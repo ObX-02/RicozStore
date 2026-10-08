@@ -1,0 +1,923 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Analytics | RicozStore
+{% endblock %}
+
+{% block content %}
+
+<div class="analytics-page">
+
+    <section class="analytics-hero">
+
+        <div class="analytics-hero-content">
+
+            <span class="analytics-eyebrow">
+                STORE INTELLIGENCE
+            </span>
+
+            <h1>
+                Analytics
+            </h1>
+
+            <p>
+                Understand your store performance, sales trends,
+                customers, products, and order activity from one place.
+            </p>
+
+        </div>
+
+        <div class="analytics-hero-badge">
+
+            <span class="analytics-badge-dot"></span>
+
+            <div>
+                <strong>Live Store Data</strong>
+                <small>{{ store.name }}</small>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ===================================================== -->
+    <!-- KPI CARDS -->
+    <!-- ===================================================== -->
+
+    <section class="analytics-kpis">
+
+        <div class="analytics-kpi-card revenue">
+
+            <div class="analytics-kpi-top">
+
+                <span class="analytics-kpi-label">
+                    Total Revenue
+                </span>
+
+                <span class="analytics-kpi-icon">
+                    $
+                </span>
+
+            </div>
+
+            <strong class="analytics-kpi-value">
+                {{ store.currency }}
+                {{ "{:,.2f}".format(overview.total_revenue or 0) }}
+            </strong>
+
+            <div class="analytics-kpi-growth {% if revenue_growth >= 0 %}positive{% else %}negative{% endif %}">
+
+    <span>
+        {% if revenue_growth >= 0 %}
+            ↑
+        {% else %}
+            ↓
+        {% endif %}
+    </span>
+
+    {{ "{:,.1f}".format(revenue_growth|abs) }}%
+
+</div>
+
+<span class="analytics-kpi-meta">
+    {% if revenue_growth > 0 %}
+        Revenue is growing compared with the previous period.
+    {% elif revenue_growth < 0 %}
+        Revenue is lower than the previous period.
+    {% else %}
+        No revenue change compared with the previous period.
+    {% endif %}
+</span>
+
+        </div>
+
+
+        <div class="analytics-kpi-card orders">
+
+            <div class="analytics-kpi-top">
+
+                <span class="analytics-kpi-label">
+                    Total Orders
+                </span>
+
+                <span class="analytics-kpi-icon">
+                    #
+                </span>
+
+            </div>
+
+            <strong class="analytics-kpi-value">
+                {{ overview.total_orders or 0 }}
+            </strong>
+
+            <span class="analytics-kpi-meta">
+                Orders received by your store
+            </span>
+
+        </div>
+
+
+        <div class="analytics-kpi-card average">
+
+            <div class="analytics-kpi-top">
+
+                <span class="analytics-kpi-label">
+                    Average Order Value
+                </span>
+
+                <span class="analytics-kpi-icon">
+                    ↗
+                </span>
+
+            </div>
+
+            <strong class="analytics-kpi-value">
+                {{ store.currency }}
+                {{ "{:,.2f}".format(overview.average_order_value or 0) }}
+            </strong>
+
+            <span class="analytics-kpi-meta">
+                Average revenue per order
+            </span>
+
+        </div>
+
+
+        <div class="analytics-kpi-card customers">
+
+            <div class="analytics-kpi-top">
+
+                <span class="analytics-kpi-label">
+                    Customers
+                </span>
+
+                <span class="analytics-kpi-icon">
+                    ◉
+                </span>
+
+            </div>
+
+            <strong class="analytics-kpi-value">
+                {{ customer_stats.total_customers or 0 }}
+            </strong>
+
+            <span class="analytics-kpi-meta">
+                Customers who placed orders
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- ===================================================== -->
+    <!-- SALES OVERVIEW -->
+    <!-- ===================================================== -->
+
+    <section class="analytics-main-grid">
+
+        <div class="analytics-panel sales-panel">
+
+            <div class="analytics-panel-header">
+
+                <div>
+
+                    <span class="analytics-section-label">
+                        PERFORMANCE
+                    </span>
+
+                    <h2>
+                        Sales Overview
+                    </h2>
+
+                    <p>
+                        Revenue and order activity over the last 30 days.
+                    </p>
+
+                </div>
+
+                <div class="analytics-period-filter">
+
+    <span class="analytics-filter-label">
+        Period
+    </span>
+
+    <div class="analytics-filter-options">
+
+        <a
+            href="{{ url_for('main.dashboard_analytics', period='7') }}"
+            class="analytics-filter-option {% if selected_period == '7' %}active{% endif %}"
+        >
+            7 Days
+        </a>
+
+        <a
+            href="{{ url_for('main.dashboard_analytics', period='30') }}"
+            class="analytics-filter-option {% if selected_period == '30' %}active{% endif %}"
+        >
+            30 Days
+        </a>
+
+        <a
+            href="{{ url_for('main.dashboard_analytics', period='90') }}"
+            class="analytics-filter-option {% if selected_period == '90' %}active{% endif %}"
+        >
+            90 Days
+        </a>
+
+        <a
+            href="{{ url_for('main.dashboard_analytics', period='all') }}"
+            class="analytics-filter-option {% if selected_period == 'all' %}active{% endif %}"
+        >
+            All Time
+        </a>
+
+    </div>
+
+</div>
+
+            </div>
+
+
+            <div class="sales-chart">
+
+                <div class="chart-y-axis">
+
+                    <span>
+                        {{ store.currency }}
+                    </span>
+
+                    <span>
+                        Revenue
+                    </span>
+
+                </div>
+
+
+                <div class="chart-area">
+
+                    <div class="chart-grid-line"></div>
+                    <div class="chart-grid-line"></div>
+                    <div class="chart-grid-line"></div>
+                    <div class="chart-grid-line"></div>
+
+
+                    {% if daily_sales %}
+
+                    <div class="sales-bars">
+
+                        {% for day in daily_sales %}
+
+                        <div
+                            class="sales-bar-wrapper"
+                            title="{{ day.order_date }} — {{ store.currency }} {{ '{:,.2f}'.format(day.revenue or 0) }}"
+                        >
+
+                            <div
+                                class="sales-bar"
+                                data-value="{{ day.revenue or 0 }}"
+                            ></div>
+
+                            <span class="sales-bar-label">
+                                {{ day.order_date.strftime('%d') }}
+                            </span>
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="analytics-empty-chart">
+
+                        <div class="analytics-empty-icon">
+                            ↗
+                        </div>
+
+                        <strong>
+                            No sales data yet
+                        </strong>
+
+                        <span>
+                            Sales activity will appear here once orders are received.
+                        </span>
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- ORDER STATUS -->
+        <!-- ================================================= -->
+
+        <div class="analytics-panel status-panel">
+
+            <div class="analytics-panel-header">
+
+                <div>
+
+                    <span class="analytics-section-label">
+                        ORDERS
+                    </span>
+
+                    <h2>
+                        Order Status
+                    </h2>
+
+                    <p>
+                        Current order distribution.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            {% if order_statuses %}
+
+            <div class="order-status-list">
+
+                {% for status in order_statuses %}
+
+                <div class="order-status-row">
+
+                    <div class="order-status-info">
+
+                        <span
+                            class="order-status-dot status-{{ status.order_status|lower|replace(' ', '-') }}"
+                        ></span>
+
+                        <span>
+                            {{ status.order_status }}
+                        </span>
+
+                    </div>
+
+                    <strong>
+                        {{ status.order_count }}
+                    </strong>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            {% else %}
+
+            <div class="analytics-empty-small">
+
+                <strong>
+                    No orders yet
+                </strong>
+
+                <span>
+                    Order status information will appear here.
+                </span>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+
+    <!-- ===================================================== -->
+    <!-- PRODUCT PERFORMANCE -->
+    <!-- ===================================================== -->
+
+    <section class="analytics-panel product-performance">
+
+        <div class="analytics-panel-header">
+
+            <div>
+
+                <span class="analytics-section-label">
+                    PRODUCTS
+                </span>
+
+                <h2>
+                    Product Performance
+                </h2>
+
+                <p>
+                    Your best-performing products based on sales and revenue.
+                </p>
+
+            </div>
+
+            <a
+                href="{{ url_for('main.dashboard_products') }}"
+                class="analytics-panel-action"
+            >
+                Manage Products
+                <span>→</span>
+            </a>
+
+        </div>
+
+
+        {% if top_products %}
+
+        <div class="analytics-table-wrapper">
+
+            <table class="analytics-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Product
+                        </th>
+
+                        <th>
+                            Price
+                        </th>
+
+                        <th>
+                            Units Sold
+                        </th>
+
+                        <th>
+                            Revenue
+                        </th>
+
+                        <th>
+                            Stock
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for product in top_products %}
+
+                    <tr>
+
+                        <td>
+
+                            <div class="analytics-product-name">
+
+                                <span class="analytics-product-icon">
+                                    P
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        {{ product.name }}
+                                    </strong>
+
+                                    <small>
+                                        Product #{{ product.id }}
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            {{ store.currency }}
+                            {{ "{:,.2f}".format(product.price or 0) }}
+
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+                                {{ product.units_sold or 0 }}
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            <strong class="product-revenue">
+
+                                {{ store.currency }}
+                                {{ "{:,.2f}".format(product.product_revenue or 0) }}
+
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if product.stock_quantity == 0 %}
+
+                            <span class="stock-badge out">
+                                Out of Stock
+                            </span>
+
+                            {% elif product.stock_quantity <= 5 %}
+
+                            <span class="stock-badge low">
+                                {{ product.stock_quantity }} left
+                            </span>
+
+                            {% else %}
+
+                            <span class="stock-badge healthy">
+                                {{ product.stock_quantity }} available
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="analytics-empty-state">
+
+            <div class="analytics-empty-icon">
+                ◈
+            </div>
+
+            <h3>
+                No product performance data
+            </h3>
+
+            <p>
+                Once your products start receiving orders,
+                their sales performance will appear here.
+            </p>
+
+            <a
+                href="{{ url_for('main.dashboard_products') }}"
+                class="analytics-empty-button"
+            >
+                View Products
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- ===================================================== -->
+    <!-- STORE SNAPSHOT -->
+    <!-- ===================================================== -->
+
+    <section class="analytics-bottom-grid">
+
+        <div class="analytics-panel snapshot-panel">
+
+            <div class="analytics-panel-header">
+
+                <div>
+
+                    <span class="analytics-section-label">
+                        INVENTORY
+                    </span>
+
+                    <h2>
+                        Store Snapshot
+                    </h2>
+
+                </div>
+
+                <a
+                    href="{{ url_for('main.dashboard_inventory') }}"
+                    class="analytics-panel-action"
+                >
+                    View Inventory
+                    <span>→</span>
+                </a>
+
+            </div>
+
+
+            <div class="snapshot-grid">
+
+                <div class="snapshot-card">
+
+                    <span>
+                        Products
+                    </span>
+
+                    <strong>
+                        {{ product_stats.total_products or 0 }}
+                    </strong>
+
+                    <small>
+                        Total catalog items
+                    </small>
+
+                </div>
+
+
+                <div class="snapshot-card">
+
+                    <span>
+                        Units
+                    </span>
+
+                    <strong>
+                        {{ product_stats.total_units or 0 }}
+                    </strong>
+
+                    <small>
+                        Current inventory units
+                    </small>
+
+                </div>
+
+
+                <div class="snapshot-card">
+
+                    <span>
+                        Customers
+                    </span>
+
+                    <strong>
+                        {{ customer_stats.total_customers or 0 }}
+                    </strong>
+
+                    <small>
+                        Unique ordering customers
+                    </small>
+
+                </div>
+
+
+                <div class="snapshot-card">
+
+                    <span>
+                        Orders
+                    </span>
+
+                    <strong>
+                        {{ overview.total_orders or 0 }}
+                    </strong>
+
+                    <small>
+                        Total store orders
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="analytics-inventory-alert">
+
+    <div class="inventory-alert-header">
+
+        <div>
+
+            <span class="analytics-section-label">
+                INVENTORY INTELLIGENCE
+            </span>
+
+            <h2>
+                Stock Attention
+            </h2>
+
+        </div>
+
+        <div class="inventory-alert-icon">
+            !
+        </div>
+
+    </div>
+
+
+    <div class="inventory-alert-stats">
+
+        <div class="inventory-alert-stat">
+
+            <span class="inventory-alert-number low">
+                {{ low_stock_stats.low_stock_products or 0 }}
+            </span>
+
+            <div>
+                <strong>
+                    Low Stock
+                </strong>
+
+                <small>
+                    Products need attention
+                </small>
+            </div>
+
+        </div>
+
+
+        <div class="inventory-alert-stat">
+
+            <span class="inventory-alert-number out">
+                {{ out_of_stock_stats.out_of_stock_products or 0 }}
+            </span>
+
+            <div>
+                <strong>
+                    Out of Stock
+                </strong>
+
+                <small>
+                    Products unavailable
+                </small>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="inventory-alert-message">
+
+        {% if out_of_stock_stats.out_of_stock_products > 0 %}
+
+        <strong>
+            Inventory action recommended
+        </strong>
+
+        <p>
+            Some products are completely out of stock.
+            Restocking them can help prevent missed sales.
+        </p>
+
+        {% elif low_stock_stats.low_stock_products > 0 %}
+
+        <strong>
+            Keep an eye on your inventory
+        </strong>
+
+        <p>
+            Some products are approaching their low-stock
+            threshold and may need replenishment soon.
+        </p>
+
+        {% else %}
+
+        <strong>
+            Inventory looks healthy
+        </strong>
+
+        <p>
+            No products are currently below their configured
+            low-stock threshold.
+        </p>
+
+        {% endif %}
+
+    </div>
+
+
+    <a
+        href="{{ url_for('main.dashboard_inventory') }}"
+        class="inventory-alert-action"
+    >
+        Open Inventory
+        <span>→</span>
+    </a>
+
+</div>
+        <!-- ================================================= -->
+        <!-- INSIGHT CARD -->
+        <!-- ================================================= -->
+
+        <div class="analytics-insight-card">
+
+            <div class="analytics-insight-icon">
+                ✦
+            </div>
+
+            <span class="analytics-section-label">
+                STORE INSIGHT
+            </span>
+
+            <h2>
+                Make smarter decisions with your data.
+            </h2>
+
+            <p>
+                Use revenue, order activity, customer behavior,
+                and product performance to understand where your
+                store is growing and where it needs attention.
+            </p>
+
+            <div class="analytics-insight-points">
+
+                <div>
+                    <span>✓</span>
+                    Monitor sales performance
+                </div>
+
+                <div>
+                    <span>✓</span>
+                    Identify strong products
+                </div>
+
+                <div>
+                    <span>✓</span>
+                    Track customer activity
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const bars = document.querySelectorAll(
+            ".sales-bar"
+        );
+
+        if (!bars.length) {
+            return;
+        }
+
+        let maximum = 0;
+
+        bars.forEach(
+            function (bar) {
+
+                const value = Number(
+                    bar.dataset.value || 0
+                );
+
+                if (value > maximum) {
+                    maximum = value;
+                }
+
+            }
+        );
+
+
+        bars.forEach(
+            function (bar) {
+
+                const value = Number(
+                    bar.dataset.value || 0
+                );
+
+                let height = 4;
+
+                if (maximum > 0) {
+
+                    height =
+                        (value / maximum) * 100;
+
+                    if (height < 4) {
+                        height = 4;
+                    }
+
+                }
+
+                bar.style.height =
+                    height + "%";
+
+            }
+        );
+
+    }
+);
+
+</script>
+
+{% endblock %}

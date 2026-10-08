@@ -1,0 +1,769 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Inventory | RicozStore
+{% endblock %}
+
+{% block content %}
+
+<div class="inventory-page">
+
+    <section class="inventory-hero">
+
+        <div class="inventory-hero-background"></div>
+
+        <div class="inventory-hero-overlay"></div>
+
+        <div class="inventory-hero-content">
+
+            <div class="inventory-hero-copy">
+
+                <div class="page-eyebrow">
+                    INVENTORY MANAGEMENT
+                </div>
+
+                <h1>
+                    Inventory
+                </h1>
+
+                <p>
+                    Monitor stock levels, identify low-stock products
+                    and keep your catalog ready for every order.
+                </p>
+
+            </div>
+
+
+            <div class="inventory-hero-visual">
+
+                <div class="inventory-visual-card inventory-card-back">
+                    <span></span>
+                </div>
+
+                <div class="inventory-visual-card inventory-card-middle">
+                    <span></span>
+                </div>
+
+                <div class="inventory-visual-card inventory-card-front">
+
+                    <div class="inventory-visual-icon">
+                        I
+                    </div>
+
+                    <div class="inventory-visual-lines">
+
+                        <span></span>
+                        <span></span>
+                        <span></span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="inventory-stats-grid">
+
+        <div class="inventory-stat-card">
+
+            <div class="inventory-stat-icon">
+                P
+            </div>
+
+            <div class="inventory-stat-content">
+
+                <span>
+                    TOTAL PRODUCTS
+                </span>
+
+                <strong>
+                    {{ stats.total_products }}
+                </strong>
+
+                <small>
+                    Products in catalog
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="inventory-stat-card">
+
+            <div class="inventory-stat-icon green">
+                U
+            </div>
+
+            <div class="inventory-stat-content">
+
+                <span>
+                    TOTAL UNITS
+                </span>
+
+                <strong>
+                    {{ stats.total_units }}
+                </strong>
+
+                <small>
+                    Units currently in stock
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="inventory-stat-card">
+
+            <div class="inventory-stat-icon value">
+                {{ store.currency or "PKR" }}
+            </div>
+
+            <div class="inventory-stat-content">
+
+                <span>
+                    INVENTORY VALUE
+                </span>
+
+                <strong>
+                    {{ store.currency or "PKR" }}
+                    {{ "%.2f"|format(stats.inventory_value or 0) }}
+                </strong>
+
+                <small>
+                    Estimated stock value
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="inventory-stat-card">
+
+            <div class="inventory-stat-icon warning">
+                !
+            </div>
+
+            <div class="inventory-stat-content">
+
+                <span>
+                    LOW STOCK
+                </span>
+
+                <strong>
+                    {{ stats.low_stock }}
+                </strong>
+
+                <small>
+                    Need attention
+                </small>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="inventory-overview-grid">
+
+        <div class="inventory-overview-card">
+
+            <div class="inventory-overview-icon inventory-good-icon">
+                ✓
+            </div>
+
+            <div>
+
+                <span>
+                    IN STOCK
+                </span>
+
+                <strong>
+                    {{ stats.in_stock }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="inventory-overview-card">
+
+            <div class="inventory-overview-icon inventory-low-icon">
+                !
+            </div>
+
+            <div>
+
+                <span>
+                    LOW STOCK
+                </span>
+
+                <strong>
+                    {{ stats.low_stock }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="inventory-overview-card">
+
+            <div class="inventory-overview-icon inventory-out-icon">
+                0
+            </div>
+
+            <div>
+
+                <span>
+                    OUT OF STOCK
+                </span>
+
+                <strong>
+                    {{ stats.out_of_stock }}
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="inventory-content-card">
+
+        <div class="inventory-content-header">
+
+            <div>
+
+                <div class="page-eyebrow">
+                    STOCK CONTROL
+                </div>
+
+                <h2>
+                    Inventory Overview
+                </h2>
+
+                <p>
+                    Review stock levels across your entire product catalog.
+                </p>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('main.dashboard_products') }}"
+                class="inventory-products-button"
+            >
+                Manage Products
+                <span>→</span>
+            </a>
+
+        </div>
+
+
+        <div class="inventory-toolbar">
+
+            <div class="inventory-search">
+
+                <span>
+                    ⌕
+                </span>
+
+                <input
+                    type="search"
+                    id="inventorySearch"
+                    placeholder="Search products, SKU or brand..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <div class="inventory-filter">
+
+                <select id="inventoryFilter">
+
+                    <option value="all">
+                        All Inventory
+                    </option>
+
+                    <option value="in-stock">
+                        In Stock
+                    </option>
+
+                    <option value="low-stock">
+                        Low Stock
+                    </option>
+
+                    <option value="out-of-stock">
+                        Out of Stock
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        {% if products %}
+
+        <div class="inventory-table-wrapper">
+
+            <table class="inventory-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            PRODUCT
+                        </th>
+
+                        <th>
+                            SKU
+                        </th>
+
+                        <th>
+                            PRICE
+                        </th>
+
+                        <th>
+                            STOCK
+                        </th>
+
+                        <th>
+                            THRESHOLD
+                        </th>
+
+                        <th>
+                            STATUS
+                        </th>
+
+                        <th>
+                            PUBLISHED
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="inventoryTableBody">
+
+                    {% for product in products %}
+
+                    <tr
+                        class="inventory-row"
+                        data-name="{{ product.name|default('', true)|lower }}"
+                        data-sku="{{ product.sku|default('', true)|lower }}"
+                        data-brand="{{ product.brand|default('', true)|lower }}"
+                        data-stock="
+                            {% if product.stock_quantity <= 0 %}
+                                out-of-stock
+                            {% elif product.stock_quantity <= product.low_stock_threshold %}
+                                low-stock
+                            {% else %}
+                                in-stock
+                            {% endif %}
+                        "
+                    >
+
+                        <td>
+
+                            <div class="inventory-product">
+
+                                <div class="inventory-product-image">
+
+                                    <span>
+                                        {{ product.name[:1]|upper }}
+                                    </span>
+
+                                </div>
+
+
+                                <div class="inventory-product-details">
+
+                                    <strong>
+                                        {{ product.name }}
+                                    </strong>
+
+                                    {% if product.brand %}
+
+                                    <span>
+                                        {{ product.brand }}
+                                    </span>
+
+                                    {% else %}
+
+                                    <span>
+                                        RicozStore Product
+                                    </span>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if product.sku %}
+
+                            <span class="inventory-sku">
+                                {{ product.sku }}
+                            </span>
+
+                            {% else %}
+
+                            <span class="inventory-muted">
+                                —
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            <strong class="inventory-price">
+
+                                {{ store.currency or "PKR" }}
+                                {{ "%.2f"|format(product.price) }}
+
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if product.stock_quantity <= 0 %}
+
+                            <div class="stock-display stock-out">
+
+                                <strong>
+                                    0
+                                </strong>
+
+                                <span>
+                                    Out of stock
+                                </span>
+
+                            </div>
+
+                            {% elif product.stock_quantity <= product.low_stock_threshold %}
+
+                            <div class="stock-display stock-low">
+
+                                <strong>
+                                    {{ product.stock_quantity }}
+                                </strong>
+
+                                <span>
+                                    Low stock
+                                </span>
+
+                            </div>
+
+                            {% else %}
+
+                            <div class="stock-display stock-good">
+
+                                <strong>
+                                    {{ product.stock_quantity }}
+                                </strong>
+
+                                <span>
+                                    In stock
+                                </span>
+
+                            </div>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="inventory-threshold">
+
+                                {{ product.low_stock_threshold }}
+
+                                <small>
+                                    units
+                                </small>
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if product.stock_quantity <= 0 %}
+
+                            <span class="inventory-status status-out">
+                                Out of stock
+                            </span>
+
+                            {% elif product.stock_quantity <= product.low_stock_threshold %}
+
+                            <span class="inventory-status status-low">
+                                Low stock
+                            </span>
+
+                            {% else %}
+
+                            <span class="inventory-status status-good">
+                                Healthy
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if product.is_published %}
+
+                            <span class="inventory-published published">
+                                <i></i>
+                                Published
+                            </span>
+
+                            {% else %}
+
+                            <span class="inventory-published hidden">
+                                <i></i>
+                                Hidden
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div
+            class="inventory-no-results"
+            id="inventoryNoResults"
+        >
+
+            <div class="inventory-no-results-icon">
+                ⌕
+            </div>
+
+            <h3>
+                No inventory items found
+            </h3>
+
+            <p>
+                Try changing your search or inventory filter.
+            </p>
+
+        </div>
+
+
+        {% else %}
+
+        <div class="inventory-empty-state">
+
+            <div class="inventory-empty-visual">
+
+                <div class="empty-inventory-card inventory-empty-back"></div>
+
+                <div class="empty-inventory-card inventory-empty-middle"></div>
+
+                <div class="empty-inventory-card inventory-empty-main">
+
+                    <div class="empty-inventory-icon">
+                        I
+                    </div>
+
+                    <div class="empty-inventory-lines">
+
+                        <span></span>
+                        <span></span>
+                        <span></span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="inventory-empty-content">
+
+                <div class="page-eyebrow">
+                    INVENTORY
+                </div>
+
+                <h2>
+                    Your inventory starts here
+                </h2>
+
+                <p>
+                    Add products to your catalog and their stock levels
+                    will automatically appear in your inventory workspace.
+                </p>
+
+                <a
+                    href="{{ url_for('main.create_product') }}"
+                    class="products-add-button large"
+                >
+                    <span>+</span>
+                    Add Your First Product
+                </a>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchInput =
+        document.getElementById("inventorySearch");
+
+    const filterSelect =
+        document.getElementById("inventoryFilter");
+
+    const rows =
+        document.querySelectorAll(".inventory-row");
+
+    const noResults =
+        document.getElementById("inventoryNoResults");
+
+
+    function filterInventory() {
+
+        const query =
+            searchInput.value.toLowerCase().trim();
+
+        const filter =
+            filterSelect.value;
+
+        let visibleRows = 0;
+
+
+        rows.forEach(function (row) {
+
+            const name =
+                row.dataset.name || "";
+
+            const sku =
+                row.dataset.sku || "";
+
+            const brand =
+                row.dataset.brand || "";
+
+            const stock =
+                row.dataset.stock || "";
+
+
+            const matchesSearch =
+                query === "" ||
+                name.includes(query) ||
+                sku.includes(query) ||
+                brand.includes(query);
+
+
+            const matchesFilter =
+                filter === "all" ||
+                stock === filter;
+
+
+            if (
+                matchesSearch &&
+                matchesFilter
+            ) {
+
+                row.style.display = "";
+
+                visibleRows++;
+
+            } else {
+
+                row.style.display = "none";
+
+            }
+
+        });
+
+
+        if (noResults) {
+
+            if (visibleRows === 0) {
+
+                noResults.classList.add("show");
+
+            } else {
+
+                noResults.classList.remove("show");
+
+            }
+
+        }
+
+    }
+
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "input",
+            filterInventory
+        );
+
+    }
+
+
+    if (filterSelect) {
+
+        filterSelect.addEventListener(
+            "change",
+            filterInventory
+        );
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

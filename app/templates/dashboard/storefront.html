@@ -1,0 +1,294 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+    Storefront | RicozStore
+{% endblock %}
+
+{% block content %}
+
+<div class="storefront-page">
+
+    <section class="storefront-hero">
+
+        <div class="storefront-hero-content">
+
+            <span class="storefront-eyebrow">
+                STORE EXPERIENCE
+            </span>
+
+            <h1>
+                Build a storefront your customers remember.
+            </h1>
+
+            <p>
+                Manage your online store experience, branding,
+                storefront content and customer-facing appearance
+                from one central workspace.
+            </p>
+
+            <div class="storefront-hero-actions">
+
+                <a
+                    href="{{ url_for('main.dashboard_products') }}"
+                    class="storefront-primary-button"
+                >
+                    Manage Products
+                </a>
+
+                <a
+                    href="{{ url_for('main.home') }}"
+                    class="storefront-secondary-button"
+                >
+                    View Store
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="storefront-hero-visual">
+
+            <div class="storefront-window">
+
+                <div class="storefront-window-bar">
+
+                    <div class="storefront-window-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
+                    <div class="storefront-window-url">
+                        yourstore.ricozstore.com
+                    </div>
+
+                </div>
+
+
+                <div class="storefront-preview">
+
+                    <div class="storefront-preview-header">
+
+                        <div class="storefront-preview-logo">
+                            R
+                        </div>
+
+                        <div class="storefront-preview-nav">
+                            <span>Home</span>
+                            <span>Shop</span>
+                            <span>Collections</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="storefront-preview-content">
+
+                        <span>
+                            NEW COLLECTION
+                        </span>
+
+                        <h2>
+                            Your brand.
+                            Your storefront.
+                        </h2>
+
+                        <p>
+                            Create a shopping experience
+                            designed around your business.
+                        </p>
+
+                        <div class="storefront-preview-button">
+                            Shop Collection
+                        </div>
+
+                    </div>
+
+
+                    <div class="storefront-preview-products">
+
+                        <div class="storefront-product-card">
+                            <div class="storefront-product-image"></div>
+                            <strong>Featured Product</strong>
+                            <span>PKR 4,999</span>
+                        </div>
+
+                        <div class="storefront-product-card">
+                            <div class="storefront-product-image"></div>
+                            <strong>New Arrival</strong>
+                            <span>PKR 6,499</span>
+                        </div>
+
+                        <div class="storefront-product-card">
+                            <div class="storefront-product-image"></div>
+                            <strong>Best Seller</strong>
+                            <span>PKR 3,999</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="storefront-section">
+
+        <div class="storefront-section-heading">
+
+            <span class="storefront-eyebrow">
+                STOREFRONT CONTROL
+            </span>
+
+            <h2>
+                Everything behind your customer experience.
+            </h2>
+
+            <p>
+                Keep your storefront organized and ready for
+                customers as your business grows.
+            </p>
+
+        </div>
+
+
+        <div class="storefront-feature-grid">
+
+            <article class="storefront-feature-card">
+
+                <div class="storefront-feature-icon">
+                    ◈
+                </div>
+
+                <h3>
+                    Store Branding
+                </h3>
+
+                <p>
+                    Manage your store identity, logo,
+                    presentation and visual direction.
+                </p>
+
+                <span class="storefront-feature-status">
+                    Ready to configure
+                </span>
+
+            </article>
+
+
+            <article class="storefront-feature-card">
+
+                <div class="storefront-feature-icon">
+                    ◆
+                </div>
+
+                <h3>
+                    Product Showcase
+                </h3>
+
+                <p>
+                    Organize the products customers see
+                    and create a stronger shopping experience.
+                </p>
+
+                <a
+                    href="{{ url_for('main.dashboard_products') }}"
+                    class="storefront-feature-link"
+                >
+                    Manage products →
+                </a>
+
+            </article>
+
+
+            <article class="storefront-feature-card">
+
+                <div class="storefront-feature-icon">
+                    ◎
+                </div>
+
+                <h3>
+                    Store Experience
+                </h3>
+
+                <p>
+                    Prepare your storefront structure,
+                    customer journey and shopping experience.
+                </p>
+
+                <span class="storefront-feature-status">
+                    Coming next
+                </span>
+
+            </article>
+
+
+            <article class="storefront-feature-card">
+
+                <div class="storefront-feature-icon">
+                    ✦
+                </div>
+
+                <h3>
+                    Store Growth
+                </h3>
+
+                <p>
+                    Use your products, campaigns and analytics
+                    together to improve store performance.
+                </p>
+
+                <a
+                    href="{{ url_for('main.dashboard_analytics') }}"
+                    class="storefront-feature-link"
+                >
+                    View analytics →
+                </a>
+
+            </article>
+
+        </div>
+
+    </section>
+
+
+    <section class="storefront-bottom">
+
+        <div class="storefront-bottom-card">
+
+            <div>
+
+                <span class="storefront-eyebrow">
+                    NEXT STEP
+                </span>
+
+                <h2>
+                    Your storefront starts with great products.
+                </h2>
+
+                <p>
+                    Add products, organize your catalog and
+                    prepare your store for customers.
+                </p>
+
+            </div>
+
+            <a
+                href="{{ url_for('main.dashboard_products') }}"
+                class="storefront-primary-button"
+            >
+                Open Products
+            </a>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}

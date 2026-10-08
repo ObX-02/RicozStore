@@ -1,0 +1,660 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+AI Studio | RicozStore
+{% endblock %}
+
+{% block content %}
+
+<div class="ai-studio-page">
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <section class="ai-studio-hero">
+
+        <div class="ai-studio-hero-content">
+
+            <div class="ai-studio-eyebrow">
+                <span class="ai-status-dot"></span>
+                RICOZ INTELLIGENCE
+            </div>
+
+            <h1>
+                AI Commerce Studio
+            </h1>
+
+            <p>
+                Turn your store data and ideas into smarter
+                products, marketing decisions and growth strategies.
+            </p>
+
+        </div>
+
+        <div class="ai-studio-hero-badge">
+
+            <div class="ai-badge-icon">
+                AI
+            </div>
+
+            <div>
+                <strong>
+                    AI Assistant
+                </strong>
+
+                <span>
+                    Ready to help
+                </span>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         QUICK ACTIONS
+    ====================================================== -->
+
+    <section class="ai-section">
+
+        <div class="ai-section-heading">
+
+            <div>
+                <span class="ai-section-kicker">
+                    QUICK ACTIONS
+                </span>
+
+                <h2>
+                    What do you want to create?
+                </h2>
+
+                <p>
+                    Start with a ready-made commerce workflow.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="ai-action-grid">
+
+            <button
+                type="button"
+                class="ai-action-card"
+                data-prompt="Create a professional product description template for an e-commerce product. Include a compelling introduction, key benefits, features, specifications and a strong call to action."
+            >
+
+                <span class="ai-action-icon">
+                    P
+                </span>
+
+                <span class="ai-action-content">
+
+                    <strong>
+                        Product Description
+                    </strong>
+
+                    <small>
+                        Create persuasive product copy
+                    </small>
+
+                </span>
+
+                <span class="ai-action-arrow">
+                    →
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="ai-action-card"
+                data-prompt="Create 5 professional marketing campaign ideas for an online store. For each idea provide the campaign name, objective, target audience, offer and suggested promotion message."
+            >
+
+                <span class="ai-action-icon">
+                    M
+                </span>
+
+                <span class="ai-action-content">
+
+                    <strong>
+                        Marketing Ideas
+                    </strong>
+
+                    <small>
+                        Generate campaign concepts
+                    </small>
+
+                </span>
+
+                <span class="ai-action-arrow">
+                    →
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="ai-action-card"
+                data-prompt="Give me 5 practical strategies to increase e-commerce sales without relying only on discounts. Focus on product presentation, customer experience, retention, upselling and conversion."
+            >
+
+                <span class="ai-action-icon">
+                    G
+                </span>
+
+                <span class="ai-action-content">
+
+                    <strong>
+                        Growth Strategy
+                    </strong>
+
+                    <small>
+                        Discover practical growth ideas
+                    </small>
+
+                </span>
+
+                <span class="ai-action-arrow">
+                    →
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="ai-action-card"
+                data-prompt="Give me a professional e-commerce SEO checklist covering product titles, descriptions, URLs, metadata, images, internal linking and category pages."
+            >
+
+                <span class="ai-action-icon">
+                    S
+                </span>
+
+                <span class="ai-action-content">
+
+                    <strong>
+                        SEO Assistant
+                    </strong>
+
+                    <small>
+                        Improve store visibility
+                    </small>
+
+                </span>
+
+                <span class="ai-action-arrow">
+                    →
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="ai-action-card"
+                data-prompt="Create a professional promotional campaign for an online store. Include campaign concept, audience, offer, messaging, channels and a simple execution plan."
+            >
+
+                <span class="ai-action-icon">
+                    C
+                </span>
+
+                <span class="ai-action-content">
+
+                    <strong>
+                        Campaign Builder
+                    </strong>
+
+                    <small>
+                        Plan your next campaign
+                    </small>
+
+                </span>
+
+                <span class="ai-action-arrow">
+                    →
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="ai-action-card"
+                data-prompt="Act as an e-commerce consultant. Give me 7 practical recommendations for improving an online store's customer experience, conversion rate and repeat purchases."
+            >
+
+                <span class="ai-action-icon">
+                    I
+                </span>
+
+                <span class="ai-action-content">
+
+                    <strong>
+                        Store Advisor
+                    </strong>
+
+                    <small>
+                        Get expert commerce guidance
+                    </small>
+
+                </span>
+
+                <span class="ai-action-arrow">
+                    →
+                </span>
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         AI WORKSPACE
+    ====================================================== -->
+
+    <section class="ai-workspace-grid">
+
+        <!-- PROMPT PANEL -->
+
+        <div class="ai-workspace-card">
+
+            <div class="ai-card-header">
+
+                <div>
+
+                    <span class="ai-card-kicker">
+                        AI ASSISTANT
+                    </span>
+
+                    <h2>
+                        Ask Ricoz AI
+                    </h2>
+
+                </div>
+
+                <span class="ai-live-badge">
+                    <span></span>
+                    Online
+                </span>
+
+            </div>
+
+
+            <form
+                method="POST"
+                class="ai-prompt-form"
+                id="ai-prompt-form"
+            >
+
+                <label for="ai-prompt">
+                    What can I help you with?
+                </label>
+
+                <textarea
+                    id="ai-prompt"
+                    name="prompt"
+                    rows="8"
+                    placeholder="Example: Create a professional product description for a premium black leather wallet..."
+                >{{ user_prompt }}</textarea>
+
+
+                <div class="ai-form-footer">
+
+                    <span class="ai-helper-text">
+                        Powered by RicozStore AI
+                    </span>
+
+                    <button
+                        type="submit"
+                        class="ai-generate-button"
+                        id="ai-generate-button"
+                    >
+
+                        <span>
+                            Generate
+                        </span>
+
+                        <span class="ai-button-arrow">
+                            →
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <!-- RESPONSE PANEL -->
+
+        <div class="ai-workspace-card ai-response-card">
+
+            <div class="ai-card-header">
+
+                <div>
+
+                    <span class="ai-card-kicker">
+                        AI OUTPUT
+                    </span>
+
+                    <h2>
+                        Your Result
+                    </h2>
+
+                </div>
+
+                {% if ai_response %}
+
+                <button
+                    type="button"
+                    class="ai-copy-button"
+                    id="ai-copy-button"
+                >
+                    Copy
+                </button>
+
+                {% endif %}
+
+            </div>
+
+
+            {% if ai_error %}
+
+            <div class="ai-error-box">
+
+                <div class="ai-error-icon">
+                    !
+                </div>
+
+                <div>
+
+                    <strong>
+                        AI request could not be completed
+                    </strong>
+
+                    <p>
+                        {{ ai_error }}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            {% elif ai_response %}
+
+            <div
+                class="ai-response-output"
+                id="ai-response-output"
+            >
+                {{ ai_response }}
+            </div>
+
+
+            {% else %}
+
+            <div class="ai-empty-state">
+
+                <div class="ai-empty-icon">
+                    AI
+                </div>
+
+                <h3>
+                    Your AI workspace is ready
+                </h3>
+
+                <p>
+                    Choose a quick action above or describe
+                    what you need in the assistant.
+                </p>
+
+                <div class="ai-empty-hints">
+
+                    <span>
+                        Product copy
+                    </span>
+
+                    <span>
+                        Marketing
+                    </span>
+
+                    <span>
+                        SEO
+                    </span>
+
+                    <span>
+                        Growth
+                    </span>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         AI CAPABILITIES
+    ====================================================== -->
+
+    <section class="ai-capabilities">
+
+        <div class="ai-capability-card">
+
+            <span class="ai-capability-number">
+                01
+            </span>
+
+            <strong>
+                Create
+            </strong>
+
+            <p>
+                Generate professional commerce content
+                faster.
+            </p>
+
+        </div>
+
+
+        <div class="ai-capability-card">
+
+            <span class="ai-capability-number">
+                02
+            </span>
+
+            <strong>
+                Analyze
+            </strong>
+
+            <p>
+                Turn business questions into practical
+                recommendations.
+            </p>
+
+        </div>
+
+
+        <div class="ai-capability-card">
+
+            <span class="ai-capability-number">
+                03
+            </span>
+
+            <strong>
+                Optimize
+            </strong>
+
+            <p>
+                Improve products, campaigns and customer
+                experiences.
+            </p>
+
+        </div>
+
+
+        <div class="ai-capability-card">
+
+            <span class="ai-capability-number">
+                04
+            </span>
+
+            <strong>
+                Grow
+            </strong>
+
+            <p>
+                Discover new opportunities for your store.
+            </p>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const promptBox =
+            document.getElementById("ai-prompt");
+
+        const promptForm =
+            document.getElementById("ai-prompt-form");
+
+        const generateButton =
+            document.getElementById("ai-generate-button");
+
+        const actionCards =
+            document.querySelectorAll(
+                ".ai-action-card"
+            );
+
+        const copyButton =
+            document.getElementById("ai-copy-button");
+
+        const responseOutput =
+            document.getElementById(
+                "ai-response-output"
+            );
+
+
+        actionCards.forEach(
+            function (card) {
+
+                card.addEventListener(
+                    "click",
+                    function () {
+
+                        const prompt =
+                            card.dataset.prompt;
+
+                        promptBox.value =
+                            prompt;
+
+                        promptBox.focus();
+
+                        promptBox.scrollIntoView(
+                            {
+                                behavior: "smooth",
+                                block: "center"
+                            }
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+        if (promptForm && generateButton) {
+
+            promptForm.addEventListener(
+                "submit",
+                function () {
+
+                    generateButton.disabled =
+                        true;
+
+                    generateButton
+                        .querySelector("span")
+                        .textContent =
+                        "Generating...";
+
+                }
+            );
+
+        }
+
+
+        if (
+            copyButton &&
+            responseOutput
+        ) {
+
+            copyButton.addEventListener(
+                "click",
+                async function () {
+
+                    try {
+
+                        await navigator.clipboard.writeText(
+                            responseOutput.innerText
+                        );
+
+                        copyButton.textContent =
+                            "Copied";
+
+                        setTimeout(
+                            function () {
+
+                                copyButton.textContent =
+                                    "Copy";
+
+                            },
+                            1800
+                        );
+
+                    } catch (error) {
+
+                        copyButton.textContent =
+                            "Select & Copy";
+
+                    }
+
+                }
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+{% endblock %}

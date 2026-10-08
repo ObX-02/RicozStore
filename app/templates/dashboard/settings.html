@@ -1,0 +1,802 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Settings | RicozStore{% endblock %}
+
+{% block content %}
+
+<div class="settings-page">
+
+    <div class="settings-hero">
+        <div>
+            <span class="settings-eyebrow">STORE CONTROL CENTER</span>
+
+            <h1>Settings</h1>
+
+            <p>
+                Manage your store profile, business preferences,
+                account security and platform configuration from one place.
+            </p>
+        </div>
+
+        <div class="settings-hero-badge">
+            <span class="settings-badge-dot"></span>
+            Store Configuration
+        </div>
+    </div>
+
+
+    <div class="settings-layout">
+
+        <aside class="settings-navigation">
+
+            <div class="settings-nav-title">
+                Settings
+            </div>
+
+            <button
+                type="button"
+                class="settings-nav-item active"
+                data-section="store"
+            >
+                <span class="settings-nav-icon">▣</span>
+                <span>
+                    <strong>Store</strong>
+                    <small>Store information</small>
+                </span>
+            </button>
+
+            <button
+                type="button"
+                class="settings-nav-item"
+                data-section="business"
+            >
+                <span class="settings-nav-icon">◈</span>
+                <span>
+                    <strong>Business</strong>
+                    <small>Business preferences</small>
+                </span>
+            </button>
+
+            <button
+                type="button"
+                class="settings-nav-item"
+                data-section="account"
+            >
+                <span class="settings-nav-icon">◎</span>
+                <span>
+                    <strong>Account</strong>
+                    <small>Profile & account</small>
+                </span>
+            </button>
+
+            <button
+                type="button"
+                class="settings-nav-item"
+                data-section="security"
+            >
+                <span class="settings-nav-icon">◇</span>
+                <span>
+                    <strong>Security</strong>
+                    <small>Account protection</small>
+                </span>
+            </button>
+
+            <button
+                type="button"
+                class="settings-nav-item"
+                data-section="notifications"
+            >
+                <span class="settings-nav-icon">◉</span>
+                <span>
+                    <strong>Notifications</strong>
+                    <small>Alerts & updates</small>
+                </span>
+            </button>
+
+        </aside>
+
+
+        <main class="settings-content">
+
+
+            <!-- STORE SETTINGS -->
+
+            <section
+                class="settings-section active"
+                id="settings-store"
+            >
+
+                <div class="settings-section-header">
+
+                    <div>
+                        <span class="settings-section-label">
+                            STORE PROFILE
+                        </span>
+
+                        <h2>Store Information</h2>
+
+                        <p>
+                            Configure the basic information customers
+                            associate with your RicozStore store.
+                        </p>
+                    </div>
+
+                    <div class="settings-section-icon">
+                        ▣
+                    </div>
+
+                </div>
+
+
+                <div class="settings-card">
+
+                    <div class="settings-card-heading">
+                        <div>
+                            <h3>Store details</h3>
+
+                            <p>
+                                Your store identity and public-facing
+                                information.
+                            </p>
+                        </div>
+
+                        <span class="settings-status">
+                            Active
+                        </span>
+                    </div>
+
+
+                    <div class="settings-form-grid">
+
+                        <div class="settings-field">
+
+                            <label for="store-name">
+                                Store name
+                            </label>
+
+                            <input
+                                id="store-name"
+                                type="text"
+                                value="RicozStore"
+                                placeholder="Enter store name"
+                            >
+
+                            <small>
+                                The name displayed across your store.
+                            </small>
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="store-url">
+                                Store URL
+                            </label>
+
+                            <input
+                                id="store-url"
+                                type="text"
+                                value="ricozstore"
+                                placeholder="your-store"
+                            >
+
+                            <small>
+                                Your unique store identifier.
+                            </small>
+
+                        </div>
+
+
+                        <div class="settings-field full-width">
+
+                            <label for="store-description">
+                                Store description
+                            </label>
+
+                            <textarea
+                                id="store-description"
+                                rows="4"
+                                placeholder="Describe your store..."
+                            >Your professional online store powered by RicozStore.</textarea>
+
+                            <small>
+                                A short description of your business.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="settings-card-footer">
+
+                        <span class="settings-save-note">
+                            Store settings are ready to configure.
+                        </span>
+
+                        <button
+                            type="button"
+                            class="settings-save-button"
+                        >
+                            Save Changes
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- BUSINESS SETTINGS -->
+
+            <section
+                class="settings-section"
+                id="settings-business"
+            >
+
+                <div class="settings-section-header">
+
+                    <div>
+                        <span class="settings-section-label">
+                            BUSINESS PREFERENCES
+                        </span>
+
+                        <h2>Business Settings</h2>
+
+                        <p>
+                            Configure currency, timezone and business
+                            preferences for your store.
+                        </p>
+                    </div>
+
+                    <div class="settings-section-icon">
+                        ◈
+                    </div>
+
+                </div>
+
+
+                <div class="settings-card">
+
+                    <div class="settings-card-heading">
+
+                        <div>
+                            <h3>Regional preferences</h3>
+
+                            <p>
+                                These preferences affect how your store
+                                handles business information.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="settings-form-grid">
+
+                        <div class="settings-field">
+
+                            <label for="currency">
+                                Currency
+                            </label>
+
+                            <select id="currency">
+
+                                <option selected>
+                                    PKR — Pakistani Rupee
+                                </option>
+
+                                <option>
+                                    USD — US Dollar
+                                </option>
+
+                                <option>
+                                    GBP — British Pound
+                                </option>
+
+                                <option>
+                                    EUR — Euro
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="timezone">
+                                Timezone
+                            </label>
+
+                            <select id="timezone">
+
+                                <option selected>
+                                    Asia/Karachi
+                                </option>
+
+                                <option>
+                                    Asia/Dubai
+                                </option>
+
+                                <option>
+                                    UTC
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="order-prefix">
+                                Order prefix
+                            </label>
+
+                            <input
+                                id="order-prefix"
+                                type="text"
+                                value="RICOZ"
+                                placeholder="ORDER"
+                            >
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="tax-mode">
+                                Tax display
+                            </label>
+
+                            <select id="tax-mode">
+
+                                <option selected>
+                                    Prices include tax
+                                </option>
+
+                                <option>
+                                    Prices exclude tax
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="settings-card-footer">
+
+                        <span class="settings-save-note">
+                            Business preferences are configured.
+                        </span>
+
+                        <button
+                            type="button"
+                            class="settings-save-button"
+                        >
+                            Save Preferences
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ACCOUNT SETTINGS -->
+
+            <section
+                class="settings-section"
+                id="settings-account"
+            >
+
+                <div class="settings-section-header">
+
+                    <div>
+                        <span class="settings-section-label">
+                            ACCOUNT
+                        </span>
+
+                        <h2>Account Profile</h2>
+
+                        <p>
+                            Manage the profile information associated
+                            with your RicozStore account.
+                        </p>
+                    </div>
+
+                    <div class="settings-section-icon">
+                        ◎
+                    </div>
+
+                </div>
+
+
+                <div class="settings-card">
+
+                    <div class="settings-account-profile">
+
+                        <div class="settings-profile-avatar">
+                            {{ session.get("user_name", "U")[0]|upper }}
+                        </div>
+
+                        <div>
+                            <h3>
+                                {{ session.get("user_name", "Store Owner") }}
+                            </h3>
+
+                            <p>
+                                {{ session.get("user_email", "Account email") }}
+                            </p>
+
+                            <span class="settings-role-badge">
+                                Store Owner
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="settings-form-grid">
+
+                        <div class="settings-field">
+
+                            <label for="account-name">
+                                Full name
+                            </label>
+
+                            <input
+                                id="account-name"
+                                type="text"
+                                value="{{ session.get('user_name', '') }}"
+                            >
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="account-email">
+                                Email address
+                            </label>
+
+                            <input
+                                id="account-email"
+                                type="email"
+                                value="{{ session.get('user_email', '') }}"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="settings-card-footer">
+
+                        <span class="settings-save-note">
+                            Keep your account information up to date.
+                        </span>
+
+                        <button
+                            type="button"
+                            class="settings-save-button"
+                        >
+                            Update Profile
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- SECURITY SETTINGS -->
+
+            <section
+                class="settings-section"
+                id="settings-security"
+            >
+
+                <div class="settings-section-header">
+
+                    <div>
+                        <span class="settings-section-label">
+                            SECURITY
+                        </span>
+
+                        <h2>Security & Access</h2>
+
+                        <p>
+                            Protect your account and manage access
+                            controls.
+                        </p>
+                    </div>
+
+                    <div class="settings-section-icon">
+                        ◇
+                    </div>
+
+                </div>
+
+
+                <div class="settings-security-grid">
+
+                    <div class="settings-security-card">
+
+                        <div class="security-card-icon">
+                            ✓
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Account protection
+                            </h3>
+
+                            <p>
+                                Your account is protected by secure
+                                authentication.
+                            </p>
+
+                            <span class="security-status">
+                                Protected
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="settings-security-card">
+
+                        <div class="security-card-icon">
+                            ↻
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Password
+                            </h3>
+
+                            <p>
+                                Keep your password strong and unique
+                                for better account security.
+                            </p>
+
+                            <button
+                                type="button"
+                                class="security-action"
+                            >
+                                Change Password
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- NOTIFICATIONS -->
+
+            <section
+                class="settings-section"
+                id="settings-notifications"
+            >
+
+                <div class="settings-section-header">
+
+                    <div>
+                        <span class="settings-section-label">
+                            NOTIFICATIONS
+                        </span>
+
+                        <h2>Notifications</h2>
+
+                        <p>
+                            Control which store events should generate
+                            notifications.
+                        </p>
+                    </div>
+
+                    <div class="settings-section-icon">
+                        ◉
+                    </div>
+
+                </div>
+
+
+                <div class="settings-card">
+
+                    <div class="notification-setting">
+
+                        <div>
+                            <h3>
+                                New orders
+                            </h3>
+
+                            <p>
+                                Receive notifications when a new order
+                                is created.
+                            </p>
+                        </div>
+
+                        <label class="settings-toggle">
+                            <input
+                                type="checkbox"
+                                checked
+                            >
+                            <span></span>
+                        </label>
+
+                    </div>
+
+
+                    <div class="notification-setting">
+
+                        <div>
+                            <h3>
+                                Low stock alerts
+                            </h3>
+
+                            <p>
+                                Get notified when products reach their
+                                low-stock threshold.
+                            </p>
+                        </div>
+
+                        <label class="settings-toggle">
+                            <input
+                                type="checkbox"
+                                checked
+                            >
+                            <span></span>
+                        </label>
+
+                    </div>
+
+
+                    <div class="notification-setting">
+
+                        <div>
+                            <h3>
+                                Marketing updates
+                            </h3>
+
+                            <p>
+                                Receive useful updates about campaigns,
+                                analytics and growth features.
+                            </p>
+                        </div>
+
+                        <label class="settings-toggle">
+
+                            <input
+                                type="checkbox"
+                            >
+
+                            <span></span>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="settings-card-footer">
+
+                        <span class="settings-save-note">
+                            Notification preferences can be changed anytime.
+                        </span>
+
+                        <button
+                            type="button"
+                            class="settings-save-button"
+                        >
+                            Save Notifications
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+        </main>
+
+    </div>
+
+</div>
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const navigationItems =
+            document.querySelectorAll(
+                ".settings-nav-item"
+            );
+
+        const sections =
+            document.querySelectorAll(
+                ".settings-section"
+            );
+
+
+        navigationItems.forEach(
+            function (item) {
+
+                item.addEventListener(
+                    "click",
+                    function () {
+
+                        const sectionName =
+                            item.dataset.section;
+
+
+                        navigationItems.forEach(
+                            function (navItem) {
+
+                                navItem.classList.remove(
+                                    "active"
+                                );
+
+                            }
+                        );
+
+
+                        sections.forEach(
+                            function (section) {
+
+                                section.classList.remove(
+                                    "active"
+                                );
+
+                            }
+                        );
+
+
+                        item.classList.add(
+                            "active"
+                        );
+
+
+                        const selectedSection =
+                            document.getElementById(
+                                "settings-" + sectionName
+                            );
+
+
+                        if (selectedSection) {
+
+                            selectedSection.classList.add(
+                                "active"
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+    }
+);
+
+</script>
+
+{% endblock %}

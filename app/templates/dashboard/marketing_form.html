@@ -1,0 +1,953 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Create Campaign — RicozStore
+{% endblock %}
+
+{% block content %}
+
+<div class="marketing-form-page">
+
+    <div class="marketing-form-hero">
+
+        <div class="marketing-form-hero-content">
+
+            <div class="marketing-form-eyebrow">
+                CAMPAIGN MANAGEMENT
+            </div>
+
+            <h1>
+                Create a marketing campaign
+            </h1>
+
+            <p>
+                Plan, organize and launch targeted campaigns
+                to grow your store and reach more customers.
+            </p>
+
+        </div>
+
+        <div class="marketing-form-hero-badge">
+            <span class="marketing-form-badge-dot"></span>
+            {{ store.name }}
+        </div>
+
+    </div>
+
+
+    <form
+        method="POST"
+        action="{{ url_for('main.create_marketing_campaign') }}"
+        class="marketing-campaign-form"
+        id="marketing-campaign-form"
+    >
+
+        <div class="marketing-form-layout">
+
+
+            <div class="marketing-form-main">
+
+
+                <section class="marketing-form-card">
+
+                    <div class="marketing-form-card-header">
+
+                        <div>
+                            <span class="marketing-form-section-label">
+                                CAMPAIGN INFORMATION
+                            </span>
+
+                            <h2>
+                                Campaign details
+                            </h2>
+
+                            <p>
+                                Define the purpose and identity of your campaign.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="marketing-form-fields">
+
+
+                        <div class="marketing-form-field marketing-form-field-full">
+
+                            <label for="name">
+                                Campaign name
+                                <span>*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                placeholder="e.g. Summer Collection Launch"
+                                maxlength="180"
+                                required
+                            >
+
+                            <small>
+                                Give your campaign a clear and recognizable name.
+                            </small>
+
+                        </div>
+
+
+                        <div class="marketing-form-field">
+
+                            <label for="campaign_type">
+                                Campaign type
+                            </label>
+
+                            <div class="marketing-select-wrap">
+
+                                <select
+                                    id="campaign_type"
+                                    name="campaign_type"
+                                >
+
+                                    <option value="General">
+                                        General
+                                    </option>
+
+                                    <option value="Email">
+                                        Email
+                                    </option>
+
+                                    <option value="Social Media">
+                                        Social Media
+                                    </option>
+
+                                    <option value="Promotion">
+                                        Promotion
+                                    </option>
+
+                                    <option value="Product Launch">
+                                        Product Launch
+                                    </option>
+
+                                    <option value="Seasonal">
+                                        Seasonal
+                                    </option>
+
+                                    <option value="Flash Sale">
+                                        Flash Sale
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="marketing-form-field">
+
+                            <label for="audience">
+                                Target audience
+                            </label>
+
+                            <input
+                                type="text"
+                                id="audience"
+                                name="audience"
+                                value="All Customers"
+                                maxlength="120"
+                                placeholder="e.g. All Customers"
+                            >
+
+                            <small>
+                                Describe who this campaign is intended for.
+                            </small>
+
+                        </div>
+
+
+                        <div class="marketing-form-field marketing-form-field-full">
+
+                            <label for="description">
+                                Campaign description
+                            </label>
+
+                            <textarea
+                                id="description"
+                                name="description"
+                                rows="6"
+                                placeholder="Describe your campaign goals, promotion, messaging or strategy..."
+                            ></textarea>
+
+                            <small>
+                                Add useful internal notes about this campaign.
+                            </small>
+
+                        </div>
+
+
+                    </div>
+
+                </section>
+
+
+                <section class="marketing-form-card">
+
+                    <div class="marketing-form-card-header">
+
+                        <div>
+
+                            <span class="marketing-form-section-label">
+                                CAMPAIGN CONTROL
+                            </span>
+
+                            <h2>
+                                Budget & status
+                            </h2>
+
+                            <p>
+                                Set the campaign budget and current lifecycle status.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="marketing-form-fields">
+
+
+                        <div class="marketing-form-field">
+
+                            <label for="budget">
+                                Campaign budget
+                            </label>
+
+                            <div class="marketing-input-prefix">
+
+                                <span>
+                                    {{ store.currency }}
+                                </span>
+
+                                <input
+                                    type="number"
+                                    id="budget"
+                                    name="budget"
+                                    value="0"
+                                    min="0"
+                                    step="0.01"
+                                    placeholder="0.00"
+                                >
+
+                            </div>
+
+                            <small>
+                                Enter the planned spending limit for this campaign.
+                            </small>
+
+                        </div>
+
+
+                        <div class="marketing-form-field">
+
+                            <label for="status">
+                                Campaign status
+                            </label>
+
+                            <div class="marketing-select-wrap">
+
+                                <select
+                                    id="status"
+                                    name="status"
+                                >
+
+                                    <option value="Draft" selected>
+                                        Draft
+                                    </option>
+
+                                    <option value="Scheduled">
+                                        Scheduled
+                                    </option>
+
+                                    <option value="Active">
+                                        Active
+                                    </option>
+
+                                    <option value="Completed">
+                                        Completed
+                                    </option>
+
+                                    <option value="Cancelled">
+                                        Cancelled
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                            <small>
+                                You can keep a campaign as Draft until it is ready.
+                            </small>
+
+                        </div>
+
+
+                    </div>
+
+                </section>
+
+
+                <section class="marketing-form-card">
+
+                    <div class="marketing-form-card-header">
+
+                        <div>
+
+                            <span class="marketing-form-section-label">
+                                CAMPAIGN SCHEDULE
+                            </span>
+
+                            <h2>
+                                Start & end dates
+                            </h2>
+
+                            <p>
+                                Define when your campaign should begin and finish.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="marketing-form-fields">
+
+
+                        <div class="marketing-form-field">
+
+                            <label for="starts_at">
+                                Start date & time
+                            </label>
+
+                            <input
+                                type="datetime-local"
+                                id="starts_at"
+                                name="starts_at"
+                            >
+
+                            <small>
+                                Optional. Leave empty if the campaign has no fixed start time.
+                            </small>
+
+                        </div>
+
+
+                        <div class="marketing-form-field">
+
+                            <label for="ends_at">
+                                End date & time
+                            </label>
+
+                            <input
+                                type="datetime-local"
+                                id="ends_at"
+                                name="ends_at"
+                            >
+
+                            <small>
+                                Optional. Leave empty for an open-ended campaign.
+                            </small>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div
+                        class="marketing-schedule-warning"
+                        id="marketing-schedule-warning"
+                    >
+                        End date must be later than the start date.
+                    </div>
+
+                </section>
+
+
+            </div>
+
+
+           <aside class="marketing-form-sidebar">
+
+
+    <!-- CAMPAIGN SUMMARY -->
+
+    <div class="marketing-campaign-preview">
+
+        <div class="marketing-preview-top">
+
+            <span>
+                CAMPAIGN SUMMARY
+            </span>
+
+            <div class="marketing-preview-status">
+                <span></span>
+                <strong id="summary-status">
+                    Draft
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="marketing-preview-icon">
+            <span>R</span>
+        </div>
+
+
+        <h3 id="preview-campaign-name">
+            New Campaign
+        </h3>
+
+
+        <p id="preview-campaign-description">
+            Your campaign summary will appear here as you complete the form.
+        </p>
+
+
+        <div class="marketing-preview-meta">
+
+            <div>
+
+                <span>
+                    TYPE
+                </span>
+
+                <strong id="preview-campaign-type">
+                    General
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    AUDIENCE
+                </span>
+
+                <strong id="preview-campaign-audience">
+                    All Customers
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    BUDGET
+                </span>
+
+                <strong id="preview-campaign-budget">
+                    {{ store.currency }} 0.00
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    DURATION
+                </span>
+
+                <strong id="preview-campaign-duration">
+                    Not scheduled
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- BUDGET OVERVIEW -->
+
+    <div class="marketing-useful-card">
+
+        <div class="marketing-useful-card-header">
+
+            <div class="marketing-useful-icon budget-icon">
+                $
+            </div>
+
+            <div>
+
+                <span class="marketing-useful-label">
+                    BUDGET OVERVIEW
+                </span>
+
+                <h3>
+                    Campaign investment
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <div class="marketing-budget-number">
+
+            <span>
+                {{ store.currency }}
+            </span>
+
+            <strong id="budget-summary-value">
+                0.00
+            </strong>
+
+        </div>
+
+
+        <div class="marketing-budget-track">
+
+            <div
+                id="budget-progress"
+                class="marketing-budget-progress"
+            ></div>
+
+        </div>
+
+
+        <p id="budget-summary-text">
+            No campaign budget has been allocated yet.
+        </p>
+
+    </div>
+
+
+    <!-- CAMPAIGN READINESS -->
+
+    <div class="marketing-useful-card">
+
+        <div class="marketing-useful-card-header">
+
+            <div class="marketing-useful-icon readiness-icon">
+                ✓
+            </div>
+
+            <div>
+
+                <span class="marketing-useful-label">
+                    READINESS
+                </span>
+
+                <h3>
+                    Campaign checklist
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <div class="marketing-readiness-score">
+
+            <strong id="readiness-score">
+                0%
+            </strong>
+
+            <span>
+                ready
+            </span>
+
+        </div>
+
+
+        <div class="marketing-readiness-list">
+
+            <div
+                class="marketing-readiness-item"
+                id="check-name"
+            >
+
+                <span class="check-circle">
+                    ✓
+                </span>
+
+                <div>
+                    <strong>
+                        Campaign name
+                    </strong>
+
+                    <small>
+                        Add a clear campaign name.
+                    </small>
+                </div>
+
+            </div>
+
+
+            <div
+                class="marketing-readiness-item"
+                id="check-audience"
+            >
+
+                <span class="check-circle">
+                    ✓
+                </span>
+
+                <div>
+                    <strong>
+                        Target audience
+                    </strong>
+
+                    <small>
+                        Define who you want to reach.
+                    </small>
+                </div>
+
+            </div>
+
+
+            <div
+                class="marketing-readiness-item"
+                id="check-budget"
+            >
+
+                <span class="check-circle">
+                    ✓
+                </span>
+
+                <div>
+                    <strong>
+                        Budget
+                    </strong>
+
+                    <small>
+                        Set a campaign investment.
+                    </small>
+                </div>
+
+            </div>
+
+
+            <div
+                class="marketing-readiness-item"
+                id="check-schedule"
+            >
+
+                <span class="check-circle">
+                    ✓
+                </span>
+
+                <div>
+                    <strong>
+                        Schedule
+                    </strong>
+
+                    <small>
+                        Optional for draft campaigns.
+                    </small>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SMART CAMPAIGN TIP -->
+
+    <div class="marketing-form-tip">
+
+        <div class="marketing-form-tip-icon">
+            +
+        </div>
+
+        <div>
+
+            <strong>
+                Smart campaign tip
+            </strong>
+
+            <p id="campaign-tip-text">
+                Give your campaign a specific goal and audience.
+                This makes performance easier to measure later.
+            </p>
+
+        </div>
+
+    </div>
+
+
+</aside>
+
+        </div>
+
+
+        <div class="marketing-form-actions">
+
+            <a
+                href="{{ url_for('main.dashboard_marketing') }}"
+                class="marketing-form-cancel"
+            >
+                Cancel
+            </a>
+
+            <button
+                type="submit"
+                class="marketing-form-submit"
+            >
+                <span>
+                    Create Campaign
+                </span>
+
+                <strong>
+                    →
+                </strong>
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const nameInput =
+            document.getElementById("name");
+
+        const typeInput =
+            document.getElementById("campaign_type");
+
+        const audienceInput =
+            document.getElementById("audience");
+
+        const descriptionInput =
+            document.getElementById("description");
+
+        const budgetInput =
+            document.getElementById("budget");
+
+        const statusInput =
+            document.getElementById("status");
+
+        const startInput =
+            document.getElementById("starts_at");
+
+        const endInput =
+            document.getElementById("ends_at");
+
+        const previewName =
+            document.getElementById(
+                "preview-campaign-name"
+            );
+
+        const previewType =
+            document.getElementById(
+                "preview-campaign-type"
+            );
+
+        const previewAudience =
+            document.getElementById(
+                "preview-campaign-audience"
+            );
+
+        const previewDescription =
+            document.getElementById(
+                "preview-campaign-description"
+            );
+
+        const previewBudget =
+            document.getElementById(
+                "preview-campaign-budget"
+            );
+
+        const previewStatus =
+            document.querySelector(
+                ".marketing-preview-status"
+            );
+
+        const previewStatusDot =
+            document.querySelector(
+                ".marketing-preview-status span"
+            );
+
+        const warning =
+            document.getElementById(
+                "marketing-schedule-warning"
+            );
+
+
+        function updatePreview() {
+
+            const name =
+                nameInput.value.trim();
+
+            const audience =
+                audienceInput.value.trim();
+
+            const description =
+                descriptionInput.value.trim();
+
+            const budget =
+                parseFloat(
+                    budgetInput.value
+                ) || 0;
+
+
+            previewName.textContent =
+                name || "New Campaign";
+
+
+            previewType.textContent =
+                typeInput.value;
+
+
+            previewAudience.textContent =
+                audience || "All Customers";
+
+
+            previewDescription.textContent =
+                description ||
+                "Your campaign description will appear here.";
+
+
+            previewBudget.textContent =
+                "{{ store.currency }} " +
+                budget.toFixed(2);
+
+
+            previewStatus.childNodes[
+                previewStatus.childNodes.length - 1
+            ].textContent =
+                " " + statusInput.value;
+
+
+            previewStatusDot.className =
+                "status-" +
+                statusInput.value
+                    .toLowerCase()
+                    .replaceAll(" ", "-");
+
+        }
+
+
+        function validateSchedule() {
+
+            if (
+                !startInput.value ||
+                !endInput.value
+            ) {
+
+                warning.classList.remove(
+                    "is-visible"
+                );
+
+                return true;
+            }
+
+
+            const start =
+                new Date(
+                    startInput.value
+                );
+
+            const end =
+                new Date(
+                    endInput.value
+                );
+
+
+            if (end <= start) {
+
+                warning.classList.add(
+                    "is-visible"
+                );
+
+                return false;
+
+            }
+
+
+            warning.classList.remove(
+                "is-visible"
+            );
+
+            return true;
+
+        }
+
+
+        [
+            nameInput,
+            typeInput,
+            audienceInput,
+            descriptionInput,
+            budgetInput,
+            statusInput
+        ].forEach(
+            function (element) {
+
+                element.addEventListener(
+                    "input",
+                    updatePreview
+                );
+
+                element.addEventListener(
+                    "change",
+                    updatePreview
+                );
+
+            }
+        );
+
+
+        startInput.addEventListener(
+            "change",
+            validateSchedule
+        );
+
+        endInput.addEventListener(
+            "change",
+            validateSchedule
+        );
+
+
+        document
+            .getElementById(
+                "marketing-campaign-form"
+            )
+            .addEventListener(
+                "submit",
+                function (event) {
+
+                    if (!validateSchedule()) {
+
+                        event.preventDefault();
+
+                        endInput.focus();
+
+                    }
+
+                }
+            );
+
+
+        updatePreview();
+
+    }
+);
+
+</script>
+
+{% endblock %}

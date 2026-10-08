@@ -1,0 +1,671 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Customers | RicozStore
+{% endblock %}
+
+{% block content %}
+
+<section class="customers-page">
+
+    <!-- ======================================================
+         CUSTOMERS HERO
+         ====================================================== -->
+
+    <section class="customers-hero">
+
+        <div class="customers-hero-background"></div>
+
+        <div class="customers-hero-overlay"></div>
+
+        <div class="customers-hero-content">
+
+            <div class="customers-hero-copy">
+
+                <span class="page-eyebrow">
+                    CUSTOMER MANAGEMENT
+                </span>
+
+                <h1>
+                    Know your customers.
+                    <span>Grow stronger relationships.</span>
+                </h1>
+
+                <p>
+                    Manage customer relationships, understand buying
+                    behavior, track order activity, and build a better
+                    shopping experience from one place.
+                </p>
+
+            </div>
+
+            <div class="customers-hero-stats">
+
+                <div class="customers-hero-stat">
+
+                    <span>
+                        CUSTOMERS
+                    </span>
+
+                    <strong>
+                        {{ stats.total_customers or 0 }}
+                    </strong>
+
+                </div>
+
+                <div class="customers-hero-stat">
+
+                    <span>
+                        ACTIVE
+                    </span>
+
+                    <strong>
+                        {{ stats.active_customers or 0 }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================================
+         CUSTOMER STATS
+         ====================================================== -->
+
+    <section class="customers-stats-grid">
+
+        <article class="customer-stat-card">
+
+            <div class="customer-stat-icon customer-stat-icon-red">
+                C
+            </div>
+
+            <div class="customer-stat-content">
+
+                <span>
+                    TOTAL CUSTOMERS
+                </span>
+
+                <strong>
+                    {{ stats.total_customers or 0 }}
+                </strong>
+
+                <small>
+                    Registered customers with orders
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <article class="customer-stat-card">
+
+            <div class="customer-stat-icon customer-stat-icon-green">
+                A
+            </div>
+
+            <div class="customer-stat-content">
+
+                <span>
+                    ACTIVE CUSTOMERS
+                </span>
+
+                <strong>
+                    {{ stats.active_customers or 0 }}
+                </strong>
+
+                <small>
+                    Customers active in the last 30 days
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <article class="customer-stat-card">
+
+            <div class="customer-stat-icon customer-stat-icon-dark">
+                O
+            </div>
+
+            <div class="customer-stat-content">
+
+                <span>
+                    TOTAL ORDERS
+                </span>
+
+                <strong>
+                    {{ stats.total_orders or 0 }}
+                </strong>
+
+                <small>
+                    Orders placed by customers
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <article class="customer-stat-card">
+
+            <div class="customer-stat-icon customer-stat-icon-money">
+                ₨
+            </div>
+
+            <div class="customer-stat-content">
+
+                <span>
+                    CUSTOMER REVENUE
+                </span>
+
+                <strong>
+                    {{ store.currency }}
+                    {{ "{:,.2f}".format(stats.total_revenue or 0) }}
+                </strong>
+
+                <small>
+                    Revenue generated through orders
+                </small>
+
+            </div>
+
+        </article>
+
+    </section>
+
+
+    <!-- ======================================================
+         CUSTOMERS CONTENT
+         ====================================================== -->
+
+    <section class="customers-content-card">
+
+        <div class="customers-content-header">
+
+            <div>
+
+                <span class="section-label">
+                    CUSTOMER DIRECTORY
+                </span>
+
+                <h2>
+                    All Customers
+                </h2>
+
+                <p>
+                    Search and review the customers connected to
+                    your store.
+                </p>
+
+            </div>
+
+            <div class="customers-count-badge">
+                {{ customers|length }}
+                Customers
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             TOOLBAR
+             ================================================== -->
+
+        <div class="customers-toolbar">
+
+            <div class="customers-search">
+
+                <span class="customers-search-icon">
+                    Q
+                </span>
+
+                <input
+                    type="search"
+                    id="customerSearch"
+                    placeholder="Search customers by name or email..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+            <select
+                id="customerStatusFilter"
+                class="customers-filter"
+            >
+
+                <option value="all">
+                    All Customers
+                </option>
+
+                <option value="active">
+                    Active
+                </option>
+
+                <option value="inactive">
+                    Inactive
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- ==================================================
+             CUSTOMER TABLE
+             ================================================== -->
+
+        {% if customers %}
+
+        <div class="customers-table-wrapper">
+
+            <table class="customers-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            CUSTOMER
+                        </th>
+
+                        <th>
+                            EMAIL
+                        </th>
+
+                        <th>
+                            ORDERS
+                        </th>
+
+                        <th>
+                            TOTAL SPENT
+                        </th>
+
+                        <th>
+                            LAST ORDER
+                        </th>
+
+                        <th>
+                            STATUS
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="customersTableBody">
+
+                    {% for customer in customers %}
+
+                    <tr
+                        class="customer-row"
+                        data-name="{{ customer.name|lower }}"
+                        data-email="{{ customer.email|lower }}"
+                        data-status="{{ 'active' if customer.is_active else 'inactive' }}"
+                    >
+
+                        <td>
+
+                            <div class="customer-profile">
+
+                                <div class="customer-avatar">
+                                    {{ customer.name[:1]|upper }}
+                                </div>
+
+                                <div class="customer-profile-info">
+
+                                    <strong>
+                                        {{ customer.name }}
+                                    </strong>
+
+                                    <span>
+                                        Customer #{{ customer.id }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="customer-email">
+                                {{ customer.email }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="customer-order-count">
+                                {{ customer.order_count }}
+                            </span>
+
+                            <span class="customer-order-label">
+                                orders
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <strong class="customer-spent">
+                                {{ store.currency }}
+                                {{ "{:,.2f}".format(customer.total_spent or 0) }}
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if customer.last_order_at %}
+
+                            <span class="customer-date">
+                                {{ customer.last_order_at.strftime("%d %b %Y") }}
+                            </span>
+
+                            {% else %}
+
+                            <span class="customer-date">
+                                No orders
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if customer.is_active %}
+
+                            <span class="customer-status customer-status-active">
+
+                                <span class="customer-status-dot"></span>
+
+                                Active
+
+                            </span>
+
+                            {% else %}
+
+                            <span class="customer-status customer-status-inactive">
+
+                                <span class="customer-status-dot"></span>
+
+                                Inactive
+
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- ==================================================
+             NO SEARCH RESULTS
+             ================================================== -->
+
+        <div
+            class="customers-no-results"
+            id="customersNoResults"
+            hidden
+        >
+
+            <div class="customers-no-results-icon">
+                Q
+            </div>
+
+            <h3>
+                No customers found
+            </h3>
+
+            <p>
+                Try a different name, email address, or status filter.
+            </p>
+
+        </div>
+
+        {% else %}
+
+        <!-- ==================================================
+             EMPTY STATE
+             ================================================== -->
+
+        <div class="customers-empty-state">
+
+            <div class="customers-empty-visual">
+
+                <div class="customers-empty-circle">
+
+                    <span>
+                        C
+                    </span>
+
+                </div>
+
+                <div class="customers-empty-card customers-empty-card-one"></div>
+
+                <div class="customers-empty-card customers-empty-card-two"></div>
+
+            </div>
+
+            <span class="section-label">
+                CUSTOMER DIRECTORY
+            </span>
+
+            <h3>
+                Your customer base starts here.
+            </h3>
+
+            <p>
+                Once customers place orders through your store,
+                their profiles, order activity, and spending history
+                will appear here.
+            </p>
+
+            <a
+                href="{{ url_for('main.dashboard_orders') }}"
+                class="customers-empty-button"
+            >
+                View Orders
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- ======================================================
+         CUSTOMER INSIGHT PANEL
+         ====================================================== -->
+
+    <section class="customers-insight-grid">
+
+        <article class="customers-insight-card customers-insight-card-primary">
+
+            <div class="customers-insight-icon">
+                R
+            </div>
+
+            <div>
+
+                <span>
+                    CUSTOMER RELATIONSHIPS
+                </span>
+
+                <h3>
+                    Turn every order into a relationship.
+                </h3>
+
+                <p>
+                    RicozStore brings customer activity and order
+                    history together so merchants can understand
+                    who is buying and how valuable each relationship is.
+                </p>
+
+            </div>
+
+        </article>
+
+
+        <article class="customers-insight-card">
+
+            <div class="customers-insight-icon customers-insight-icon-green">
+                G
+            </div>
+
+            <div>
+
+                <span>
+                    GROWTH
+                </span>
+
+                <h3>
+                    Understand repeat purchasing.
+                </h3>
+
+                <p>
+                    Use order counts and customer spending to identify
+                    valuable relationships and future growth opportunities.
+                </p>
+
+            </div>
+
+        </article>
+
+    </section>
+
+</section>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchInput =
+        document.getElementById("customerSearch");
+
+    const statusFilter =
+        document.getElementById("customerStatusFilter");
+
+    const rows =
+        document.querySelectorAll(".customer-row");
+
+    const noResults =
+        document.getElementById("customersNoResults");
+
+
+    function filterCustomers() {
+
+        const searchValue =
+            searchInput
+                ? searchInput.value
+                    .trim()
+                    .toLowerCase()
+                : "";
+
+        const statusValue =
+            statusFilter
+                ? statusFilter.value
+                : "all";
+
+        let visibleRows = 0;
+
+
+        rows.forEach(function (row) {
+
+            const name =
+                row.dataset.name || "";
+
+            const email =
+                row.dataset.email || "";
+
+            const status =
+                row.dataset.status || "";
+
+
+            const matchesSearch =
+                name.includes(searchValue) ||
+                email.includes(searchValue);
+
+            const matchesStatus =
+                statusValue === "all" ||
+                status === statusValue;
+
+
+            if (
+                matchesSearch &&
+                matchesStatus
+            ) {
+
+                row.style.display = "";
+
+                visibleRows++;
+
+            } else {
+
+                row.style.display = "none";
+
+            }
+
+        });
+
+
+        if (noResults) {
+
+            noResults.hidden =
+                visibleRows !== 0;
+
+        }
+
+    }
+
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "input",
+            filterCustomers
+        );
+
+    }
+
+
+    if (statusFilter) {
+
+        statusFilter.addEventListener(
+            "change",
+            filterCustomers
+        );
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="RicozStore — Build, manage and grow your online business."
+    >
+
+    <title>
+        {% block title %}
+            RicozStore
+        {% endblock %}
+    </title>
+
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/base.css') }}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/marketing.css') }}"
+    >
+    <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/legal.css') }}"
+>
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/contact.css') }}"
+>
+    {% block extra_css %}{% endblock %}
+
+</head>
+
+
+<body>
+
+    <!-- =====================================================
+         ANNOUNCEMENT BAR
+         ===================================================== -->
+
+    <div class="announcement-bar">
+
+        <div class="announcement-inner">
+
+            <span>
+                Build your business with RicozStore
+            </span>
+
+            <a href="{{ url_for('main.pricing') }}">
+                Explore plans
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         MAIN HEADER
+         ===================================================== -->
+
+    <header class="site-header">
+
+        <div class="site-header-inner">
+
+
+            <!-- =================================================
+                 BRAND
+                 ================================================= -->
+
+            <a
+                href="{{ url_for('main.home') }}"
+                class="site-brand"
+            >
+
+                <span class="site-brand-mark">
+                    R
+                </span>
+
+                <span class="site-brand-name">
+                    RicozStore
+                </span>
+
+            </a>
+
+
+            <!-- =================================================
+                 MAIN NAVIGATION
+                 ================================================= -->
+
+            <nav
+                class="main-navigation"
+                aria-label="Main navigation"
+            >
+
+
+                <!-- HOME -->
+
+                <a
+                    href="{{ url_for('main.home') }}"
+                    class="nav-link"
+                >
+                    Home
+                </a>
+
+
+                <!-- =================================================
+                     PRODUCTS
+                     ================================================= -->
+
+                <details class="nav-dropdown">
+
+                    <summary class="nav-dropdown-trigger">
+                        Products
+                        <span class="nav-chevron">
+                            ▾
+                        </span>
+                    </summary>
+
+
+                    <div class="mega-menu products-menu">
+
+                        <div class="mega-menu-intro">
+
+                            <span class="mega-menu-eyebrow">
+                                RICOZSTORE PLATFORM
+                            </span>
+
+                            <h3>
+                                Everything you need to sell online.
+                            </h3>
+
+                            <p>
+                                Build your store, manage products,
+                                process orders and grow your business
+                                from one powerful platform.
+                            </p>
+
+                            <a
+                                href="{{ url_for('main.products') }}"
+                                class="mega-menu-main-link"
+                            >
+                                Explore all products
+                                <span>→</span>
+                            </a>
+
+                        </div>
+
+
+                        <div class="mega-menu-column">
+
+                            <a
+                                href="{{ url_for('main.products') }}"
+                                class="mega-menu-item"
+                            >
+
+                                <strong>
+                                    Online Store
+                                </strong>
+
+                                <span>
+                                    Create a beautiful storefront
+                                    for your business.
+                                </span>
+
+                            </a>
+
+
+                            <a
+                                href="{{ url_for('main.products') }}"
+                                class="mega-menu-item"
+                            >
+
+                                <strong>
+                                    Products
+                                </strong>
+
+                                <span>
+                                    Organize products, pricing,
+                                    variants and inventory.
+                                </span>
+
+                            </a>
+
+
+                            <a
+                                href="{{ url_for('main.products') }}"
+                                class="mega-menu-item"
+                            >
+
+                                <strong>
+                                    Orders
+                                </strong>
+
+                                <span>
+                                    Manage orders from one
+                                    centralized workspace.
+                                </span>
+
+                            </a>
+
+                        </div>
+
+
+                        <div class="mega-menu-column">
+
+                            <a
+                                href="{{ url_for('main.products') }}"
+                                class="mega-menu-item"
+                            >
+
+                                <strong>
+                                    Customers
+                                </strong>
+
+                                <span>
+                                    Understand and manage your
+                                    customer relationships.
+                                </span>
+
+                            </a>
+
+
+                            <a
+                                href="{{ url_for('main.products') }}"
+                                class="mega-menu-item"
+                            >
+
+                                <strong>
+                                    Payments
+                                </strong>
+
+                                <span>
+                                    Build a smoother checkout
+                                    experience for customers.
+                                </span>
+
+                            </a>
+
+
+                            <a
+                                href="{{ url_for('main.products') }}"
+                                class="mega-menu-item"
+                            >
+
+                                <strong>
+                                    Analytics
+                                </strong>
+
+                                <span>
+                                    Turn store data into useful
+                                    business insights.
+                                </span>
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </details>
+
+
+                <!-- =================================================
+                     SOLUTIONS
+                     ================================================= -->
+
+                <details class="nav-dropdown">
+
+                    <summary class="nav-dropdown-trigger">
+                        Solutions
+                        <span class="nav-chevron">
+                            ▾
+                        </span>
+                    </summary>
+
+
+                    <div class="mega-menu solutions-menu">
+
+                        <div class="mega-menu-intro">
+
+                            <span class="mega-menu-eyebrow">
+                                BUILT FOR BUSINESS
+                            </span>
+
+                            <h3>
+                                A platform that grows with you.
+                            </h3>
+
+                            <p>
+                                Whether you're starting small or
+                                building an enterprise business,
+                                RicozStore gives you room to grow.
+                            </p>
+
+                            <a
+                                href="{{ url_for('main.solutions') }}"
+                                class="mega-menu-main-link"
+                            >
+                                Explore solutions
+                                <span>→</span>
+                            </a>
+
+                        </div>
+
+
+                        <div class="mega-menu-column">
+
+                            <a
+                                href="{{ url_for('main.solutions') }}"
+                                class="mega-menu-item"
+                            >
+
+                                <strong>
+                                    Startups
+                                </strong>
+
+                                <span>
+                                    Launch your first online
+                                    business with confidence.
+                                </span>
+
+                            </a>
+
+
+                            <a
+                                href="{{ url_for('main.solutions') }}"
+                                class="mega-menu-item"
+                            >
+
+                                <strong>
+                                    Small Business
+                                </strong>
+
+                                <span>
+                                    Simple tools for everyday
+                                    commerce operations.
+                                </span>
+
+                            </a>
+
+
+                            <a
+                                href="{{ url_for('main.solutions') }}"
+                                class="mega-menu-item"
+                            >
+
+                                <strong>
+                                    Growing Brands
+                                </strong>
+
+                                <span>
+                                    Scale products, customers
+                                    and sales in one place.
+                                </span>
+
+                            </a>
+
+                        </div>
+
+
+                        <div class="mega-menu-column">
+
+                            <a
+                                href="{{ url_for('main.enterprise') }}"
+                                class="mega-menu-item"
+                            >
+
+                                <strong>
+                                    Enterprise
+                                </strong>
+
+                                <span>
+                                    Powerful commerce infrastructure
+                                    for larger organizations.
+                                </span>
+
+                            </a>
+
+
+                            <a
+                                href="{{ url_for('main.solutions') }}"
+                                class="mega-menu-item"
+                            >
+
+                                <strong>
+                                    Retail
+                                </strong>
+
+                                <span>
+                                    Connect your online business
+                                    with modern retail workflows.
+                                </span>
+
+                            </a>
+
+
+                            <a
+                                href="{{ url_for('main.solutions') }}"
+                                class="mega-menu-item"
+                            >
+
+                                <strong>
+                                    B2B Commerce
+                                </strong>
+
+                                <span>
+                                    Build stronger business-to-business
+                                    selling experiences.
+                                </span>
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </details>
+
+
+                <!-- PRICING -->
+
+                <a
+                    href="{{ url_for('main.pricing') }}"
+                    class="nav-link"
+                >
+                    Pricing
+                </a>
+
+
+                <!-- ENTERPRISE -->
+
+                <a
+                    href="{{ url_for('main.enterprise') }}"
+                    class="nav-link"
+                >
+                    Enterprise
+                </a>
+
+
+                <!-- =================================================
+                     RESOURCES
+                     ================================================= -->
+
+                <details class="nav-dropdown">
+
+                    <summary class="nav-dropdown-trigger">
+                        Resources
+                        <span class="nav-chevron">
+                            ▾
+                        </span>
+                    </summary>
+
+
+                    <div class="mega-menu resources-menu">
+
+                        <div class="mega-menu-intro">
+
+                            <span class="mega-menu-eyebrow">
+                                LEARN & GROW
+                            </span>
+
+                            <h3>
+                                Resources for your next step.
+                            </h3>
+
+                            <p>
+                                Learn how to build, launch and
+                                grow a successful online business.
+                            </p>
+
+                            <a
+                                href="{{ url_for('main.resources') }}"
+                                class="mega-menu-main-link"
+                            >
+                                Browse resources
+                                <span>→</span>
+                            </a>
+
+                        </div>
+
+
+                        <div class="mega-menu-column">
+
+                            <a
+                                href="{{ url_for('main.resources') }}"
+                                class="mega-menu-item"
+                            >
+
+                                <strong>
+                                    Resource Center
+                                </strong>
+
+                                <span>
+                                    Guides, tutorials and useful
+                                    commerce resources.
+                                </span>
+
+                            </a>
+
+
+                            <a
+                                href="{{ url_for('main.blog') }}"
+                                class="mega-menu-item"
+                            >
+
+                                <strong>
+                                    Blog
+                                </strong>
+
+                                <span>
+                                    Insights, strategies and
+                                    stories for modern commerce.
+                                </span>
+
+                            </a>
+
+
+                            <a
+                                href="{{ url_for('main.resources') }}"
+                                class="mega-menu-item"
+                            >
+
+                                <strong>
+                                    Guides
+                                </strong>
+
+                                <span>
+                                    Practical guides to help your
+                                    business move forward.
+                                </span>
+
+                            </a>
+
+                        </div>
+
+
+                        <div class="mega-menu-column">
+
+                            <a
+                                href="{{ url_for('main.resources') }}"
+                                class="mega-menu-item"
+                            >
+
+                                <strong>
+                                    Help Center
+                                </strong>
+
+                                <span>
+                                    Find answers and learn how
+                                    RicozStore works.
+                                </span>
+
+                            </a>
+
+
+                            <a
+                                href="{{ url_for('main.about') }}"
+                                class="mega-menu-item"
+                            >
+
+                                <strong>
+                                    About RicozStore
+                                </strong>
+
+                                <span>
+                                    Discover the company and
+                                    the platform behind RicozStore.
+                                </span>
+
+                            </a>
+
+
+                            <a
+                                href="{{ url_for('main.contact') }}"
+                                class="mega-menu-item"
+                            >
+
+                                <strong>
+                                    Contact
+                                </strong>
+
+                                <span>
+                                    Get in touch with the RicozStore
+                                    team.
+                                </span>
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </details>
+
+            </nav>
+
+
+            <!-- =================================================
+                 HEADER ACTIONS
+                 ================================================= -->
+<!-- =================================================
+     HEADER ACTIONS
+     ================================================= -->
+
+<div class="header-actions">
+
+    {% if session.get("user_id") %}
+
+        <a
+            href="{{ url_for('main.dashboard') }}"
+            class="header-link"
+        >
+            Dashboard
+        </a>
+
+        <a
+            href="{{ url_for('main.logout') }}"
+            class="header-cta"
+        >
+            Logout
+        </a>
+
+    {% else %}
+
+        <a
+            href="{{ url_for('main.contact') }}"
+            class="header-link"
+        >
+            Contact
+        </a>
+
+        <a
+            href="{{ url_for('main.login') }}"
+            class="header-login"
+        >
+            Log in
+        </a>
+
+        <a
+            href="{{ url_for('main.signup') }}"
+            class="header-cta"
+        >
+            Start for free
+        </a>
+
+    {% endif %}
+
+</div>
+
+
+            <!-- =================================================
+                 MOBILE MENU BUTTON
+                 ================================================= -->
+
+            <button
+                type="button"
+                class="mobile-menu-button"
+                aria-label="Open navigation"
+                aria-expanded="false"
+            >
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
+
+    <main class="site-main">
+
+        {% block content %}{% endblock %}
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
+
+       <!-- =====================================================
+         FOOTER
+         ===================================================== -->
+
+    <footer class="site-footer">
+
+        <div class="footer-main">
+
+
+            <!-- =================================================
+                 BRAND
+                 ================================================= -->
+
+            <div class="footer-brand-column">
+
+                <a
+                    href="{{ url_for('main.home') }}"
+                    class="footer-brand"
+                >
+
+                    <span class="footer-brand-mark">
+                        R
+                    </span>
+
+                    <span>
+                        RicozStore
+                    </span>
+
+                </a>
+
+                <p>
+                    Everything you need to build,
+                    manage and grow a modern online business.
+                </p>
+
+                <a
+                    href="{{ url_for('main.contact') }}"
+                    class="footer-contact-link"
+                >
+                    Talk to our team
+                    <span>→</span>
+                </a>
+
+            </div>
+
+
+            <!-- =================================================
+                 PRODUCT
+                 ================================================= -->
+
+            <div class="footer-column">
+
+                <h3>
+                    Product
+                </h3>
+
+                <a href="{{ url_for('main.products') }}">
+                    Store Builder
+                </a>
+
+                <a href="{{ url_for('main.products') }}">
+                    Product Management
+                </a>
+
+                <a href="{{ url_for('main.products') }}">
+                    Order Management
+                </a>
+
+                <a href="{{ url_for('main.products') }}">
+                    Inventory
+                </a>
+
+                <a href="{{ url_for('main.products') }}">
+                    Analytics
+                </a>
+
+                <a href="{{ url_for('main.products') }}">
+                    AI Studio
+                </a>
+
+            </div>
+
+
+            <!-- =================================================
+                 RESOURCES
+                 ================================================= -->
+
+            <div class="footer-column">
+
+                <h3>
+                    Resources
+                </h3>
+
+                <a href="{{ url_for('main.resources') }}">
+                    Resource Center
+                </a>
+
+                <a href="{{ url_for('main.blog') }}">
+                    Blog
+                </a>
+
+                <a href="{{ url_for('main.resources') }}">
+                    Guides
+                </a>
+
+                <a href="{{ url_for('main.resources') }}">
+                    Help Center
+                </a>
+
+                <a href="{{ url_for('main.about') }}">
+                    About RicozStore
+                </a>
+
+                <a href="{{ url_for('main.contact') }}">
+                    Contact Us
+                </a>
+
+            </div>
+
+
+            <!-- =================================================
+                 BUSINESS
+                 ================================================= -->
+
+            <div class="footer-column">
+
+                <h3>
+                    Business
+                </h3>
+
+                <a href="{{ url_for('main.enterprise') }}">
+                    Enterprise
+                </a>
+
+                <a href="{{ url_for('main.pricing') }}">
+                    Plans & Pricing
+                </a>
+
+                <a href="{{ url_for('main.solutions') }}">
+                    Small Business
+                </a>
+
+                <a href="{{ url_for('main.solutions') }}">
+                    Growing Brands
+                </a>
+
+                <a href="{{ url_for('main.solutions') }}">
+                    B2B Commerce
+                </a>
+
+                <a href="{{ url_for('main.contact') }}">
+                    Contact Sales
+                </a>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =====================================================
+             FOOTER BOTTOM
+             ===================================================== -->
+
+        <div class="footer-bottom">
+
+            <p>
+                © 2026 RicozStore. All rights reserved.
+            </p>
+
+            <div class="footer-bottom-links">
+
+                <a
+                    href="{{ url_for('main.privacy') }}"
+                >
+                    Privacy
+                </a>
+
+                <a
+                    href="{{ url_for('main.terms') }}"
+                >
+                    Terms
+                </a>
+
+                <a
+                    href="{{ url_for('main.security') }}"
+                >
+                    Security
+                </a>
+
+                <a
+                    href="{{ url_for('main.contact') }}"
+                >
+                    Contact
+                </a>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+    <script
+        src="{{ url_for('static', filename='js/main.js') }}"
+    ></script>
+
+</body>
+
+</html>

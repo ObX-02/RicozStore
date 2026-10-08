@@ -1,0 +1,434 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Add Product — RicozStore{% endblock %}
+
+{% block content %}
+
+<div class="product-form-page">
+
+    <div class="product-form-header">
+
+        <div>
+            <div class="page-eyebrow">CATALOG MANAGEMENT</div>
+
+            <h1>Add Product</h1>
+
+            <p>
+                Create a new product and configure its pricing,
+                inventory, category, and publishing settings.
+            </p>
+        </div>
+
+        <div class="product-form-header-actions">
+
+            <a
+                href="{{ url_for('main.dashboard_products') }}"
+                class="secondary-button"
+            >
+                Back to Products
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <form method="POST" class="product-form">
+
+        <div class="product-form-grid">
+
+            <div class="product-form-main">
+
+                <div class="form-card">
+
+                    <div class="form-card-header">
+
+                        <div>
+                            <h2>Product Information</h2>
+                            <p>
+                                Add the basic information customers will see.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="name">
+                            Product Name
+                            <span>*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            placeholder="e.g. Premium Cotton T-Shirt"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="description">
+                            Description
+                        </label>
+
+                        <textarea
+                            id="description"
+                            name="description"
+                            rows="7"
+                            placeholder="Describe your product, features, materials, benefits, and other important details..."
+                        ></textarea>
+
+                    </div>
+
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="brand">
+                                Brand
+                            </label>
+
+                            <input
+                                type="text"
+                                id="brand"
+                                name="brand"
+                                placeholder="e.g. Ricoz"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="sku">
+                                SKU
+                            </label>
+
+                            <input
+                                type="text"
+                                id="sku"
+                                name="sku"
+                                placeholder="e.g. RZ-TSH-001"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-card">
+
+                    <div class="form-card-header">
+
+                        <div>
+                            <h2>Pricing</h2>
+                            <p>
+                                Configure your selling price and product cost.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-row three-columns">
+
+                        <div class="form-group">
+
+                            <label for="price">
+                                Price
+                                <span>*</span>
+                            </label>
+
+                            <div class="input-with-prefix">
+
+                                <span>{{ store.currency or "PKR" }}</span>
+
+                                <input
+                                    type="number"
+                                    id="price"
+                                    name="price"
+                                    min="0"
+                                    step="0.01"
+                                    placeholder="0.00"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="compare_at_price">
+                                Compare-at Price
+                            </label>
+
+                            <div class="input-with-prefix">
+
+                                <span>{{ store.currency or "PKR" }}</span>
+
+                                <input
+                                    type="number"
+                                    id="compare_at_price"
+                                    name="compare_at_price"
+                                    min="0"
+                                    step="0.01"
+                                    placeholder="0.00"
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="cost_price">
+                                Cost Price
+                            </label>
+
+                            <div class="input-with-prefix">
+
+                                <span>{{ store.currency or "PKR" }}</span>
+
+                                <input
+                                    type="number"
+                                    id="cost_price"
+                                    name="cost_price"
+                                    min="0"
+                                    step="0.01"
+                                    placeholder="0.00"
+                                >
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-card">
+
+                    <div class="form-card-header">
+
+                        <div>
+                            <h2>Inventory</h2>
+                            <p>
+                                Keep track of available stock and low-stock alerts.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="stock_quantity">
+                                Stock Quantity
+                            </label>
+
+                            <input
+                                type="number"
+                                id="stock_quantity"
+                                name="stock_quantity"
+                                min="0"
+                                value="0"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="low_stock_threshold">
+                                Low Stock Threshold
+                            </label>
+
+                            <input
+                                type="number"
+                                id="low_stock_threshold"
+                                name="low_stock_threshold"
+                                min="0"
+                                value="5"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="product-form-sidebar">
+
+                <div class="form-card">
+
+                    <div class="form-card-header">
+
+                        <div>
+                            <h2>Publishing</h2>
+                            <p>
+                                Control how your product appears in the store.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="status">
+                            Status
+                        </label>
+
+                        <select id="status" name="status">
+
+                            <option value="Draft">
+                                Draft
+                            </option>
+
+                            <option value="Active">
+                                Active
+                            </option>
+
+                            <option value="Published">
+                                Published
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <label class="checkbox-field">
+
+                        <input
+                            type="checkbox"
+                            name="is_published"
+                            value="1"
+                        >
+
+                        <span>
+
+                            <strong>
+                                Publish to storefront
+                            </strong>
+
+                            <small>
+                                Make this product visible to customers.
+                            </small>
+
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="form-card">
+
+                    <div class="form-card-header">
+
+                        <div>
+                            <h2>Organization</h2>
+                            <p>
+                                Organize this product within your catalog.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="category_id">
+                            Category
+                        </label>
+
+                        <select id="category_id" name="category_id">
+
+                            <option value="">
+                                Select a category
+                            </option>
+
+                            {% for category in categories %}
+
+                                <option value="{{ category.id }}">
+                                    {{ category.name }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-card product-tip-card">
+
+                    <div class="tip-icon">
+                        R
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Product tip
+                        </strong>
+
+                        <p>
+                            Use clear product names, accurate pricing,
+                            and detailed descriptions to improve the
+                            customer shopping experience.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="product-form-actions">
+
+            <a
+                href="{{ url_for('main.dashboard_products') }}"
+                class="secondary-button"
+            >
+                Cancel
+            </a>
+
+            <button
+                type="submit"
+                class="primary-button"
+            >
+                Create Product
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,815 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Discounts | RicozStore
+{% endblock %}
+
+{% block content %}
+
+<section class="discounts-page">
+
+    <!-- ======================================================
+         DISCOUNTS HERO
+         ====================================================== -->
+
+    <section class="discounts-hero">
+
+        <div class="discounts-hero-background"></div>
+
+        <div class="discounts-hero-overlay"></div>
+
+        <div class="discounts-hero-content">
+
+            <div class="discounts-hero-copy">
+
+                <span class="page-eyebrow">
+                    PROMOTIONS & OFFERS
+                </span>
+
+                <h1>
+                    Create offers that
+                    <span>drive more sales.</span>
+                </h1>
+
+                <p>
+                    Manage promotional codes, customer incentives,
+                    order thresholds, usage limits, and campaign
+                    offers from one central workspace.
+                </p>
+
+            </div>
+
+            <div class="discounts-hero-stats">
+
+                <div class="discounts-hero-stat">
+
+                    <span>
+                        ACTIVE OFFERS
+                    </span>
+
+                    <strong>
+                        {{ stats.active_discounts or 0 }}
+                    </strong>
+
+                </div>
+
+                <div class="discounts-hero-stat">
+
+                    <span>
+                        VALID NOW
+                    </span>
+
+                    <strong>
+                        {{ stats.valid_discounts or 0 }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================================
+         DISCOUNT STATS
+         ====================================================== -->
+
+    <section class="discounts-stats-grid">
+
+        <article class="discount-stat-card">
+
+            <div class="discount-stat-icon discount-stat-icon-red">
+                %
+            </div>
+
+            <div class="discount-stat-content">
+
+                <span>
+                    TOTAL DISCOUNTS
+                </span>
+
+                <strong>
+                    {{ stats.total_discounts or 0 }}
+                </strong>
+
+                <small>
+                    Promotional offers created
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <article class="discount-stat-card">
+
+            <div class="discount-stat-icon discount-stat-icon-green">
+                A
+            </div>
+
+            <div class="discount-stat-content">
+
+                <span>
+                    ACTIVE DISCOUNTS
+                </span>
+
+                <strong>
+                    {{ stats.active_discounts or 0 }}
+                </strong>
+
+                <small>
+                    Currently enabled offers
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <article class="discount-stat-card">
+
+            <div class="discount-stat-icon discount-stat-icon-dark">
+                V
+            </div>
+
+            <div class="discount-stat-content">
+
+                <span>
+                    VALID OFFERS
+                </span>
+
+                <strong>
+                    {{ stats.valid_discounts or 0 }}
+                </strong>
+
+                <small>
+                    Offers available within dates
+                </small>
+
+            </div>
+
+        </article>
+
+
+        <article class="discount-stat-card">
+
+            <div class="discount-stat-icon discount-stat-icon-orange">
+                E
+            </div>
+
+            <div class="discount-stat-content">
+
+                <span>
+                    EXPIRED
+                </span>
+
+                <strong>
+                    {{ stats.expired_discounts or 0 }}
+                </strong>
+
+                <small>
+                    Offers past their expiry date
+                </small>
+
+            </div>
+
+        </article>
+
+    </section>
+
+
+    <!-- ======================================================
+         DISCOUNTS CONTENT
+         ====================================================== -->
+
+    <section class="discounts-content-card">
+
+        <div class="discounts-content-header">
+
+            <div>
+
+                <span class="section-label">
+                    OFFER MANAGEMENT
+                </span>
+
+                <h2>
+                    Discount Codes
+                </h2>
+
+                <p>
+                    Create, monitor, and manage promotional offers
+                    for your customers.
+                </p>
+
+            </div>
+
+            <a
+    href="{{ url_for('main.create_discount') }}"
+    class="discount-create-button"
+>
+                <span class="discount-create-plus">
+                    +
+                </span>
+
+                Create Discount
+            </a>
+
+        </div>
+
+
+        <!-- ==================================================
+             TOOLBAR
+             ================================================== -->
+
+        <div class="discounts-toolbar">
+
+            <div class="discounts-search">
+
+                <span class="discounts-search-icon">
+                    Q
+                </span>
+
+                <input
+                    type="search"
+                    id="discountSearch"
+                    placeholder="Search by discount name or code..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <select
+                id="discountStatusFilter"
+                class="discounts-filter"
+            >
+
+                <option value="all">
+                    All Discounts
+                </option>
+
+                <option value="active">
+                    Active
+                </option>
+
+                <option value="inactive">
+                    Inactive
+                </option>
+
+                <option value="valid">
+                    Valid Now
+                </option>
+
+                <option value="expired">
+                    Expired
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- ==================================================
+             DISCOUNTS TABLE
+             ================================================== -->
+
+        {% if discounts %}
+
+        <div class="discounts-table-wrapper">
+
+            <table class="discounts-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            DISCOUNT
+                        </th>
+
+                        <th>
+                            CODE
+                        </th>
+
+                        <th>
+                            VALUE
+                        </th>
+
+                        <th>
+                            MINIMUM ORDER
+                        </th>
+
+                        <th>
+                            USAGE
+                        </th>
+
+                        <th>
+                            VALIDITY
+                        </th>
+
+                        <th>
+                            STATUS
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="discountsTableBody">
+
+                    {% for discount in discounts %}
+
+                    {% set is_expired =
+                        discount.expires_at and
+                        discount.expires_at <= namespace(now=None)
+                    %}
+
+                    <tr
+                        class="discount-row"
+                        data-name="{{ discount.name|lower }}"
+                        data-code="{{ discount.code|lower }}"
+                        data-status="{{ 'active' if discount.is_active else 'inactive' }}"
+                    >
+
+                        <td>
+
+                            <div class="discount-profile">
+
+                                <div class="discount-profile-icon">
+
+                                    {% if discount.discount_type == "percentage" %}
+                                        %
+                                    {% else %}
+                                        {{ store.currency[:1] }}
+                                    {% endif %}
+
+                                </div>
+
+                                <div class="discount-profile-info">
+
+                                    <strong>
+                                        {{ discount.name }}
+                                    </strong>
+
+                                    {% if discount.description %}
+
+                                    <span>
+                                        {{ discount.description }}
+                                    </span>
+
+                                    {% else %}
+
+                                    <span>
+                                        Promotional discount
+                                    </span>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="discount-code">
+                                {{ discount.code }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="discount-value">
+
+                                <strong>
+
+                                    {% if discount.discount_type == "percentage" %}
+
+                                        {{ "{:,.0f}".format(discount.discount_value) }}%
+
+                                    {% else %}
+
+                                        {{ store.currency }}
+                                        {{ "{:,.2f}".format(discount.discount_value) }}
+
+                                    {% endif %}
+
+                                </strong>
+
+                                <span>
+                                    {{ discount.discount_type|capitalize }}
+                                </span>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if discount.minimum_order_amount > 0 %}
+
+                            <span class="discount-minimum">
+                                {{ store.currency }}
+                                {{ "{:,.2f}".format(discount.minimum_order_amount) }}
+                            </span>
+
+                            {% else %}
+
+                            <span class="discount-no-minimum">
+                                No minimum
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="discount-usage">
+
+                                {% if discount.usage_limit %}
+
+                                {% set usage_percentage =
+                                    (
+                                        discount.usage_count /
+                                        discount.usage_limit * 100
+                                    )
+                                    if discount.usage_limit > 0
+                                    else 0
+                                %}
+
+                                <div class="discount-usage-text">
+
+                                    <strong>
+                                        {{ discount.usage_count }}
+                                    </strong>
+
+                                    <span>
+                                        / {{ discount.usage_limit }}
+                                    </span>
+
+                                </div>
+
+                                <div class="discount-progress">
+
+                                    <span
+                                        style="width: {{ [usage_percentage, 100]|min }}%;"
+                                    ></span>
+
+                                </div>
+
+                                {% else %}
+
+                                <div class="discount-usage-unlimited">
+                                    {{ discount.usage_count }} uses
+                                </div>
+
+                                {% endif %}
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="discount-validity">
+
+                                {% if discount.starts_at %}
+
+                                <span>
+                                    From
+                                    {{ discount.starts_at.strftime("%d %b %Y") }}
+                                </span>
+
+                                {% else %}
+
+                                <span>
+                                    Available immediately
+                                </span>
+
+                                {% endif %}
+
+                                {% if discount.expires_at %}
+
+                                <span>
+                                    Until
+                                    {{ discount.expires_at.strftime("%d %b %Y") }}
+                                </span>
+
+                                {% else %}
+
+                                <span>
+                                    No expiry
+                                </span>
+
+                                {% endif %}
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if not discount.is_active %}
+
+                            <span class="discount-status discount-status-inactive">
+
+                                <span class="discount-status-dot"></span>
+
+                                Inactive
+
+                            </span>
+
+                            {% elif discount.expires_at and
+                                  discount.expires_at < current_time %}
+
+                            <span class="discount-status discount-status-expired">
+
+                                <span class="discount-status-dot"></span>
+
+                                Expired
+
+                            </span>
+
+                            {% else %}
+
+                            <span class="discount-status discount-status-active">
+
+                                <span class="discount-status-dot"></span>
+
+                                Active
+
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- ==================================================
+             NO RESULTS
+             ================================================== -->
+
+        <div
+            class="discounts-no-results"
+            id="discountsNoResults"
+            hidden
+        >
+
+            <div class="discounts-no-results-icon">
+                Q
+            </div>
+
+            <h3>
+                No discounts found
+            </h3>
+
+            <p>
+                Try another discount name, code, or status filter.
+            </p>
+
+        </div>
+
+        {% else %}
+
+        <!-- ==================================================
+             EMPTY STATE
+             ================================================== -->
+
+        <div class="discounts-empty-state">
+
+            <div class="discounts-empty-visual">
+
+                <div class="discounts-empty-ticket">
+
+                    <span>
+                        %
+                    </span>
+
+                </div>
+
+                <div class="discounts-empty-line"></div>
+
+                <div class="discounts-empty-line discounts-empty-line-short"></div>
+
+            </div>
+
+            <span class="section-label">
+                PROMOTIONAL ENGINE
+            </span>
+
+            <h3>
+                Give customers a reason to come back.
+            </h3>
+
+            <p>
+                Create percentage or fixed-value discounts,
+                define order requirements, set usage limits,
+                and control when each offer is available.
+            </p>
+
+           <a
+    href="{{ url_for('main.create_discount') }}"
+    class="discounts-empty-button"
+>
+                Create Your First Discount
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- ======================================================
+         DISCOUNT INSIGHTS
+         ====================================================== -->
+
+    <section class="discounts-insight-grid">
+
+        <article class="discounts-insight-card discounts-insight-primary">
+
+            <div class="discounts-insight-icon">
+                %
+            </div>
+
+            <div>
+
+                <span>
+                    SMART PROMOTIONS
+                </span>
+
+                <h3>
+                    Build offers around customer behavior.
+                </h3>
+
+                <p>
+                    Combine discount values, minimum order amounts,
+                    usage limits, and expiry windows to create
+                    promotions that support your sales strategy.
+                </p>
+
+            </div>
+
+        </article>
+
+
+        <article class="discounts-insight-card">
+
+            <div class="discounts-insight-icon discounts-insight-green">
+                G
+            </div>
+
+            <div>
+
+                <span>
+                    GROWTH
+                </span>
+
+                <h3>
+                    Protect your margins.
+                </h3>
+
+                <p>
+                    Use minimum order values and maximum discount
+                    limits to encourage larger purchases without
+                    giving away unnecessary margin.
+                </p>
+
+            </div>
+
+        </article>
+
+    </section>
+
+</section>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchInput =
+        document.getElementById("discountSearch");
+
+    const statusFilter =
+        document.getElementById("discountStatusFilter");
+
+    const rows =
+        document.querySelectorAll(".discount-row");
+
+    const noResults =
+        document.getElementById("discountsNoResults");
+
+
+    function filterDiscounts() {
+
+        const searchValue =
+            searchInput
+                ? searchInput.value
+                    .trim()
+                    .toLowerCase()
+                : "";
+
+        const statusValue =
+            statusFilter
+                ? statusFilter.value
+                : "all";
+
+        let visibleRows = 0;
+
+
+        rows.forEach(function (row) {
+
+            const name =
+                row.dataset.name || "";
+
+            const code =
+                row.dataset.code || "";
+
+            const status =
+                row.dataset.status || "";
+
+
+            const matchesSearch =
+                name.includes(searchValue) ||
+                code.includes(searchValue);
+
+            const matchesStatus =
+                statusValue === "all" ||
+                status === statusValue;
+
+
+            if (
+                matchesSearch &&
+                matchesStatus
+            ) {
+
+                row.style.display = "";
+
+                visibleRows++;
+
+            } else {
+
+                row.style.display = "none";
+
+            }
+
+        });
+
+
+        if (noResults) {
+
+            noResults.hidden =
+                visibleRows !== 0;
+
+        }
+
+    }
+
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "input",
+            filterDiscounts
+        );
+
+    }
+
+
+    if (statusFilter) {
+
+        statusFilter.addEventListener(
+            "change",
+            filterDiscounts
+        );
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

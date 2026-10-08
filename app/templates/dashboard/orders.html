@@ -1,0 +1,522 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Orders — RicozStore{% endblock %}
+
+{% block content %}
+
+<div class="orders-page">
+
+    <!-- =========================================================
+         ORDERS HERO
+    ========================================================== -->
+
+    <section class="orders-hero">
+
+        <div class="orders-hero-background"></div>
+
+        <div class="orders-hero-overlay"></div>
+
+        <div class="orders-hero-content">
+
+            <div class="orders-hero-copy">
+
+                <span class="orders-eyebrow">
+                    ORDER MANAGEMENT
+                </span>
+
+                <h1>
+                    Orders
+                </h1>
+
+                <p>
+                    Manage customer orders, track payments,
+                    monitor fulfillment, and keep every sale
+                    moving smoothly.
+                </p>
+
+            </div>
+
+            <div class="orders-hero-stats">
+
+                <div class="orders-stat-card">
+                    <span>Total Orders</span>
+                    <strong>{{ stats.total_orders or 0 }}</strong>
+                </div>
+
+                <div class="orders-stat-card">
+                    <span>Pending</span>
+                    <strong>{{ stats.pending_orders or 0 }}</strong>
+                </div>
+
+                <div class="orders-stat-card">
+                    <span>Completed</span>
+                    <strong>{{ stats.completed_orders or 0 }}</strong>
+                </div>
+
+                <div class="orders-stat-card orders-revenue-card">
+                    <span>Total Revenue</span>
+                    <strong>
+                        {{ store.currency }}
+                        {{ "{:,.2f}".format(stats.total_revenue or 0) }}
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         ORDERS TOOLBAR
+    ========================================================== -->
+
+    <section class="orders-toolbar-section">
+
+        <div class="orders-toolbar">
+
+            <div class="orders-toolbar-heading">
+
+                <span class="orders-section-label">
+                    SALES ACTIVITY
+                </span>
+
+                <h2>
+                    Recent Orders
+                </h2>
+
+                <p>
+                    Review and monitor your latest customer purchases.
+                </p>
+
+            </div>
+
+            <div class="orders-toolbar-actions">
+
+                <div class="orders-search">
+
+                    <span class="orders-search-icon">
+                        ⌕
+                    </span>
+
+                    <input
+                        type="search"
+                        id="orderSearch"
+                        placeholder="Search orders..."
+                        autocomplete="off"
+                    >
+
+                </div>
+
+                <select
+                    id="orderStatusFilter"
+                    class="orders-filter"
+                >
+                    <option value="all">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="processing">Processing</option>
+                    <option value="completed">Completed</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="cancelled">Cancelled</option>
+                    <option value="failed">Failed</option>
+                </select>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         ORDERS TABLE
+    ========================================================== -->
+
+    <section class="orders-content-card">
+
+        {% if orders %}
+
+            <div class="orders-table-wrapper">
+
+                <table class="orders-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                ORDER
+                            </th>
+
+                            <th>
+                                CUSTOMER
+                            </th>
+
+                            <th>
+                                ITEMS
+                            </th>
+
+                            <th>
+                                TOTAL
+                            </th>
+
+                            <th>
+                                PAYMENT
+                            </th>
+
+                            <th>
+                                STATUS
+                            </th>
+
+                            <th>
+                                DATE
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="ordersTableBody">
+
+                        {% for order in orders %}
+
+                            <tr
+                                class="order-row"
+                                data-status="{{ order.order_status|lower }}"
+                                data-search="
+                                    {{ order.order_number }}
+                                    {{ order.customer_name }}
+                                    {{ order.customer_email or '' }}
+                                    {{ order.order_status }}
+                                    {{ order.payment_status }}
+                                "
+                            >
+
+                                <td>
+
+                                    <div class="order-number-cell">
+
+                                        <div class="order-number-icon">
+                                            #
+                                        </div>
+
+                                        <div>
+                                            <strong>
+                                                {{ order.order_number }}
+                                            </strong>
+
+                                            <span>
+                                                Order #{{ order.id }}
+                                            </span>
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="order-customer-cell">
+
+                                        <div class="order-customer-avatar">
+                                            {{ order.customer_name[:1]|upper }}
+                                        </div>
+
+                                        <div class="order-customer-info">
+
+                                            <strong>
+                                                {{ order.customer_name }}
+                                            </strong>
+
+                                            {% if order.customer_email %}
+                                                <span>
+                                                    {{ order.customer_email }}
+                                                </span>
+                                            {% else %}
+                                                <span>
+                                                    No email provided
+                                                </span>
+                                            {% endif %}
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="order-items-count">
+                                        {{ order.item_count }}
+                                        {% if order.item_count == 1 %}
+                                            item
+                                        {% else %}
+                                            items
+                                        {% endif %}
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="order-total-cell">
+
+                                        <strong>
+                                            {{ order.currency }}
+                                            {{ "{:,.2f}".format(order.total_amount) }}
+                                        </strong>
+
+                                        {% if order.discount_amount > 0 %}
+                                            <span>
+                                                Discount applied
+                                            </span>
+                                        {% else %}
+                                            <span>
+                                                Standard total
+                                            </span>
+                                        {% endif %}
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span
+                                        class="order-payment-badge payment-{{ order.payment_status|lower|replace(' ', '-') }}"
+                                    >
+                                        {{ order.payment_status }}
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span
+                                        class="order-status-badge status-{{ order.order_status|lower|replace(' ', '-') }}"
+                                    >
+                                        <span class="order-status-dot"></span>
+                                        {{ order.order_status }}
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="order-date-cell">
+
+                                        <strong>
+                                            {{ order.created_at.strftime("%d %b %Y") }}
+                                        </strong>
+
+                                        <span>
+                                            {{ order.created_at.strftime("%I:%M %p") }}
+                                        </span>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- =====================================================
+                 NO SEARCH RESULTS
+            ====================================================== -->
+
+            <div
+                id="ordersNoResults"
+                class="orders-no-results"
+                style="display: none;"
+            >
+
+                <div class="orders-no-results-icon">
+                    ⌕
+                </div>
+
+                <h3>
+                    No matching orders
+                </h3>
+
+                <p>
+                    Try another order number, customer name,
+                    email, or status.
+                </p>
+
+            </div>
+
+        {% else %}
+
+            <!-- =====================================================
+                 EMPTY ORDERS STATE
+            ====================================================== -->
+
+            <div class="orders-empty-state">
+
+                <div class="orders-empty-visual">
+
+                    <div class="empty-order-card empty-order-card-one">
+                        <span>#RZ-1024</span>
+                        <strong>PKR 18,500</strong>
+                    </div>
+
+                    <div class="empty-order-card empty-order-card-two">
+                        <span>#RZ-1025</span>
+                        <strong>PKR 7,900</strong>
+                    </div>
+
+                    <div class="empty-order-main">
+
+                        <div class="empty-order-icon">
+                            #
+                        </div>
+
+                        <div class="empty-order-lines">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="orders-empty-copy">
+
+                    <span class="orders-section-label">
+                        YOUR SALES WILL APPEAR HERE
+                    </span>
+
+                    <h2>
+                        No orders yet
+                    </h2>
+
+                    <p>
+                        Once customers place orders through your
+                        storefront, they will appear here with
+                        customer details, payment information,
+                        totals, and fulfillment status.
+                    </p>
+
+                    <a
+                        href="{{ url_for('main.home') }}"
+                        class="orders-empty-button"
+                    >
+                        View Store
+                    </a>
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+
+<!-- =============================================================
+     ORDERS SEARCH / FILTER
+============================================================= -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchInput = document.getElementById("orderSearch");
+    const statusFilter = document.getElementById("orderStatusFilter");
+    const rows = document.querySelectorAll(".order-row");
+    const noResults = document.getElementById("ordersNoResults");
+
+    function filterOrders() {
+
+        if (!rows.length) {
+            return;
+        }
+
+        const searchValue = searchInput
+            ? searchInput.value.toLowerCase().trim()
+            : "";
+
+        const statusValue = statusFilter
+            ? statusFilter.value.toLowerCase()
+            : "all";
+
+        let visibleRows = 0;
+
+        rows.forEach(function (row) {
+
+            const rowSearch = (
+                row.dataset.search || ""
+            ).toLowerCase();
+
+            const rowStatus = (
+                row.dataset.status || ""
+            ).toLowerCase();
+
+            const matchesSearch =
+                !searchValue ||
+                rowSearch.includes(searchValue);
+
+            const matchesStatus =
+                statusValue === "all" ||
+                rowStatus === statusValue;
+
+            if (matchesSearch && matchesStatus) {
+
+                row.style.display = "";
+
+                visibleRows++;
+
+            } else {
+
+                row.style.display = "none";
+
+            }
+
+        });
+
+        if (noResults) {
+
+            noResults.style.display =
+                visibleRows === 0 ? "block" : "none";
+
+        }
+
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener(
+            "input",
+            filterOrders
+        );
+    }
+
+    if (statusFilter) {
+        statusFilter.addEventListener(
+            "change",
+            filterOrders
+        );
+    }
+
+});
+
+</script>
+
+{% endblock %}

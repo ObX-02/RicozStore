@@ -1,0 +1,570 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Products | RicozStore
+{% endblock %}
+
+{% block content %}
+
+<div class="products-page">
+
+    <section class="products-hero">
+
+        <div class="products-hero-background"></div>
+
+        <div class="products-hero-content">
+
+            <div class="products-hero-copy">
+
+                <div class="page-eyebrow">
+                    RICOZSTORE CATALOG
+                </div>
+
+                <h1>
+                    Products
+                </h1>
+
+                <p>
+                    Build and manage your complete product catalog,
+                    from pricing and inventory to storefront publishing.
+                </p>
+
+                <div class="products-hero-stats">
+
+                    <div class="hero-stat">
+
+                        <strong>
+                            {{ products|length }}
+                        </strong>
+
+                        <span>
+                            Total Products
+                        </span>
+
+                    </div>
+
+                    <div class="hero-stat-divider"></div>
+
+                    <div class="hero-stat">
+
+                        <strong>
+                            {{ products|selectattr("is_published", "equalto", true)|list|length }}
+                        </strong>
+
+                        <span>
+                            Published
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="products-hero-action">
+
+                <div class="catalog-visual">
+
+                    <div class="visual-card visual-card-back"></div>
+
+                    <div class="visual-card visual-card-middle"></div>
+
+                    <div class="visual-card visual-card-front">
+
+                        <div class="visual-product-image"></div>
+
+                        <div class="visual-product-info">
+
+                            <span></span>
+                            <span></span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="products-toolbar-section">
+
+        <div class="products-toolbar">
+
+            <div class="products-search">
+
+                <span class="search-icon">
+                    ⌕
+                </span>
+
+                <input
+                    type="search"
+                    id="productSearch"
+                    placeholder="Search products by name, SKU or brand..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <div class="products-toolbar-right">
+
+                <span class="products-total">
+
+                    {{ products|length }}
+
+                    product{% if products|length != 1 %}s{% endif %}
+
+                </span>
+
+                <a
+                    href="{{ url_for('main.create_product') }}"
+                    class="products-add-button"
+                >
+                    <span>+</span>
+                    Add Product
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="products-content-card">
+
+        {% if products %}
+
+            <div class="products-table-header">
+
+                <div>
+
+                    <h2>
+                        Product Catalog
+                    </h2>
+
+                    <p>
+                        Manage your products and storefront visibility.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="products-table-wrapper">
+
+                <table class="products-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Product
+                            </th>
+
+                            <th>
+                                SKU
+                            </th>
+
+                            <th>
+                                Price
+                            </th>
+
+                            <th>
+                                Inventory
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Visibility
+                            </th>
+
+                            <th>
+                                Created
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="productsTableBody">
+
+                        {% for product in products %}
+
+                            <tr
+                                class="product-row"
+                                data-search="
+                                    {{ product.name|default('', true)|lower }}
+                                    {{ product.sku|default('', true)|lower }}
+                                    {{ product.brand|default('', true)|lower }}
+                                    {{ product.status|default('', true)|lower }}
+                                "
+                            >
+
+                                <td>
+
+                                    <div class="catalog-product">
+
+                                        <div class="catalog-product-image">
+
+                                            <span>
+                                                {{ product.name[:1]|upper }}
+                                            </span>
+
+                                        </div>
+
+
+                                        <div class="catalog-product-details">
+
+                                            <strong>
+                                                {{ product.name }}
+                                            </strong>
+
+                                            {% if product.brand %}
+
+                                                <span>
+                                                    {{ product.brand }}
+                                                </span>
+
+                                            {% elif product.description %}
+
+                                                <span>
+
+                                                    {{ product.description[:55] }}
+
+                                                    {% if product.description|length > 55 %}
+                                                        ...
+                                                    {% endif %}
+
+                                                </span>
+
+                                            {% else %}
+
+                                                <span>
+                                                    RicozStore Product
+                                                </span>
+
+                                            {% endif %}
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if product.sku %}
+
+                                        <span class="product-sku">
+                                            {{ product.sku }}
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="product-muted">
+                                            —
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="product-price">
+
+                                        <span>
+                                            {{ store.currency or "PKR" }}
+                                        </span>
+
+                                        {{ "%.2f"|format(product.price) }}
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if product.stock_quantity <= 0 %}
+
+                                        <span class="inventory-badge inventory-out">
+                                            Out of stock
+                                        </span>
+
+                                    {% elif product.stock_quantity <= product.low_stock_threshold %}
+
+                                        <span class="inventory-badge inventory-low">
+                                            {{ product.stock_quantity }} units
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="inventory-badge inventory-good">
+                                            {{ product.stock_quantity }} units
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if product.status == "Published" %}
+
+                                        <span class="product-status status-published">
+                                            Published
+                                        </span>
+
+                                    {% elif product.status == "Active" %}
+
+                                        <span class="product-status status-active">
+                                            Active
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="product-status status-draft">
+                                            {{ product.status or "Draft" }}
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if product.is_published %}
+
+                                        <span class="visibility visible">
+
+                                            <i></i>
+
+                                            Visible
+
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="visibility hidden">
+
+                                            <i></i>
+
+                                            Hidden
+
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="product-date">
+
+                                        {% if product.created_at %}
+
+                                            {{ product.created_at.strftime("%d %b %Y") }}
+
+                                        {% else %}
+
+                                            —
+
+                                        {% endif %}
+
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div
+                id="productsNoResults"
+                class="products-no-results"
+            >
+
+                <div class="no-results-icon">
+                    ⌕
+                </div>
+
+                <h3>
+                    No products found
+                </h3>
+
+                <p>
+                    Try a different search term.
+                </p>
+
+            </div>
+
+
+        {% else %}
+
+            <div class="products-empty-state">
+
+                <div class="empty-product-showcase">
+
+                    <div class="empty-product-card empty-card-one"></div>
+
+                    <div class="empty-product-card empty-card-two"></div>
+
+                    <div class="empty-product-card empty-card-main">
+
+                        <div class="empty-product-image"></div>
+
+                        <div class="empty-product-lines">
+
+                            <span></span>
+                            <span></span>
+                            <span></span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="empty-state-content">
+
+                    <div class="page-eyebrow">
+                        YOUR CATALOG
+                    </div>
+
+                    <h2>
+                        Your product catalog starts here
+                    </h2>
+
+                    <p>
+                        Add your first product to start building your
+                        RicozStore catalog. You can manage pricing,
+                        inventory, categories and publishing from here.
+                    </p>
+
+                    <a
+                        href="{{ url_for('main.create_product') }}"
+                        class="products-add-button large"
+                    >
+
+                        <span>
+                            +
+                        </span>
+
+                        Create Your First Product
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchInput =
+        document.getElementById("productSearch");
+
+    const rows =
+        document.querySelectorAll(".product-row");
+
+    const noResults =
+        document.getElementById("productsNoResults");
+
+
+    if (!searchInput) {
+        return;
+    }
+
+
+    searchInput.addEventListener("input", function () {
+
+        const query =
+            searchInput.value.toLowerCase().trim();
+
+        let visibleRows = 0;
+
+
+        rows.forEach(function (row) {
+
+            const searchableText =
+                row.getAttribute("data-search") ||
+                row.textContent.toLowerCase();
+
+
+            if (
+                query === "" ||
+                searchableText.includes(query)
+            ) {
+
+                row.style.display = "";
+
+                visibleRows++;
+
+            } else {
+
+                row.style.display = "none";
+
+            }
+
+        });
+
+
+        if (noResults) {
+
+            if (
+                query !== "" &&
+                visibleRows === 0
+            ) {
+
+                noResults.classList.add("show");
+
+            } else {
+
+                noResults.classList.remove("show");
+
+            }
+
+        }
+
+    });
+
+});
+
+</script>
+
+{% endblock %}

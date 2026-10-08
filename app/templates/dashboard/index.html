@@ -1,0 +1,400 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Dashboard | RicozStore
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-page">
+
+
+<div class="dashboard-heading">
+
+    <div>
+        <span class="dashboard-eyebrow">
+            STORE OVERVIEW
+        </span>
+
+        <h1>
+            Good to see you again.
+        </h1>
+
+        <p>
+            Here's what's happening with your store today.
+        </p>
+    </div>
+
+    <a
+        href="{{ url_for('main.products') }}"
+        class="dashboard-primary-button"
+    >
+        Add Product
+        <span>+</span>
+    </a>
+
+</div>
+
+<section class="dashboard-stats">
+
+    <article class="dashboard-stat-card">
+
+        <div class="stat-icon stat-icon-red">
+            $
+        </div>
+
+        <div class="stat-content">
+
+            <span class="stat-label">
+                Total Sales
+            </span>
+
+            <strong>
+                $0.00
+            </strong>
+
+            <small class="stat-positive">
+                Store sales
+            </small>
+
+        </div>
+
+    </article>
+
+    <article class="dashboard-stat-card">
+
+        <div class="stat-icon stat-icon-green">
+            #
+        </div>
+
+        <div class="stat-content">
+
+            <span class="stat-label">
+                Orders
+            </span>
+
+            <strong>
+                0
+            </strong>
+
+            <small>
+                No orders yet
+            </small>
+
+        </div>
+
+    </article>
+
+    <article class="dashboard-stat-card">
+
+        <div class="stat-icon stat-icon-dark">
+            P
+        </div>
+
+        <div class="stat-content">
+
+            <span class="stat-label">
+                Products
+            </span>
+
+            <strong>
+                0
+            </strong>
+
+            <small>
+                Add your first product
+            </small>
+
+        </div>
+
+    </article>
+
+    <article class="dashboard-stat-card">
+
+        <div class="stat-icon stat-icon-green">
+            C
+        </div>
+
+        <div class="stat-content">
+
+            <span class="stat-label">
+                Customers
+            </span>
+
+            <strong>
+                0
+            </strong>
+
+            <small>
+                Customer accounts
+            </small>
+
+        </div>
+
+    </article>
+
+</section>
+
+<section class="dashboard-grid">
+
+    <article class="dashboard-panel sales-panel">
+
+        <div class="panel-header">
+
+            <div>
+                <span class="panel-eyebrow">
+                    PERFORMANCE
+                </span>
+
+                <h2>
+                    Sales overview
+                </h2>
+            </div>
+
+            <select class="panel-select">
+                <option>Last 7 days</option>
+                <option>Last 30 days</option>
+                <option>Last 90 days</option>
+            </select>
+
+        </div>
+
+        <div class="sales-placeholder">
+
+            <div class="sales-placeholder-icon">
+                $
+            </div>
+
+            <h3>
+                Your sales data will appear here
+            </h3>
+
+            <p>
+                Once customers start placing orders,
+                you'll see your store performance here.
+            </p>
+
+        </div>
+
+    </article>
+
+    <article class="dashboard-panel">
+
+        <div class="panel-header">
+
+            <div>
+                <span class="panel-eyebrow">
+                    GET STARTED
+                </span>
+
+                <h2>
+                    Quick actions
+                </h2>
+            </div>
+
+        </div>
+
+        <div class="quick-actions">
+
+            <a
+                href="{{ url_for('main.products') }}"
+                class="quick-action"
+            >
+                <span class="quick-action-icon">
+                    P
+                </span>
+
+                <span>
+                    <strong>
+                        Add a product
+                    </strong>
+
+                    <small>
+                        Start building your catalog
+                    </small>
+                </span>
+
+                <b>
+                    →
+                </b>
+            </a>
+
+            <a
+                href="{{ url_for('main.products') }}"
+                class="quick-action"
+            >
+                <span class="quick-action-icon green">
+                    S
+                </span>
+
+                <span>
+                    <strong>
+                        View products
+                    </strong>
+
+                    <small>
+                        Manage your store catalog
+                    </small>
+                </span>
+
+                <b>
+                    →
+                </b>
+            </a>
+
+            <a
+                href="{{ url_for('main.home') }}"
+                class="quick-action"
+            >
+                <span class="quick-action-icon dark">
+                    V
+                </span>
+
+                <span>
+                    <strong>
+                        View storefront
+                    </strong>
+
+                    <small>
+                        See your public store
+                    </small>
+                </span>
+
+                <b>
+                    →
+                </b>
+            </a>
+
+        </div>
+
+    </article>
+
+</section>
+
+<section class="dashboard-grid dashboard-grid-bottom">
+
+    <article class="dashboard-panel">
+
+        <div class="panel-header">
+
+            <div>
+                <span class="panel-eyebrow">
+                    ORDERS
+                </span>
+
+                <h2>
+                    Recent orders
+                </h2>
+            </div>
+
+            <a
+                href="{{ url_for('main.dashboard') }}"
+                class="panel-link"
+            >
+                View all
+            </a>
+
+        </div>
+
+        <div class="empty-dashboard-state">
+
+            <div class="empty-state-icon">
+                O
+            </div>
+
+            <h3>
+                No orders yet
+            </h3>
+
+            <p>
+                When customers place orders,
+                they'll appear here.
+            </p>
+
+        </div>
+
+    </article>
+
+    <article class="dashboard-panel">
+
+        <div class="panel-header">
+
+            <div>
+                <span class="panel-eyebrow">
+                    STORE HEALTH
+                </span>
+
+                <h2>
+                    Store setup
+                </h2>
+            </div>
+
+        </div>
+
+        <div class="setup-progress">
+
+            <div class="setup-progress-top">
+
+                <span>
+                    Setup progress
+                </span>
+
+                <strong>
+                    20%
+                </strong>
+
+            </div>
+
+            <div class="progress-track">
+                <div class="progress-bar"></div>
+            </div>
+
+        </div>
+
+        <div class="setup-list">
+
+            <div class="setup-item completed">
+                <span>✓</span>
+                <div>
+                    <strong>
+                        Create your account
+                    </strong>
+                    <small>
+                        Your RicozStore account is ready.
+                    </small>
+                </div>
+            </div>
+
+            <div class="setup-item">
+                <span>2</span>
+                <div>
+                    <strong>
+                        Add your first product
+                    </strong>
+                    <small>
+                        Create your first product listing.
+                    </small>
+                </div>
+            </div>
+
+            <div class="setup-item">
+                <span>3</span>
+                <div>
+                    <strong>
+                        Configure your store
+                    </strong>
+                    <small>
+                        Set up your store information.
+                    </small>
+                </div>
+            </div>
+
+        </div>
+
+    </article>
+
+</section>
+
+</div>
+
+{% endblock %}

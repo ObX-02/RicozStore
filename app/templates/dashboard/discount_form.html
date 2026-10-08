@@ -1,0 +1,799 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Create Discount | RicozStore
+{% endblock %}
+
+{% block content %}
+
+<div class="discount-form-page">
+
+    <div class="discount-form-hero">
+
+        <div class="discount-form-hero-overlay"></div>
+
+        <div class="discount-form-hero-content">
+
+            <div>
+
+                <span class="discount-form-eyebrow">
+                    PROMOTIONS & OFFERS
+                </span>
+
+                <h1>
+                    Create Discount
+                </h1>
+
+                <p>
+                    Create a professional discount campaign for
+                    {{ store.name }} and give your customers
+                    a better reason to buy.
+                </p>
+
+            </div>
+
+            <a
+                href="{{ url_for('main.dashboard_discounts') }}"
+                class="discount-back-button"
+            >
+                <span>←</span>
+                Back to Discounts
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <form
+        method="POST"
+        action="{{ url_for('main.create_discount') }}"
+        class="discount-form-layout"
+        id="discount-create-form"
+    >
+
+        <div class="discount-form-main">
+
+            <!-- DISCOUNT INFORMATION -->
+
+            <section class="discount-form-card">
+
+                <div class="discount-section-heading">
+
+                    <div class="discount-section-icon">
+                        %
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Discount Information
+                        </h2>
+
+                        <p>
+                            Define the basic information customers
+                            will see when using this promotion.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="discount-field-grid">
+
+                    <div class="discount-field full-width">
+
+                        <label for="name">
+                            Discount Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            placeholder="Summer Sale"
+                            required
+                        >
+
+                        <span class="discount-field-help">
+                            Use a clear internal name for this promotion.
+                        </span>
+
+                    </div>
+
+
+                    <div class="discount-field">
+
+                        <label for="code">
+                            Discount Code
+                        </label>
+
+                        <div class="discount-code-input">
+
+                            <span>
+                                RICOZ
+                            </span>
+
+                            <input
+                                type="text"
+                                id="code"
+                                name="code"
+                                placeholder="SUMMER20"
+                                maxlength="80"
+                                required
+                            >
+
+                        </div>
+
+                        <span class="discount-field-help">
+                            Customers will enter this code at checkout.
+                        </span>
+
+                    </div>
+
+
+                    <div class="discount-field">
+
+                        <label for="discount_type">
+                            Discount Type
+                        </label>
+
+                        <select
+                            id="discount_type"
+                            name="discount_type"
+                        >
+
+                            <option value="percentage">
+                                Percentage
+                            </option>
+
+                            <option value="fixed">
+                                Fixed Amount
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="discount-field full-width">
+
+                        <label for="description">
+                            Description
+                        </label>
+
+                        <textarea
+                            id="description"
+                            name="description"
+                            rows="4"
+                            placeholder="Describe this promotion for your store team..."
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- DISCOUNT VALUE -->
+
+            <section class="discount-form-card">
+
+                <div class="discount-section-heading">
+
+                    <div class="discount-section-icon green">
+                        $
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Discount Value
+                        </h2>
+
+                        <p>
+                            Configure how much customers will save
+                            and when the discount can be applied.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="discount-field-grid">
+
+                    <div class="discount-field">
+
+                        <label for="discount_value">
+                            Discount Value
+                        </label>
+
+                        <div class="discount-value-input">
+
+                            <span id="discount-value-prefix">
+                                %
+                            </span>
+
+                            <input
+                                type="number"
+                                id="discount_value"
+                                name="discount_value"
+                                min="0.01"
+                                step="0.01"
+                                placeholder="20"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="discount-field">
+
+                        <label for="minimum_order_amount">
+                            Minimum Order Amount
+                        </label>
+
+                        <div class="discount-value-input">
+
+                            <span>
+                                {{ store.currency }}
+                            </span>
+
+                            <input
+                                type="number"
+                                id="minimum_order_amount"
+                                name="minimum_order_amount"
+                                min="0"
+                                step="0.01"
+                                placeholder="0"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="discount-field"
+                        id="maximum-discount-field"
+                    >
+
+                        <label for="maximum_discount_amount">
+                            Maximum Discount
+                        </label>
+
+                        <div class="discount-value-input">
+
+                            <span>
+                                {{ store.currency }}
+                            </span>
+
+                            <input
+                                type="number"
+                                id="maximum_discount_amount"
+                                name="maximum_discount_amount"
+                                min="0"
+                                step="0.01"
+                                placeholder="Optional"
+                            >
+
+                        </div>
+
+                        <span class="discount-field-help">
+                            Useful for percentage discounts.
+                        </span>
+
+                    </div>
+
+
+                    <div class="discount-field">
+
+                        <label for="usage_limit">
+                            Usage Limit
+                        </label>
+
+                        <input
+                            type="number"
+                            id="usage_limit"
+                            name="usage_limit"
+                            min="1"
+                            step="1"
+                            placeholder="Unlimited"
+                        >
+
+                        <span class="discount-field-help">
+                            Leave empty for unlimited usage.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- SCHEDULE -->
+
+            <section class="discount-form-card">
+
+                <div class="discount-section-heading">
+
+                    <div class="discount-section-icon red">
+                        ◷
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Schedule & Availability
+                        </h2>
+
+                        <p>
+                            Control when this discount becomes active
+                            and when it expires.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="discount-field-grid">
+
+                    <div class="discount-field">
+
+                        <label for="starts_at">
+                            Starts At
+                        </label>
+
+                        <input
+                            type="datetime-local"
+                            id="starts_at"
+                            name="starts_at"
+                        >
+
+                    </div>
+
+
+                    <div class="discount-field">
+
+                        <label for="expires_at">
+                            Expires At
+                        </label>
+
+                        <input
+                            type="datetime-local"
+                            id="expires_at"
+                            name="expires_at"
+                        >
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- SIDEBAR -->
+
+        <aside class="discount-form-sidebar">
+
+
+            <!-- PUBLISHING -->
+
+            <section class="discount-form-card publish-card">
+
+                <div class="publish-card-header">
+
+                    <div>
+
+                        <span class="publish-label">
+                            DISCOUNT STATUS
+                        </span>
+
+                        <h3>
+                            Publishing
+                        </h3>
+
+                    </div>
+
+                    <span
+                        class="publish-status-dot active"
+                        id="status-dot"
+                    ></span>
+
+                </div>
+
+
+                <label class="discount-toggle">
+
+                    <input
+                        type="checkbox"
+                        name="is_active"
+                        id="is_active"
+                        checked
+                    >
+
+                    <span class="discount-toggle-slider"></span>
+
+                    <span class="discount-toggle-content">
+
+                        <strong id="status-text">
+                            Active
+                        </strong>
+
+                        <small>
+                            Customers can use this discount.
+                        </small>
+
+                    </span>
+
+                </label>
+
+            </section>
+
+
+            <!-- LIVE PREVIEW -->
+
+            <section class="discount-form-card preview-card">
+
+                <span class="publish-label">
+                    LIVE PREVIEW
+                </span>
+
+                <h3 id="preview-code">
+                    SUMMER20
+                </h3>
+
+                <div class="preview-discount">
+
+                    <strong id="preview-value">
+                        20%
+                    </strong>
+
+                    <span>
+                        OFF
+                    </span>
+
+                </div>
+
+                <p id="preview-description">
+                    Your discount preview will appear here.
+                </p>
+
+                <div class="preview-meta">
+
+                    <div>
+
+                        <span>
+                            Minimum
+                        </span>
+
+                        <strong id="preview-minimum">
+                            {{ store.currency }} 0
+                        </strong>
+
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Usage
+                        </span>
+
+                        <strong id="preview-usage">
+                            Unlimited
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- TIP -->
+
+            <section class="discount-form-card tip-card">
+
+                <div class="tip-icon">
+                    i
+                </div>
+
+                <div>
+
+                    <h3>
+                        Promotion Tip
+                    </h3>
+
+                    <p>
+                        Keep discount codes short, memorable and
+                        easy to communicate across your marketing
+                        channels.
+                    </p>
+
+                </div>
+
+            </section>
+
+        </aside>
+
+    </form>
+
+
+    <!-- ACTIONS -->
+
+    <div class="discount-form-actions">
+
+        <a
+            href="{{ url_for('main.dashboard_discounts') }}"
+            class="discount-cancel-button"
+        >
+            Cancel
+        </a>
+
+        <button
+            type="submit"
+            form="discount-create-form"
+            class="discount-save-button"
+        >
+            <span>+</span>
+            Create Discount
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const discountType =
+            document.getElementById(
+                "discount_type"
+            );
+
+        const discountValue =
+            document.getElementById(
+                "discount_value"
+            );
+
+        const valuePrefix =
+            document.getElementById(
+                "discount-value-prefix"
+            );
+
+        const maximumField =
+            document.getElementById(
+                "maximum-discount-field"
+            );
+
+        const codeInput =
+            document.getElementById(
+                "code"
+            );
+
+        const descriptionInput =
+            document.getElementById(
+                "description"
+            );
+
+        const minimumInput =
+            document.getElementById(
+                "minimum_order_amount"
+            );
+
+        const usageInput =
+            document.getElementById(
+                "usage_limit"
+            );
+
+        const previewCode =
+            document.getElementById(
+                "preview-code"
+            );
+
+        const previewValue =
+            document.getElementById(
+                "preview-value"
+            );
+
+        const previewDescription =
+            document.getElementById(
+                "preview-description"
+            );
+
+        const previewMinimum =
+            document.getElementById(
+                "preview-minimum"
+            );
+
+        const previewUsage =
+            document.getElementById(
+                "preview-usage"
+            );
+
+        const activeInput =
+            document.getElementById(
+                "is_active"
+            );
+
+        const statusText =
+            document.getElementById(
+                "status-text"
+            );
+
+        const statusDot =
+            document.getElementById(
+                "status-dot"
+            );
+
+
+        function updateDiscountType() {
+
+            if (
+                discountType.value ===
+                "percentage"
+            ) {
+
+                valuePrefix.textContent =
+                    "%";
+
+                maximumField.style.display =
+                    "";
+
+                discountValue.max =
+                    "100";
+
+            } else {
+
+                valuePrefix.textContent =
+                    "{{ store.currency }}";
+
+                maximumField.style.display =
+                    "none";
+
+                discountValue.removeAttribute(
+                    "max"
+                );
+
+            }
+
+            updatePreview();
+
+        }
+
+
+        function updatePreview() {
+
+            const code =
+                codeInput.value
+                    .trim()
+                    .toUpperCase()
+                || "SUMMER20";
+
+            const value =
+                discountValue.value
+                || "20";
+
+            const minimum =
+                minimumInput.value
+                || "0";
+
+
+            previewCode.textContent =
+                code;
+
+
+            if (
+                discountType.value ===
+                "percentage"
+            ) {
+
+                previewValue.textContent =
+                    value + "%";
+
+            } else {
+
+                previewValue.textContent =
+                    "{{ store.currency }} "
+                    + value;
+
+            }
+
+
+            previewDescription.textContent =
+                descriptionInput.value.trim()
+                ||
+                "Your discount preview will appear here.";
+
+
+            previewMinimum.textContent =
+                "{{ store.currency }} "
+                + minimum;
+
+
+            previewUsage.textContent =
+                usageInput.value
+                ? usageInput.value + " uses"
+                : "Unlimited";
+
+        }
+
+
+        function updateStatus() {
+
+            if (activeInput.checked) {
+
+                statusText.textContent =
+                    "Active";
+
+                statusDot.classList.add(
+                    "active"
+                );
+
+            } else {
+
+                statusText.textContent =
+                    "Inactive";
+
+                statusDot.classList.remove(
+                    "active"
+                );
+
+            }
+
+        }
+
+
+        discountType.addEventListener(
+            "change",
+            updateDiscountType
+        );
+
+
+        [
+            codeInput,
+            descriptionInput,
+            discountValue,
+            minimumInput,
+            usageInput
+        ].forEach(
+            function (input) {
+
+                input.addEventListener(
+                    "input",
+                    updatePreview
+                );
+
+            }
+        );
+
+
+        activeInput.addEventListener(
+            "change",
+            updateStatus
+        );
+
+
+        updateDiscountType();
+
+        updateStatus();
+
+    }
+);
+
+</script>
+
+{% endblock %}

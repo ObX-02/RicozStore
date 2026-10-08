@@ -1,0 +1,712 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+Marketing | RicozStore
+{% endblock %}
+
+{% block content %}
+
+<div class="marketing-page">
+
+    <!-- =====================================================
+         HERO
+         ===================================================== -->
+
+    <section class="marketing-hero">
+
+        <div class="marketing-hero-overlay"></div>
+
+        <div class="marketing-hero-content">
+
+            <div class="marketing-hero-copy">
+
+                <span class="marketing-eyebrow">
+                    GROW YOUR STORE
+                </span>
+
+                <h1>
+                    Marketing
+                </h1>
+
+                <p>
+                    Build campaigns, promote your products and
+                    turn more visitors into loyal customers.
+                </p>
+
+            </div>
+
+            <div class="marketing-hero-actions">
+
+                <a
+    href="{{ url_for('main.create_marketing_campaign') }}"
+    class="marketing-hero-primary"
+>
+    Create Campaign
+    <span>→</span>
+</a>
+
+                <a
+                    href="{{ url_for('main.dashboard_discounts') }}"
+                    class="marketing-secondary-button"
+                >
+                    <span>%</span>
+                    Manage Discounts
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         STATS
+         ===================================================== -->
+
+    <section class="marketing-stats">
+
+        <div class="marketing-stat-card">
+
+            <div class="marketing-stat-icon red">
+                C
+            </div>
+
+            <div class="marketing-stat-content">
+
+                <span>
+                    TOTAL CAMPAIGNS
+                </span>
+
+                <strong>
+                    {{ campaign_stats.total_campaigns or 0 }}
+                </strong>
+
+                <small>
+                    Campaigns created
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="marketing-stat-card">
+
+            <div class="marketing-stat-icon green">
+                A
+            </div>
+
+            <div class="marketing-stat-content">
+
+                <span>
+                    ACTIVE CAMPAIGNS
+                </span>
+
+                <strong>
+                    {{ active_stats.active_campaigns or 0 }}
+                </strong>
+
+                <small>
+                    Currently running
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="marketing-stat-card">
+
+            <div class="marketing-stat-icon purple">
+                ✓
+            </div>
+
+            <div class="marketing-stat-content">
+
+                <span>
+                    COMPLETED
+                </span>
+
+                <strong>
+                    {{ completed_stats.completed_campaigns or 0 }}
+                </strong>
+
+                <small>
+                    Finished campaigns
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="marketing-stat-card">
+
+            <div class="marketing-stat-icon orange">
+                {{ store.currency }}
+            </div>
+
+            <div class="marketing-stat-content">
+
+                <span>
+                    MARKETING BUDGET
+                </span>
+
+                <strong>
+                    {{ "{:,.0f}".format(budget_stats.total_budget or 0) }}
+                </strong>
+
+                <small>
+                    Total allocated budget
+                </small>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
+
+    <section
+        class="marketing-main-grid"
+        id="campaigns"
+    >
+
+        <!-- CAMPAIGNS -->
+
+        <div class="marketing-campaign-panel">
+
+            <div class="marketing-panel-header">
+
+                <div>
+
+                    <span class="marketing-panel-eyebrow">
+                        CAMPAIGN MANAGEMENT
+                    </span>
+
+                    <h2>
+                        Marketing Campaigns
+                    </h2>
+
+                    <p>
+                        Plan and manage promotional campaigns
+                        for {{ store.name }}.
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="marketing-create-button"
+                    onclick="openMarketingModal()"
+                >
+                    <span>+</span>
+                    New Campaign
+                </button>
+
+            </div>
+
+
+            {% if campaigns %}
+
+                <div class="marketing-campaign-list">
+
+                    {% for campaign in campaigns %}
+
+                        <article class="marketing-campaign-card">
+
+                            <div class="marketing-campaign-top">
+
+                                <div class="marketing-campaign-icon">
+                                    {{ campaign.name[:1]|upper }}
+                                </div>
+
+                                <div class="marketing-campaign-info">
+
+                                    <h3>
+                                        {{ campaign.name }}
+                                    </h3>
+
+                                    <p>
+                                        {{ campaign.description
+                                           or
+                                           "No campaign description provided." }}
+                                    </p>
+
+                                </div>
+
+                                <span
+                                    class="
+                                        marketing-status
+                                        {% if campaign.status == 'Active' %}
+                                            active
+                                        {% elif campaign.status == 'Completed' %}
+                                            completed
+                                        {% elif campaign.status == 'Draft' %}
+                                            draft
+                                        {% else %}
+                                            scheduled
+                                        {% endif %}
+                                    "
+                                >
+                                    {{ campaign.status }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="marketing-campaign-meta">
+
+                                <div>
+
+                                    <span>
+                                        CHANNEL
+                                    </span>
+
+                                    <strong>
+                                        {{ campaign.channel or "Multi-channel" }}
+                                    </strong>
+
+                                </div>
+
+                                <div>
+
+                                    <span>
+                                        BUDGET
+                                    </span>
+
+                                    <strong>
+                                        {{ store.currency }}
+                                        {{ "{:,.0f}".format(
+                                            campaign.budget or 0
+                                        ) }}
+                                    </strong>
+
+                                </div>
+
+                                <div>
+
+                                    <span>
+                                        START
+                                    </span>
+
+                                    <strong>
+                                        {% if campaign.starts_at %}
+                                            {{ campaign.starts_at.strftime(
+                                                "%d %b %Y"
+                                            ) }}
+                                        {% else %}
+                                            Not scheduled
+                                        {% endif %}
+                                    </strong>
+
+                                </div>
+
+                                <div>
+
+                                    <span>
+                                        END
+                                    </span>
+
+                                    <strong>
+                                        {% if campaign.ends_at %}
+                                            {{ campaign.ends_at.strftime(
+                                                "%d %b %Y"
+                                            ) }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="marketing-empty-state">
+
+                    <div class="marketing-empty-icon">
+                        M
+                    </div>
+
+                    <h3>
+                        No campaigns yet
+                    </h3>
+
+                    <p>
+                        Your marketing campaigns will appear here.
+                        Create your first campaign to start promoting
+                        your store.
+                    </p>
+
+                    <button
+                        type="button"
+                        class="marketing-empty-button"
+                        onclick="openMarketingModal()"
+                    >
+                        <span>+</span>
+                        Create Your First Campaign
+                    </button>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- MARKETING TOOLS -->
+
+        <aside class="marketing-tools-panel">
+
+            <div class="marketing-panel-header compact">
+
+                <div>
+
+                    <span class="marketing-panel-eyebrow">
+                        GROWTH TOOLS
+                    </span>
+
+                    <h2>
+                        Marketing Tools
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="marketing-tool-list">
+
+
+                <a
+                    href="{{ url_for('main.dashboard_discounts') }}"
+                    class="marketing-tool-card"
+                >
+
+                    <div class="marketing-tool-icon red">
+                        %
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Discounts
+                        </strong>
+
+                        <span>
+                            Create promotional offers and coupon codes.
+                        </span>
+
+                    </div>
+
+                    <b>
+                        →
+                    </b>
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('main.dashboard_products') }}"
+                    class="marketing-tool-card"
+                >
+
+                    <div class="marketing-tool-icon green">
+                        P
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Featured Products
+                        </strong>
+
+                        <span>
+                            Manage products you want to promote.
+                        </span>
+
+                    </div>
+
+                    <b>
+                        →
+                    </b>
+
+                </a>
+
+
+                <a
+                    href="#campaigns"
+                    class="marketing-tool-card"
+                >
+
+                    <div class="marketing-tool-icon purple">
+                        C
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Campaigns
+                        </strong>
+
+                        <span>
+                            Organize your promotional activities.
+                        </span>
+
+                    </div>
+
+                    <b>
+                        →
+                    </b>
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('main.dashboard_customers') }}"
+                    class="marketing-tool-card"
+                >
+
+                    <div class="marketing-tool-icon orange">
+                        U
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Customers
+                        </strong>
+
+                        <span>
+                            Understand and reach your customer base.
+                        </span>
+
+                    </div>
+
+                    <b>
+                        →
+                    </b>
+
+                </a>
+
+            </div>
+
+
+            <div class="marketing-growth-card">
+
+                <div class="marketing-growth-decoration"></div>
+
+                <span>
+                    RICOZ GROWTH
+                </span>
+
+                <h3>
+                    Turn traffic into sales.
+                </h3>
+
+                <p>
+                    Combine campaigns, discounts and product
+                    promotions to create a stronger customer journey.
+                </p>
+
+            </div>
+
+        </aside>
+
+    </section>
+
+
+    <!-- =====================================================
+         CAMPAIGN MODAL
+         ===================================================== -->
+
+    <div
+        class="marketing-modal"
+        id="marketingModal"
+    >
+
+        <div
+            class="marketing-modal-backdrop"
+            onclick="closeMarketingModal()"
+        ></div>
+
+
+        <div class="marketing-modal-card">
+
+            <button
+                type="button"
+                class="marketing-modal-close"
+                onclick="closeMarketingModal()"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+
+            <span class="marketing-panel-eyebrow">
+                CAMPAIGN PLANNER
+            </span>
+
+            <h2>
+                Create Marketing Campaign
+            </h2>
+
+            <p>
+                Campaign creation will connect to the marketing
+                campaign database in the next step.
+            </p>
+
+
+            <div class="marketing-modal-options">
+
+                <div class="marketing-modal-option">
+
+                    <div class="marketing-tool-icon red">
+                        %
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Promotional Campaign
+                        </strong>
+
+                        <span>
+                            Promote a discount or special offer.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="marketing-modal-option">
+
+                    <div class="marketing-tool-icon green">
+                        P
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Product Campaign
+                        </strong>
+
+                        <span>
+                            Highlight selected products.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="marketing-modal-option">
+
+                    <div class="marketing-tool-icon purple">
+                        C
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Custom Campaign
+                        </strong>
+
+                        <span>
+                            Build a campaign around a specific goal.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="marketing-modal-primary"
+                onclick="closeMarketingModal()"
+            >
+                Continue
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function openMarketingModal() {
+
+    const modal =
+        document.getElementById(
+            "marketingModal"
+        );
+
+    if (modal) {
+
+        modal.classList.add("show");
+
+        document.body.classList.add(
+            "marketing-modal-open"
+        );
+
+    }
+
+}
+
+
+function closeMarketingModal() {
+
+    const modal =
+        document.getElementById(
+            "marketingModal"
+        );
+
+    if (modal) {
+
+        modal.classList.remove("show");
+
+        document.body.classList.remove(
+            "marketing-modal-open"
+        );
+
+    }
+
+}
+
+
+document.addEventListener(
+    "keydown",
+    function (event) {
+
+        if (event.key === "Escape") {
+
+            closeMarketingModal();
+
+        }
+
+    }
+);
+
+</script>
+
+{% endblock %}

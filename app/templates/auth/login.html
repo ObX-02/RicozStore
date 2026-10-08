@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<meta
+    name="description"
+    content="Log in to your RicozStore account."
+>
+
+<title>
+    Log in | RicozStore
+</title>
+
+
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/base.css') }}"
+>
+
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/auth.css') }}"
+>
+```
+
+</head>
+
+<body class="auth-page">
+
+```
+<!-- =====================================================
+     AUTH HEADER
+     ===================================================== -->
+
+<header class="auth-header">
+
+    <a
+        href="{{ url_for('main.home') }}"
+        class="auth-brand"
+    >
+
+        <span class="auth-brand-mark">
+            R
+        </span>
+
+        <span class="auth-brand-name">
+            RicozStore
+        </span>
+
+    </a>
+
+
+    <a
+        href="{{ url_for('main.home') }}"
+        class="auth-back-link"
+    >
+        Back to RicozStore
+    </a>
+
+</header>
+
+
+<!-- =====================================================
+     LOGIN CONTENT
+     ===================================================== -->
+
+<main class="auth-main">
+
+    <section class="auth-card">
+
+
+        <!-- CARD HEADER -->
+
+        <div class="auth-card-header">
+
+            <span class="auth-eyebrow">
+                WELCOME BACK
+            </span>
+
+            <h1>
+                Log in to RicozStore
+            </h1>
+
+            <p>
+                Access your store, manage your business,
+                and keep growing.
+            </p>
+
+        </div>
+
+
+        <!-- LOGIN FORM -->
+
+        <form
+            class="auth-form"
+            method="POST"
+            action="{{ url_for('main.login') }}"
+        >
+
+
+            <!-- EMAIL -->
+
+            <div class="form-field">
+
+                <label for="email">
+                    Email address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="form-field">
+
+                <div class="form-label-row">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <a
+                        href="#"
+                        class="forgot-password"
+                    >
+                        Forgot password?
+                    </a>
+
+                </div>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <!-- REMEMBER ME -->
+
+            <label class="remember-option">
+
+                <input
+                    type="checkbox"
+                    name="remember"
+                    value="1"
+                >
+
+                <span>
+                    Remember me
+                </span>
+
+            </label>
+
+
+            <!-- LOGIN BUTTON -->
+
+            <button
+                type="submit"
+                class="auth-submit-button"
+            >
+                Log in
+                <span>→</span>
+            </button>
+
+        </form>
+
+
+        <!-- SIGNUP -->
+
+        <div class="auth-divider">
+
+            <span>
+                New to RicozStore?
+            </span>
+
+        </div>
+
+
+        <a
+            href="{{ url_for('main.signup') }}"
+            class="auth-secondary-button"
+        >
+            Create your account
+        </a>
+
+
+        <!-- SECURITY NOTE -->
+
+        <p class="auth-security-note">
+
+            <span class="security-icon">
+                ✓
+            </span>
+
+            Your account and business data are protected
+            with secure authentication.
+
+        </p>
+
+    </section>
+
+
+    <!-- SIDE CONTENT -->
+
+    <aside class="auth-side-panel">
+
+        <div class="auth-side-content">
+
+            <span class="auth-side-eyebrow">
+                YOUR BUSINESS. ONE PLATFORM.
+            </span>
+
+            <h2>
+                Everything you need to run your store.
+            </h2>
+
+            <p>
+                Manage products, orders, customers,
+                inventory, marketing and analytics
+                from one powerful workspace.
+            </p>
+
+
+            <div class="auth-benefits">
+
+                <div class="auth-benefit">
+
+                    <span class="benefit-icon">
+                        ✓
+                    </span>
+
+                    <div>
+                        <strong>
+                            Manage your store
+                        </strong>
+
+                        <span>
+                            Products, orders and inventory
+                            in one place.
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="auth-benefit">
+
+                    <span class="benefit-icon">
+                        ✓
+                    </span>
+
+                    <div>
+                        <strong>
+                            Understand your business
+                        </strong>
+
+                        <span>
+                            Insights and analytics that
+                            help you make better decisions.
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="auth-benefit">
+
+                    <span class="benefit-icon">
+                        ✓
+                    </span>
+
+                    <div>
+                        <strong>
+                            Grow with RicozStore
+                        </strong>
+
+                        <span>
+                            Tools designed to support your
+                            business at every stage.
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+</main>
+
+
+<!-- =====================================================
+     FOOTER
+     ===================================================== -->
+
+<footer class="auth-footer">
+
+    <p>
+        © 2026 RicozStore. All rights reserved.
+    </p>
+
+    <div>
+
+        <a href="{{ url_for('main.home') }}">
+            Privacy
+        </a>
+
+        <a href="{{ url_for('main.home') }}">
+            Terms
+        </a>
+
+        <a href="{{ url_for('main.contact') }}">
+            Contact
+        </a>
+
+    </div>
+
+</footer>
+```
+
+</body>
+
+</html>

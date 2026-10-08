@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>Create Account | RicozStore</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+
+
+</head>
+
+<body class="auth-page">
+
+<header class="auth-header">
+
+    <a href="{{ url_for('main.home') }}" class="auth-brand">
+        <span class="auth-brand-mark">R</span>
+        <span class="auth-brand-name">RicozStore</span>
+    </a>
+
+    <a href="{{ url_for('main.home') }}" class="auth-back-link">
+        Back to RicozStore
+    </a>
+
+</header>
+
+<main class="auth-main">
+
+    <section class="auth-card">
+
+        <div class="auth-card-header">
+
+            <span class="auth-eyebrow">
+                CREATE YOUR ACCOUNT
+            </span>
+
+            <h1>
+                Start building your store
+            </h1>
+
+            <p>
+                Create your RicozStore account and get everything you need
+                to launch, manage, and grow your online business.
+            </p>
+
+        </div>
+
+        <form
+            class="auth-form"
+            method="POST"
+            action="{{ url_for('main.signup') }}"
+        >
+
+            <div class="form-field">
+
+                <label for="full_name">
+                    Full name
+                </label>
+
+                <input
+                    type="text"
+                    id="full_name"
+                    name="full_name"
+                    placeholder="Enter your full name"
+                    required
+                >
+
+            </div>
+
+            <div class="form-field">
+
+                <label for="email">
+                    Email address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="you@example.com"
+                    required
+                >
+
+            </div>
+
+            <div class="form-field">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Create a strong password"
+                    required
+                >
+
+            </div>
+
+            <div class="form-field">
+
+                <label for="confirm_password">
+                    Confirm password
+                </label>
+
+                <input
+                    type="password"
+                    id="confirm_password"
+                    name="confirm_password"
+                    placeholder="Repeat your password"
+                    required
+                >
+
+            </div>
+
+            <label class="remember-option">
+
+                <input
+                    type="checkbox"
+                    name="terms"
+                    required
+                >
+
+                <span>
+                    I agree to the RicozStore terms and privacy policy.
+                </span>
+
+            </label>
+
+            <button
+                type="submit"
+                class="auth-submit-button"
+            >
+                Create Account
+                <span>→</span>
+            </button>
+
+        </form>
+
+        <div class="auth-divider">
+            <span>Already have an account?</span>
+        </div>
+
+        <a
+            href="{{ url_for('main.login') }}"
+            class="auth-secondary-button"
+        >
+            Log in to RicozStore
+        </a>
+
+        <p class="auth-security-note">
+
+            <span class="security-icon">
+                ✓
+            </span>
+
+            <span>
+                Your account information is securely handled by RicozStore.
+            </span>
+
+        </p>
+
+    </section>
+
+    <aside class="auth-side-panel">
+
+        <div class="auth-side-content">
+
+            <span class="auth-side-eyebrow">
+                GROW WITH RICOZSTORE
+            </span>
+
+            <h2>
+                Everything your business needs to sell online.
+            </h2>
+
+            <p>
+                From your first product to your next thousand orders,
+                RicozStore brings your store, customers, products,
+                orders, and growth tools together.
+            </p>
+
+            <div class="auth-benefits">
+
+                <div class="auth-benefit">
+
+                    <span class="benefit-icon">
+                        ✓
+                    </span>
+
+                    <div>
+                        <strong>
+                            Build your storefront
+                        </strong>
+
+                        <span>
+                            Create a professional online shopping experience.
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="auth-benefit">
+
+                    <span class="benefit-icon">
+                        ✓
+                    </span>
+
+                    <div>
+                        <strong>
+                            Manage everything
+                        </strong>
+
+                        <span>
+                            Products, inventory, orders, customers, and more.
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="auth-benefit">
+
+                    <span class="benefit-icon">
+                        ✓
+                    </span>
+
+                    <div>
+                        <strong>
+                            Grow your business
+                        </strong>
+
+                        <span>
+                            Use marketing, analytics, and AI-powered tools.
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+</main>
+
+<footer class="auth-footer">
+
+    <p>
+        © 2026 RicozStore. All rights reserved.
+    </p>
+
+    <div>
+
+        <a href="{{ url_for('main.home') }}">
+            Privacy
+        </a>
+
+        <a href="{{ url_for('main.home') }}">
+            Terms
+        </a>
+
+        <a href="{{ url_for('main.contact') }}">
+            Contact
+        </a>
+
+    </div>
+
+</footer>
+
+</body>
+</html>
+s

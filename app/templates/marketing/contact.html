@@ -1,0 +1,523 @@
+{% extends "marketing/base.html" %}
+
+
+{% block title %}
+    RicozStore — Contact Us
+{% endblock %}
+
+
+{% block content %}
+
+<div class="contact-page">
+
+
+    <!-- =====================================================
+         HERO
+         ===================================================== -->
+
+    <section class="contact-hero">
+
+        <div class="marketing-container">
+
+            <div class="contact-hero-content">
+
+                <span class="section-eyebrow">
+                    LET'S TALK
+                </span>
+
+                <h1>
+                    How can we help
+                    your business?
+                </h1>
+
+                <p>
+                    Have a question about RicozStore, your store,
+                    a feature or getting started? Send us a message
+                    and our team will help you find the right direction.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CONTACT CONTENT
+         ===================================================== -->
+
+    <section class="contact-content-section">
+
+        <div class="marketing-container contact-grid">
+
+
+            <!-- =================================================
+                 LEFT SIDE
+                 ================================================= -->
+
+            <div class="contact-information">
+
+
+                <div class="contact-intro-card">
+
+                    <div class="contact-intro-icon">
+                        R
+                    </div>
+
+                    <div>
+
+                        <span>
+                            RICOZSTORE SUPPORT
+                        </span>
+
+                        <h2>
+                            Let's build something
+                            great together.
+                        </h2>
+
+                        <p>
+                            Whether you're starting a new store,
+                            growing an existing business or exploring
+                            RicozStore for your team, we're here to help.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SUPPORT CARDS -->
+
+                <div class="contact-info-card">
+
+                    <div class="contact-info-icon">
+                        ?
+                    </div>
+
+                    <div>
+
+                        <span>
+                            GENERAL QUESTIONS
+                        </span>
+
+                        <h3>
+                            Need some information?
+                        </h3>
+
+                        <p>
+                            Ask us about RicozStore features,
+                            plans, store management or getting started.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="contact-info-card">
+
+                    <div class="contact-info-icon green">
+                        S
+                    </div>
+
+                    <div>
+
+                        <span>
+                            STORE SUPPORT
+                        </span>
+
+                        <h3>
+                            Need help with your store?
+                        </h3>
+
+                        <p>
+                            Tell us what you're trying to accomplish
+                            and we'll help point you in the right direction.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="contact-info-card">
+
+                    <div class="contact-info-icon dark">
+                        P
+                    </div>
+
+                    <div>
+
+                        <span>
+                            PARTNERSHIPS
+                        </span>
+
+                        <h3>
+                            Interested in working together?
+                        </h3>
+
+                        <p>
+                            Contact us about partnerships, business
+                            opportunities or enterprise conversations.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RESPONSE CARD -->
+
+                <div class="contact-response-card">
+
+                    <div class="response-status">
+
+                        <span></span>
+
+                        SUPPORT TEAM
+
+                    </div>
+
+                    <h3>
+                        Your message matters.
+                    </h3>
+
+                    <p>
+                        Share the details below and we'll have
+                        the information we need to understand
+                        your request.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 FORM
+                 ================================================= -->
+
+            <div class="contact-form-wrapper">
+
+                <div class="contact-form-card">
+
+
+                    <div class="contact-form-heading">
+
+                        <span>
+                            CONTACT RICOZSTORE
+                        </span>
+
+                        <h2>
+                            Send us a message
+                        </h2>
+
+                        <p>
+                            Fill out the form and tell us how
+                            we can help.
+                        </p>
+
+                    </div>
+
+
+                    <!-- SUCCESS -->
+
+                    {% if success %}
+
+                        <div class="contact-success">
+
+                            <div class="contact-success-icon">
+                                ✓
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Message received.
+                                </strong>
+
+                                <p>
+                                    Thank you for contacting RicozStore.
+                                    Your message has been submitted
+                                    successfully.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- ERROR -->
+
+                    {% if error %}
+
+                        <div class="contact-error">
+
+                            <strong>
+                                Please check your form.
+                            </strong>
+
+                            <span>
+                                {{ error }}
+                            </span>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('main.contact') }}"
+                        class="contact-form"
+                    >
+
+
+                        <!-- NAME + EMAIL -->
+
+                        <div class="contact-form-row">
+
+                            <div class="contact-field">
+
+                                <label for="name">
+                                    Full Name
+                                    <span>*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    placeholder="Your full name"
+                                    value="{{ form_data.get('name', '') if form_data else '' }}"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="contact-field">
+
+                                <label for="email">
+                                    Work Email
+                                    <span>*</span>
+                                </label>
+
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    placeholder="you@company.com"
+                                    value="{{ form_data.get('email', '') if form_data else '' }}"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- PHONE + INQUIRY -->
+
+                        <div class="contact-form-row">
+
+                            <div class="contact-field">
+
+                                <label for="phone">
+                                    Phone
+                                    <small>
+                                        Optional
+                                    </small>
+                                </label>
+
+                                <input
+                                    type="tel"
+                                    id="phone"
+                                    name="phone"
+                                    placeholder="+92 300 0000000"
+                                    value="{{ form_data.get('phone', '') if form_data else '' }}"
+                                >
+
+                            </div>
+
+
+                            <div class="contact-field">
+
+                                <label for="inquiry_type">
+                                    Inquiry Type
+                                </label>
+
+                                <select
+                                    id="inquiry_type"
+                                    name="inquiry_type"
+                                >
+
+                                    <option value="">
+                                        Select an option
+                                    </option>
+
+                                    <option value="General Question">
+                                        General Question
+                                    </option>
+
+                                    <option value="Store Support">
+                                        Store Support
+                                    </option>
+
+                                    <option value="Sales">
+                                        Sales
+                                    </option>
+
+                                    <option value="Partnership">
+                                        Partnership
+                                    </option>
+
+                                    <option value="Enterprise">
+                                        Enterprise
+                                    </option>
+
+                                    <option value="Other">
+                                        Other
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- SUBJECT -->
+
+                        <div class="contact-field">
+
+                            <label for="subject">
+                                Subject
+                                <span>*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="subject"
+                                name="subject"
+                                placeholder="What can we help you with?"
+                                value="{{ form_data.get('subject', '') if form_data else '' }}"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- MESSAGE -->
+
+                        <div class="contact-field">
+
+                            <label for="message">
+                                Message
+                                <span>*</span>
+                            </label>
+
+                            <textarea
+                                id="message"
+                                name="message"
+                                rows="7"
+                                placeholder="Tell us a little more about your question or request..."
+                                required
+                            >{{ form_data.get('message', '') if form_data else '' }}</textarea>
+
+                        </div>
+
+
+                        <!-- SUBMIT -->
+
+                        <div class="contact-submit-row">
+
+                            <p>
+                                By submitting this form, you agree
+                                to our
+                                <a href="{{ url_for('main.privacy') }}">
+                                    Privacy Policy
+                                </a>.
+                            </p>
+
+                            <button
+                                type="submit"
+                                class="contact-submit-button"
+                            >
+                                Send message
+                                <span>→</span>
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         BOTTOM CTA
+         ===================================================== -->
+
+    <section class="contact-bottom-section">
+
+        <div class="marketing-container">
+
+            <div class="contact-bottom-card">
+
+                <div>
+
+                    <span class="section-eyebrow">
+                        READY TO START?
+                    </span>
+
+                    <h2>
+                        Build your store with RicozStore.
+                    </h2>
+
+                    <p>
+                        Explore the platform and discover the tools
+                        designed to help your business sell and grow.
+                    </p>
+
+                </div>
+
+
+                <div class="contact-bottom-actions">
+
+                    <a
+                        href="{{ url_for('main.pricing') }}"
+                        class="contact-primary-button"
+                    >
+                        Start for free
+                        <span>→</span>
+                    </a>
+
+                    <a
+                        href="{{ url_for('main.products') }}"
+                        class="contact-secondary-button"
+                    >
+                        Explore platform
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+</div>
+
+{% endblock %}
