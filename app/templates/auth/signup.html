@@ -1,23 +1,55 @@
-<!DOCTYPE html>
 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <title>Create Account | RicozStore</title>
 
-<title>Create Account | RicozStore</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
 
-<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <style>
+        .signup-flash-messages {
+            margin: 0 0 22px;
+        }
 
+        .signup-flash-message {
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+            border: 1px solid transparent;
+        }
 
+        .signup-flash-message.error,
+        .signup-flash-message.danger {
+            background: #fff1f1;
+            color: #a71919;
+            border-color: #ffd0d0;
+        }
+
+        .signup-flash-message.success {
+            background: #edfff3;
+            color: #176b39;
+            border-color: #bce9cb;
+        }
+
+        .signup-flash-message.info,
+        .signup-flash-message.warning {
+            background: #fff8e8;
+            color: #805b12;
+            border-color: #f2dfac;
+        }
+    </style>
 </head>
 
 <body class="auth-page">
 
 <header class="auth-header">
-
     <a href="{{ url_for('main.home') }}" class="auth-brand">
         <span class="auth-brand-mark">R</span>
         <span class="auth-brand-name">RicozStore</span>
@@ -26,7 +58,6 @@
     <a href="{{ url_for('main.home') }}" class="auth-back-link">
         Back to RicozStore
     </a>
-
 </header>
 
 <main class="auth-main">
@@ -34,21 +65,27 @@
     <section class="auth-card">
 
         <div class="auth-card-header">
+            <span class="auth-eyebrow">CREATE YOUR ACCOUNT</span>
 
-            <span class="auth-eyebrow">
-                CREATE YOUR ACCOUNT
-            </span>
-
-            <h1>
-                Start building your store
-            </h1>
+            <h1>Start building your store</h1>
 
             <p>
                 Create your RicozStore account and get everything you need
                 to launch, manage, and grow your online business.
             </p>
-
         </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="signup-flash-messages" role="status" aria-live="polite">
+                    {% for category, message in messages %}
+                        <div class="signup-flash-message {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
         <form
             class="auth-form"
@@ -57,87 +94,61 @@
         >
 
             <div class="form-field">
-
-                <label for="full_name">
-                    Full name
-                </label>
-
+                <label for="full_name">Full name</label>
                 <input
                     type="text"
                     id="full_name"
                     name="full_name"
                     placeholder="Enter your full name"
+                    autocomplete="name"
                     required
                 >
-
             </div>
 
             <div class="form-field">
-
-                <label for="email">
-                    Email address
-                </label>
-
+                <label for="email">Email address</label>
                 <input
                     type="email"
                     id="email"
                     name="email"
                     placeholder="you@example.com"
+                    autocomplete="email"
                     required
                 >
-
             </div>
 
             <div class="form-field">
-
-                <label for="password">
-                    Password
-                </label>
-
+                <label for="password">Password</label>
                 <input
                     type="password"
                     id="password"
                     name="password"
                     placeholder="Create a strong password"
+                    autocomplete="new-password"
                     required
                 >
-
             </div>
 
             <div class="form-field">
-
-                <label for="confirm_password">
-                    Confirm password
-                </label>
-
+                <label for="confirm_password">Confirm password</label>
                 <input
                     type="password"
                     id="confirm_password"
                     name="confirm_password"
                     placeholder="Repeat your password"
+                    autocomplete="new-password"
                     required
                 >
-
             </div>
 
             <label class="remember-option">
-
-                <input
-                    type="checkbox"
-                    name="terms"
-                    required
-                >
-
+                <input type="checkbox" name="terms" required>
                 <span>
                     I agree to the RicozStore terms and privacy policy.
                 </span>
-
             </label>
 
-            <button
-                type="submit"
-                class="auth-submit-button"
-            >
+            <button type="submit" class="auth-submit-button">
                 Create Account
                 <span>→</span>
             </button>
@@ -156,30 +167,20 @@
         </a>
 
         <p class="auth-security-note">
-
-            <span class="security-icon">
-                ✓
-            </span>
-
+            <span class="security-icon">✓</span>
             <span>
                 Your account information is securely handled by RicozStore.
             </span>
-
         </p>
 
     </section>
 
     <aside class="auth-side-panel">
-
         <div class="auth-side-content">
 
-            <span class="auth-side-eyebrow">
-                GROW WITH RICOZSTORE
-            </span>
+            <span class="auth-side-eyebrow">GROW WITH RICOZSTORE</span>
 
-            <h2>
-                Everything your business needs to sell online.
-            </h2>
+            <h2>Everything your business needs to sell online.</h2>
 
             <p>
                 From your first product to your next thousand orders,
@@ -190,91 +191,50 @@
             <div class="auth-benefits">
 
                 <div class="auth-benefit">
-
-                    <span class="benefit-icon">
-                        ✓
-                    </span>
-
+                    <span class="benefit-icon">✓</span>
                     <div>
-                        <strong>
-                            Build your storefront
-                        </strong>
-
+                        <strong>Build your storefront</strong>
                         <span>
                             Create a professional online shopping experience.
                         </span>
                     </div>
-
                 </div>
 
                 <div class="auth-benefit">
-
-                    <span class="benefit-icon">
-                        ✓
-                    </span>
-
+                    <span class="benefit-icon">✓</span>
                     <div>
-                        <strong>
-                            Manage everything
-                        </strong>
-
+                        <strong>Manage everything</strong>
                         <span>
                             Products, inventory, orders, customers, and more.
                         </span>
                     </div>
-
                 </div>
 
                 <div class="auth-benefit">
-
-                    <span class="benefit-icon">
-                        ✓
-                    </span>
-
+                    <span class="benefit-icon">✓</span>
                     <div>
-                        <strong>
-                            Grow your business
-                        </strong>
-
+                        <strong>Grow your business</strong>
                         <span>
                             Use marketing, analytics, and AI-powered tools.
                         </span>
                     </div>
-
                 </div>
 
             </div>
-
         </div>
-
     </aside>
 
 </main>
 
 <footer class="auth-footer">
-
-    <p>
-        © 2026 RicozStore. All rights reserved.
-    </p>
+    <p>© 2026 RicozStore. All rights reserved.</p>
 
     <div>
-
-        <a href="{{ url_for('main.home') }}">
-            Privacy
-        </a>
-
-        <a href="{{ url_for('main.home') }}">
-            Terms
-        </a>
-
-        <a href="{{ url_for('main.contact') }}">
-            Contact
-        </a>
-
+        <a href="{{ url_for('main.home') }}">Privacy</a>
+        <a href="{{ url_for('main.home') }}">Terms</a>
+        <a href="{{ url_for('main.contact') }}">Contact</a>
     </div>
-
 </footer>
 
 </body>
 </html>
-s
