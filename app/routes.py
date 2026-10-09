@@ -249,6 +249,7 @@ def signup():
                         password
                     )
 
+                    
                     cursor.execute(
                         """
                         INSERT INTO users (
@@ -267,6 +268,41 @@ def signup():
                     )
 
                     new_user = cursor.fetchone()
+                    user_id = new_user["id"]
+
+                    base_slug = "".join(
+                        character.lower()
+                        if character.isalnum()
+                        else "-"
+                        for character in name
+                    ).strip("-")
+
+                    while "--" in base_slug:
+                        base_slug = base_slug.replace("--", "-")
+
+                    base_slug = base_slug[:140].strip("-")
+                    base_slug = base_slug or "my-store"
+
+                    store_slug = f"{base_slug}-{user_id}"
+
+                    cursor.execute(
+                        """
+                        INSERT INTO stores (
+                            owner_id,
+                            name,
+                            slug,
+                            currency,
+                            timezone,
+                            is_active
+                        )
+                        VALUES (%s, %s, %s, 'PKR', 'Asia/Karachi', TRUE)
+                        """,
+                        (
+                            user_id,
+                            f"{name}'s Store",
+                            store_slug,
+                        ),
+                    )
 
                 connection.commit()
 

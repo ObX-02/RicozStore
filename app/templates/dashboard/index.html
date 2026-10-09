@@ -26,7 +26,8 @@ Dashboard | RicozStore
     </div>
 
     <a
-        href="{{ url_for('main.products') }}"
+        href="
+{{ url_for('main.dashboard_products') }}"
         class="dashboard-primary-button"
     >
         Add Product
@@ -197,7 +198,8 @@ Dashboard | RicozStore
         <div class="quick-actions">
 
             <a
-                href="{{ url_for('main.products') }}"
+                href="
+{{ url_for('main.dashboard_products') }}"
                 class="quick-action"
             >
                 <span class="quick-action-icon">
@@ -288,7 +290,8 @@ Dashboard | RicozStore
             </div>
 
             <a
-                href="{{ url_for('main.dashboard') }}"
+                href="
+{{ url_for('main.dashboard_orders') }}"
                 class="panel-link"
             >
                 View all
