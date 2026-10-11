@@ -1,420 +1,200 @@
+{% set dashboard_title = "Dashboard | RicozStore" %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <title>{% block title %}{{ dashboard_title }}{% endblock %}</title>
 
-    <title>
-        {% block title %}Dashboard | RicozStore{% endblock %}
-    </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    
+<link rel="stylesheet" href="{{ url_for('static', filename='css/content.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/storefront.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/base.css') }}"
-    >
+<link rel="stylesheet" href="{{ url_for('static', filename='css/markets.css') }}">
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/dashboard.css') }}"
-    >
-<link
-    rel="stylesheet"
-    href="{{ url_for('static', filename='css/storefront.css') }}"
->
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/responsive.css') }}"
-    >
-
+<link rel="stylesheet" href="{{ url_for('static', filename='css/growth.css') }}">
 </head>
 
 <body class="dashboard-layout">
 
-    <!-- =========================================================
-         SIDEBAR
-    ========================================================== -->
-
     <aside class="dashboard-sidebar">
 
-        <!-- BRAND -->
-
         <div class="sidebar-brand">
-
-            <a
-                href="{{ url_for('main.dashboard') }}"
-                class="sidebar-brand-link"
-            >
-
-                <span class="sidebar-logo-mark">
-                    R
-                </span>
-
-                <span class="sidebar-logo-name">
-                    RicozStore
-                </span>
-
+            <a href="{{ url_for('main.dashboard') }}" class="sidebar-brand-link">
+                <span class="sidebar-logo-mark">R</span>
+                <span class="sidebar-logo-name">RicozStore</span>
             </a>
-
         </div>
-
-
-        <!-- NAVIGATION -->
 
         <nav class="sidebar-navigation">
 
-            <!-- =================================================
-                 MAIN
-            ================================================== -->
-
             <div class="sidebar-section">
+                <span class="sidebar-section-title">MAIN</span>
 
-                <span class="sidebar-section-title">
-                    MAIN
-                </span>
+                <a href="{{ url_for('main.dashboard') }}" class="sidebar-link">
+                    <span class="sidebar-link-icon">D</span>
+                    <span>Dashboard</span>
+                </a>
 
+                <a href="{{ url_for('main.dashboard_commerce') }}" class="sidebar-link">
+                    <span class="sidebar-link-icon">↗</span>
+                    <span>Ecommerce Center</span>
+                </a>
 
-                <!-- DASHBOARD -->
+                <a href="{{ url_for('main.dashboard_products') }}" class="sidebar-link">
+                    <span class="sidebar-link-icon">P</span>
+                    <span>Products</span>
+                </a>
 
-                <a
-                    href="{{ url_for('main.dashboard') }}"
-                    class="sidebar-link"
-                >
+                <a href="{{ url_for('main.dashboard_variants') }}" class="sidebar-link">
+                    <span class="sidebar-link-icon">◇</span>
+                    <span>Product Variants</span>
+                </a>
+                <a href="{{ url_for('main.dashboard_reviews') }}" class="sidebar-link">
+    <span class="sidebar-link-icon">★</span>
+    <span>Reviews &amp; Ratings</span>
+</a>
+<a href="{{ url_for('main.dashboard_product_images') }}" class="sidebar-link">
+    <span class="sidebar-link-icon">▧</span>
+    <span>Product Image Gallery</span>
+</a>
 
-                    <span class="sidebar-link-icon">
-                        D
-                    </span>
+                <a href="{{ url_for('main.dashboard_storefront') }}" class="sidebar-link">
+                    <span class="sidebar-link-icon">◈</span>
+                    <span>Storefront</span>
+                </a>
 
-                    <span>
-                        Dashboard
-                    </span>
+                <a href="{{ url_for('main.dashboard_orders') }}" class="sidebar-link">
+                    <span class="sidebar-link-icon">O</span>
+                    <span>Orders</span>
+                </a>
 
+                <a href="{{ url_for('main.dashboard_inventory') }}" class="sidebar-link">
+                    <span class="sidebar-link-icon">I</span>
+                    <span>Inventory</span>
                 </a>
 
 
-                <!-- PRODUCTS -->
+<a href="{{ url_for('main.dashboard_content') }}" class="sidebar-link">
+    <span class="sidebar-link-icon">P</span>
+    <span>Content Management</span>
+</a>
 
-                <a
-                    href="{{ url_for('main.dashboard_products') }}"
-                    class="sidebar-link"
-                >
-
-                    <span class="sidebar-link-icon">
-                        P
-                    </span>
-
-                    <span>
-                        Products
-                    </span>
-
+<a href="{{ url_for('main.dashboard_markets') }}" class="sidebar-link">
+    <span class="sidebar-link-icon">M</span>
+    <span>Markets</span>
+</a>
+<a href="{{ url_for('main.blog') }}" class="sidebar-link">
+    <span class="sidebar-link-icon">B</span>
+    <span>Blog</span>
+</a>
+                <a href="{{ url_for('main.dashboard_customers') }}" class="sidebar-link">
+                    <span class="sidebar-link-icon">C</span>
+                    <span>Customers</span>
                 </a>
-                <a
-    href="{{ url_for('main.dashboard_storefront') }}"
-    class="sidebar-link"
->
-    <span class="sidebar-link-icon">
-        ◈
-    </span>
-
-    <span>
-        Storefront
-    </span>
-</a>
-
-
-                <!-- ORDERS -->
-
-                <a
-                    href="{{ url_for('main.dashboard_orders') }}"
-                    class="sidebar-link"
-                >
-
-                    <span class="sidebar-link-icon">
-                        O
-                    </span>
-
-                    <span>
-                        Orders
-                    </span>
-
-                </a>
-
-
-                <!-- INVENTORY -->
-
-                <a
-    href="{{ url_for('main.dashboard_inventory') }}"
-    class="sidebar-link"
->
-    <span class="sidebar-link-icon">I</span>
-    <span>Inventory</span>
-</a>
-
-
-                <!-- CUSTOMERS -->
-
-               <a
-    href="{{ url_for('main.dashboard_customers') }}"
-    class="sidebar-link"
->
-    <span class="sidebar-link-icon">C</span>
-    <span>Customers</span>
-</a>
-
             </div>
 
-
-            <!-- =================================================
-                 GROW
-            ================================================== -->
-
             <div class="sidebar-section">
+                <span class="sidebar-section-title">GROW</span>
 
-                <span class="sidebar-section-title">
-                    GROW
-                </span>
-
-
-                <!-- DISCOUNTS -->
-
-                <a
-    href="{{ url_for('main.dashboard_discounts') }}"
-    class="sidebar-link"
->
-    <span class="sidebar-link-icon">%</span>
-    <span>Discounts</span>
-</a>
-
-
-                <!-- MARKETING -->
-
-                <a
-                   href="{{ url_for('main.dashboard_marketing') }}"
-                    class="sidebar-link"
-                >
-
-                    <span class="sidebar-link-icon">
-                        M
-                    </span>
-
-                    <span>
-                        Marketing
-                    </span>
-
+                <a href="{{ url_for('main.dashboard_discounts') }}" class="sidebar-link">
+                    <span class="sidebar-link-icon">%</span>
+                    <span>Discounts</span>
                 </a>
 
-
-                <!-- ANALYTICS -->
-
-                <a
-                    href="{{ url_for('main.dashboard_analytics') }}"
-                    class="sidebar-link"
-                >
-
-                    <span class="sidebar-link-icon">
-                        A
-                    </span>
-
-                    <span>
-                        Analytics
-                    </span>
-
+                <a href="{{ url_for('main.dashboard_marketing') }}" class="sidebar-link">
+                    <span class="sidebar-link-icon">M</span>
+                    <span>Marketing</span>
                 </a>
 
-
-                <!-- AI STUDIO -->
-
-                <a
-                    href="{{ url_for('main.dashboard_ai_studio') }}"
-                    class="sidebar-link"
-                >
-
-                    <span class="sidebar-link-icon">
-                        AI
-                    </span>
-
-                    <span>
-                        AI Studio
-                    </span>
-
+                <a href="{{ url_for('main.dashboard_analytics') }}" class="sidebar-link">
+                    <span class="sidebar-link-icon">A</span>
+                    <span>Analytics</span>
                 </a>
 
+                <a href="{{ url_for('main.dashboard_ai_studio') }}" class="sidebar-link">
+                    <span class="sidebar-link-icon">AI</span>
+                    <span>AI Studio</span>
+                </a>
+
+                <a href="{{ url_for('main.dashboard_growth') }}" class="sidebar-link">
+                    <span class="sidebar-link-icon">↗</span>
+                    <span>Growth</span>
+                </a>
             </div>
 
-
-            <!-- =================================================
-                 SETTINGS
-            ================================================== -->
-
             <div class="sidebar-section">
+                <span class="sidebar-section-title">SETTINGS</span>
 
-                <span class="sidebar-section-title">
-                    SETTINGS
-                </span>
-
-
-                <!-- SETTINGS -->
-
-                <a
-                    href="{{ url_for('main.dashboard_settings') }}"
-                    class="sidebar-link"
-                >
-
-                    <span class="sidebar-link-icon">
-                        S
-                    </span>
-
-                    <span>
-                        Settings
-                    </span>
-
+                <a href="{{ url_for('main.dashboard_settings') }}" class="sidebar-link">
+                    <span class="sidebar-link-icon">S</span>
+                    <span>Settings</span>
                 </a>
-
             </div>
 
         </nav>
 
-
-        <!-- =====================================================
-             SIDEBAR BOTTOM
-        ====================================================== -->
-
         <div class="sidebar-bottom">
 
-
-            <!-- VIEW STORE -->
-
-            <a
-                href="{{ url_for('main.home') }}"
-                class="sidebar-store-link"
-            >
-
-                <span>
-                    View Store
-                </span>
-
-                <span>
-                    →
-                </span>
-
+            <a href="{{ url_for('main.home') }}" class="sidebar-store-link">
+                <span>View Store</span>
+                <span>→</span>
             </a>
 
-
-            <!-- USER -->
-
             <div class="sidebar-user">
-
                 <div class="sidebar-user-avatar">
-
                     {{ session.get("user_name", "R")[:1]|upper }}
-
                 </div>
-
 
                 <div class="sidebar-user-info">
-
-                    <strong>
-                        {{ session.get("user_name", "Store Owner") }}
-                    </strong>
-
-                    <span>
-                        {{ session.get(
-                            "user_email",
-                            "owner@ricozstore.com"
-                        ) }}
-                    </span>
-
+                    <strong>{{ session.get("user_name", "Store Owner") }}</strong>
+                    <span>{{ session.get("user_email", "owner@ricozstore.com") }}</span>
                 </div>
-
             </div>
 
         </div>
 
     </aside>
 
-
-    <!-- =========================================================
-         MAIN DASHBOARD AREA
-    ========================================================== -->
-
     <div class="dashboard-content-wrapper">
-
-
-        <!-- =====================================================
-             TOPBAR
-        ====================================================== -->
 
         <header class="dashboard-topbar">
 
             <div class="topbar-left">
-
-                <button
-                    type="button"
-                    class="sidebar-toggle"
-                    id="sidebarToggle"
-                >
+                <button type="button" class="sidebar-toggle" id="sidebarToggle">
                     ☰
                 </button>
 
-                <div class="topbar-page-name">
-                    RicozStore Admin
-                </div>
-
+                <div class="topbar-page-name">RicozStore Admin</div>
             </div>
 
-
             <div class="topbar-right">
-
-                <a
-                    href="{{ url_for('main.home') }}"
-                    class="topbar-store-button"
-                >
+                <a href="{{ url_for('main.home') }}" class="topbar-store-button">
                     View Store
                 </a>
 
-
                 <div class="topbar-profile">
-
                     <div class="topbar-avatar">
-
                         {{ session.get("user_name", "R")[:1]|upper }}
-
                     </div>
-
                 </div>
-
             </div>
 
         </header>
 
-
-        <!-- =====================================================
-             PAGE CONTENT
-        ====================================================== -->
-
         <main class="dashboard-main">
-
             {% block content %}
             {% endblock %}
-
         </main>
 
     </div>
 
-
-    <!-- =========================================================
-         DASHBOARD JAVASCRIPT
-    ========================================================== -->
-
-    <script
-        src="{{ url_for('static', filename='js/dashboard.js') }}"
-    ></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 
 </body>
-
 </html>

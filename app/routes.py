@@ -1,10 +1,11 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.extensions import get_db_connection
 from datetime import datetime, timezone
 from app.ai_service import ask_ai
-main_bp = Blueprint("main", __name__)
 
+main_bp = Blueprint("main", __name__)
 
 @main_bp.route("/")
 def home():
@@ -36,10 +37,85 @@ def resources():
     return render_template("marketing/resources.html")
 
 
+
 @main_bp.route("/blog")
 def blog():
-    return render_template("marketing/blog.html")
+    conn = get_db_connection()
 
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT
+                    sc.id,
+                    sc.title,
+                    sc.slug,
+                    sc.excerpt,
+                    sc.body,
+                    sc.published_at,
+                    s.name AS store_name
+                FROM store_contents AS sc
+                JOIN stores AS s ON s.id = sc.store_id
+                WHERE sc.content_type = 'blog'
+                  AND sc.status = 'published'
+                  AND s.is_active = TRUE
+                ORDER BY sc.published_at DESC NULLS LAST, sc.created_at DESC
+                """
+            )
+            posts = cur.fetchall()
+
+        return render_template("marketing/blog.html", posts=posts)
+
+    except Exception:
+        current_app.logger.exception("Public blog page failed to load.")
+        return render_template("marketing/blog.html", posts=[])
+
+    finally:
+        conn.close()
+
+
+@main_bp.route("/blog/<int:content_id>/<slug>")
+def public_blog_post(content_id, slug):
+    conn = get_db_connection()
+
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT
+                    sc.id,
+                    sc.title,
+                    sc.slug,
+                    sc.excerpt,
+                    sc.body,
+                    sc.meta_title,
+                    sc.meta_description,
+                    sc.published_at,
+                    s.name AS store_name
+                FROM store_contents AS sc
+                JOIN stores AS s ON s.id = sc.store_id
+                WHERE sc.id = %s
+                  AND sc.slug = %s
+                  AND sc.content_type = 'blog'
+                  AND sc.status = 'published'
+                  AND s.is_active = TRUE
+                LIMIT 1
+                """,
+                (content_id, slug),
+            )
+            post = cur.fetchone()
+
+        if not post:
+            return render_template("marketing/blog_detail.html", post=None), 404
+
+        return render_template("marketing/blog_detail.html", post=post)
+
+    except Exception:
+        current_app.logger.exception("Public blog article failed to load.")
+        return render_template("marketing/blog_detail.html", post=None), 500
+
+    finally:
+        conn.close()
 
 @main_bp.route("/about")
 def about():
@@ -366,10 +442,15 @@ def dashboard_products():
     if "user_id" not in session:
         return redirect(url_for("main.login"))
 
+    search = request.args.get("search", "").strip()
+    category_id = request.args.get("category_id", type=int)
+    status = request.args.get("status", "").strip()
+    min_price = request.args.get("min_price", type=float)
+    max_price = request.args.get("max_price", type=float)
+
     conn = get_db_connection()
 
     try:
-
         with conn.cursor() as cur:
 
             cur.execute(
@@ -390,18 +471,27 @@ def dashboard_products():
             store = cur.fetchone()
 
             if not store:
-
                 flash(
                     "Please create your store before viewing products.",
                     "warning",
                 )
-
-                return redirect(
-                    url_for("main.dashboard")
-                )
+                return redirect(url_for("main.dashboard"))
 
             cur.execute(
                 """
+                SELECT
+                    id,
+                    name
+                FROM categories
+                WHERE store_id = %s
+                ORDER BY name
+                """,
+                (store["id"],),
+            )
+
+            categories = cur.fetchall()
+
+            query = """
                 SELECT
                     p.id,
                     p.name,
@@ -416,14 +506,66 @@ def dashboard_products():
                     p.low_stock_threshold,
                     p.status,
                     p.is_published,
+                    p.category_id,
                     p.created_at,
-                    p.updated_at
+                    p.updated_at,
+                    c.name AS category_name
                 FROM products p
+                LEFT JOIN categories c
+                    ON c.id = p.category_id
+                   AND c.store_id = p.store_id
                 WHERE p.store_id = %s
+            """
+
+            params = [store["id"]]
+
+            if search:
+                query += """
+                    AND (
+                        p.name ILIKE %s
+                        OR p.sku ILIKE %s
+                        OR COALESCE(p.brand, '') ILIKE %s
+                    )
+                """
+
+                search_pattern = f"%{search}%"
+                params.extend(
+                    [
+                        search_pattern,
+                        search_pattern,
+                        search_pattern,
+                    ]
+                )
+
+            if category_id:
+                query += """
+                    AND p.category_id = %s
+                """
+                params.append(category_id)
+
+            if status:
+                query += """
+                    AND p.status = %s
+                """
+                params.append(status)
+
+            if min_price is not None:
+                query += """
+                    AND p.price >= %s
+                """
+                params.append(min_price)
+
+            if max_price is not None:
+                query += """
+                    AND p.price <= %s
+                """
+                params.append(max_price)
+
+            query += """
                 ORDER BY p.created_at DESC
-                """,
-                (store["id"],),
-            )
+            """
+
+            cur.execute(query, tuple(params))
 
             products = cur.fetchall()
 
@@ -431,12 +573,16 @@ def dashboard_products():
                 "dashboard/products.html",
                 store=store,
                 products=products,
+                categories=categories,
+                search=search,
+                selected_category=category_id,
+                selected_status=status,
+                min_price=min_price,
+                max_price=max_price,
             )
 
     finally:
-
         conn.close()
-
 @main_bp.route("/dashboard/products/new", methods=["GET", "POST"])
 def create_product():
     if "user_id" not in session:
@@ -2410,3 +2556,1209 @@ def dashboard_storefront():
     return render_template(
         "dashboard/storefront.html"
     )
+    # ============================================================
+# ECOMMERCE FEATURES CENTER
+# ============================================================
+
+@main_bp.route("/dashboard/commerce")
+def dashboard_commerce():
+    if "user_id" not in session:
+        return redirect(url_for("main.login"))
+
+    features = [
+        {
+            "title": "Shopping Cart",
+            "description": "Manage the shopping journey, cart items, quantities and checkout flow.",
+            "category": "Sales",
+            "icon": "🛒",
+            "status": "Next to implement",
+        },
+        {
+            "title": "Checkout",
+            "description": "Customer details, delivery address and order placement.",
+            "category": "Sales",
+            "icon": "↗",
+            "status": "Next to implement",
+        },
+        {
+            "title": "Product Variants",
+            "description": "Manage product sizes, colors, variant prices and stock.",
+            "category": "Catalog",
+            "icon": "◇",
+            "status": "Database ready",
+        },
+        {
+            "title": "Shipping & Delivery",
+            "description": "Configure shipping zones, delivery methods and shipping charges.",
+            "category": "Operations",
+            "icon": "➜",
+            "status": "Next to implement",
+        },
+        {
+            "title": "Product Reviews",
+            "description": "Collect product ratings and customer feedback.",
+            "category": "Growth",
+            "icon": "☆",
+            "status": "Next to implement",
+        },
+        {
+    "title": "Product Image Gallery",
+    "description": "Manage product photos, primary images, and accessibility descriptions.",
+    "icon": "▧",
+    "category": "PRODUCTS",
+    "status": "Database ready"
+},
+        {
+            "title": "Wishlist",
+            "description": "Allow customers to save products for later.",
+            "category": "Growth",
+            "icon": "♡",
+            "status": "Next to implement",
+        },
+        {
+            "title": "SEO Manager",
+            "description": "Manage product metadata, search visibility and store SEO.",
+            "category": "Online Store",
+            "icon": "⌕",
+            "status": "Next to implement",
+        },
+        {
+            "title": "Customer Segments",
+            "description": "Organize customer groups for targeted promotions.",
+            "category": "Marketing",
+            "icon": "◎",
+            "status": "Next to implement",
+        },
+        {
+            "title": "Upselling & Recommendations",
+            "description": "Suggest related products and increase average order value.",
+            "category": "Growth",
+            "icon": "↑",
+            "status": "Next to implement",
+        },
+        {
+            "title": "Sales Performance",
+            "description": "Track revenue, orders, average order value and product performance.",
+            "category": "Analytics",
+            "icon": "▥",
+            "status": "Next to implement",
+        },
+    ]
+
+    return render_template(
+        "dashboard/commerce.html",
+        features=features,
+    )
+    @main_bp.route("/dashboard/cart")
+    def dashboard_cart():
+        if "user_id" not in session:
+            return redirect(url_for("main.login"))
+
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT id, name, currency
+                    FROM stores
+                    WHERE owner_id = %s AND is_active = TRUE
+                    ORDER BY id
+                    LIMIT 1
+                    """,
+                    (session["user_id"],),
+                )
+                store = cur.fetchone()
+
+                if not store:
+                    flash("Please create your store first.", "warning")
+                    return redirect(url_for("main.dashboard"))
+
+                cur.execute(
+                    """
+                    SELECT
+                        c.id AS cart_id,
+                        c.status,
+                        c.created_at,
+                        COUNT(ci.id) AS item_count,
+                        COALESCE(SUM(ci.quantity), 0) AS total_quantity,
+                        COALESCE(SUM(ci.quantity * p.price), 0) AS subtotal
+                    FROM shopping_carts c
+                    LEFT JOIN shopping_cart_items ci ON ci.cart_id = c.id
+                    LEFT JOIN products p
+                        ON p.id = ci.product_id
+                       AND p.store_id = c.store_id
+                    WHERE c.store_id = %s
+                    GROUP BY c.id
+                    ORDER BY c.created_at DESC
+                    LIMIT 100
+                    """,
+                    (store["id"],),
+                )
+                carts = cur.fetchall()
+
+                cur.execute(
+                    """
+                    SELECT
+                        COUNT(*) AS total_carts,
+                        COUNT(*) FILTER (WHERE status = 'active') AS active_carts,
+                        COUNT(*) FILTER (WHERE status = 'converted') AS converted_carts,
+                        COUNT(*) FILTER (WHERE status = 'abandoned') AS abandoned_carts
+                    FROM shopping_carts
+                    WHERE store_id = %s
+                    """,
+                    (store["id"],),
+                )
+                stats = cur.fetchone()
+
+        return render_template(
+            "dashboard/cart.html",
+            store=store,
+            carts=carts,
+            stats=stats,
+        )
+
+    except Exception:
+        flash("Unable to load shopping carts. Please check the database setup.", "danger")
+        return redirect(url_for("main.dashboard"))
+# ============================================================
+# PRODUCT VARIANTS
+# ============================================================
+
+@main_bp.route("/dashboard/variants", methods=["GET", "POST"])
+def dashboard_variants():
+    if "user_id" not in session:
+        return redirect(url_for("main.login"))
+
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT id, name, currency
+                    FROM stores
+                    WHERE owner_id = %s AND is_active = TRUE
+                    ORDER BY id
+                    LIMIT 1
+                    """,
+                    (session["user_id"],),
+                )
+                store = cur.fetchone()
+
+                if not store:
+                    flash("Please create your store first.", "warning")
+                    return redirect(url_for("main.dashboard"))
+
+                if request.method == "POST":
+                    product_id = request.form.get("product_id", type=int)
+                    name = request.form.get("name", "").strip()
+                    sku = request.form.get("sku", "").strip() or None
+                    price = request.form.get("price", type=float)
+                    compare_at_price = request.form.get(
+                        "compare_at_price", type=float
+                    )
+                    cost_price = request.form.get("cost_price", type=float)
+                    stock_quantity = request.form.get(
+                        "stock_quantity", type=int
+                    )
+                    low_stock_threshold = request.form.get(
+                        "low_stock_threshold", default=5, type=int
+                    )
+
+                    if (
+                        not product_id
+                        or not name
+                        or price is None
+                        or price < 0
+                        or stock_quantity is None
+                        or stock_quantity < 0
+                        or low_stock_threshold is None
+                        or low_stock_threshold < 0
+                        or (
+                            compare_at_price is not None
+                            and compare_at_price < 0
+                        )
+                        or (cost_price is not None and cost_price < 0)
+                    ):
+                        flash(
+                            "Enter a product, variant name and valid non-negative prices and stock values.",
+                            "danger",
+                        )
+                    else:
+                        cur.execute(
+                            """
+                            SELECT id
+                            FROM products
+                            WHERE id = %s AND store_id = %s
+                            """,
+                            (product_id, store["id"]),
+                        )
+                        product = cur.fetchone()
+
+                        if not product:
+                            flash("Please select a valid product.", "danger")
+                        else:
+                            cur.execute(
+                                """
+                                INSERT INTO product_variants (
+                                    product_id,
+                                    name,
+                                    sku,
+                                    price,
+                                    compare_at_price,
+                                    cost_price,
+                                    stock_quantity,
+                                    low_stock_threshold
+                                )
+                                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                                """,
+                                (
+                                    product_id,
+                                    name,
+                                    sku,
+                                    price,
+                                    compare_at_price,
+                                    cost_price,
+                                    stock_quantity,
+                                    low_stock_threshold,
+                                ),
+                            )
+                            conn.commit()
+                            flash("Product variant added successfully.", "success")
+                            return redirect(
+                                url_for("main.dashboard_variants")
+                            )
+
+                cur.execute(
+                    """
+                    SELECT id, name, sku
+                    FROM products
+                    WHERE store_id = %s
+                    ORDER BY name
+                    """,
+                    (store["id"],),
+                )
+                products = cur.fetchall()
+
+                cur.execute(
+                    """
+                    SELECT
+                        v.id,
+                        v.name AS variant_name,
+                        v.sku AS variant_sku,
+                        v.price,
+                        v.stock_quantity,
+                        v.low_stock_threshold,
+                        v.is_active,
+                        p.name AS product_name
+                    FROM product_variants v
+                    JOIN products p ON p.id = v.product_id
+                    WHERE p.store_id = %s
+                    ORDER BY v.created_at DESC
+                    """,
+                    (store["id"],),
+                )
+                variants = cur.fetchall()
+
+        return render_template(
+            "dashboard/variants.html",
+            store=store,
+            products=products,
+            variants=variants,
+        )
+
+    except Exception:
+        flash(
+            "Unable to load product variants. Check the database setup.",
+            "danger",
+        )
+        return redirect(url_for("main.dashboard"))
+# ============================================================
+# PRODUCT REVIEWS & RATINGS
+# ============================================================
+
+@main_bp.route("/dashboard/reviews", methods=["GET", "POST"])
+def dashboard_reviews():
+    if "user_id" not in session:
+        return redirect(url_for("main.login"))
+
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT id, name, currency
+                    FROM stores
+                    WHERE owner_id = %s AND is_active = TRUE
+                    ORDER BY id
+                    LIMIT 1
+                    """,
+                    (session["user_id"],),
+                )
+                store = cur.fetchone()
+
+                if not store:
+                    flash("Please create your store first.", "warning")
+                    return redirect(url_for("main.dashboard"))
+
+                if request.method == "POST":
+                    review_id = request.form.get("review_id", type=int)
+                    new_status = request.form.get("status", "").strip()
+
+                    if not review_id or new_status not in (
+                        "approved",
+                        "rejected",
+                        "pending",
+                    ):
+                        flash("Invalid review action.", "danger")
+                    else:
+                        cur.execute(
+                            """
+                            UPDATE product_reviews AS r
+                            SET status = %s, updated_at = CURRENT_TIMESTAMP
+                            FROM products AS p
+                            WHERE r.id = %s
+                              AND r.product_id = p.id
+                              AND p.store_id = %s
+                            RETURNING r.id
+                            """,
+                            (new_status, review_id, store["id"]),
+                        )
+                        updated_review = cur.fetchone()
+
+                        if updated_review:
+                            conn.commit()
+                            flash(
+                                f"Review status updated to {new_status}.",
+                                "success",
+                            )
+                        else:
+                            conn.rollback()
+                            flash("Review not found in your store.", "warning")
+
+                    return redirect(url_for("main.dashboard_reviews"))
+
+                cur.execute(
+                    """
+                    SELECT
+                        r.id,
+                        r.customer_name,
+                        r.customer_email,
+                        r.rating,
+                        r.title,
+                        r.review_text,
+                        r.status,
+                        r.created_at,
+                        p.name AS product_name
+                    FROM product_reviews r
+                    JOIN products p ON p.id = r.product_id
+                    WHERE p.store_id = %s
+                    ORDER BY
+                        CASE r.status
+                            WHEN 'pending' THEN 0
+                            WHEN 'approved' THEN 1
+                            ELSE 2
+                        END,
+                        r.created_at DESC
+                    LIMIT 200
+                    """,
+                    (store["id"],),
+                )
+                reviews = cur.fetchall()
+
+                cur.execute(
+                    """
+                    SELECT
+                        COUNT(*) AS total_reviews,
+                        COUNT(*) FILTER (
+                            WHERE r.status = 'pending'
+                        ) AS pending_reviews,
+                        COUNT(*) FILTER (
+                            WHERE r.status = 'approved'
+                        ) AS approved_reviews,
+                        COALESCE(AVG(r.rating), 0) AS average_rating
+                    FROM product_reviews r
+                    JOIN products p ON p.id = r.product_id
+                    WHERE p.store_id = %s
+                    """,
+                    (store["id"],),
+                )
+                stats = cur.fetchone()
+
+        return render_template(
+            "dashboard/reviews.html",
+            store=store,
+            reviews=reviews,
+            stats=stats,
+        )
+
+    except Exception:
+        flash(
+            "Unable to load reviews. Please check the database setup.",
+            "danger",
+        )
+        return redirect(url_for("main.dashboard"))
+# ============================================================
+# PRODUCT IMAGE GALLERY
+# ============================================================
+
+@main_bp.route("/dashboard/product-images", methods=["GET", "POST"])
+def dashboard_product_images():
+    if "user_id" not in session:
+        return redirect(url_for("main.login"))
+
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT id, name
+                    FROM stores
+                    WHERE owner_id = %s AND is_active = TRUE
+                    ORDER BY id
+                    LIMIT 1
+                    """,
+                    (session["user_id"],),
+                )
+                store = cur.fetchone()
+
+                if not store:
+                    flash("Please create your store first.", "warning")
+                    return redirect(url_for("main.dashboard"))
+
+                if request.method == "POST":
+                    action = request.form.get("action", "add").strip()
+                    product_id = request.form.get("product_id", type=int)
+
+                    cur.execute(
+                        """
+                        SELECT id
+                        FROM products
+                        WHERE id = %s AND store_id = %s
+                        """,
+                        (product_id, store["id"]),
+                    )
+                    product = cur.fetchone()
+
+                    if not product:
+                        flash("Please select a valid product.", "danger")
+                        return redirect(url_for("main.dashboard_product_images"))
+
+                    if action == "delete":
+                        image_id = request.form.get("image_id", type=int)
+
+                        cur.execute(
+                            """
+                            DELETE FROM product_images AS i
+                            USING products AS p
+                            WHERE i.id = %s
+                              AND i.product_id = p.id
+                              AND p.store_id = %s
+                            RETURNING i.id
+                            """,
+                            (image_id, store["id"]),
+                        )
+
+                        if cur.fetchone():
+                            conn.commit()
+                            flash("Product image deleted.", "success")
+                        else:
+                            conn.rollback()
+                            flash("Image not found.", "warning")
+
+                    elif action == "primary":
+                        image_id = request.form.get("image_id", type=int)
+
+                        cur.execute(
+                            """
+                            SELECT i.id
+                            FROM product_images i
+                            JOIN products p ON p.id = i.product_id
+                            WHERE i.id = %s
+                              AND i.product_id = %s
+                              AND p.store_id = %s
+                            """,
+                            (image_id, product_id, store["id"]),
+                        )
+
+                        image = cur.fetchone()
+
+                        if image:
+                            cur.execute(
+                                """
+                                UPDATE product_images
+                                SET is_primary = FALSE
+                                WHERE product_id = %s
+                                """,
+                                (product_id,),
+                            )
+                            cur.execute(
+                                """
+                                UPDATE product_images
+                                SET is_primary = TRUE
+                                WHERE id = %s
+                                """,
+                                (image_id,),
+                            )
+                            conn.commit()
+                            flash("Primary product image updated.", "success")
+                        else:
+                            conn.rollback()
+                            flash("Image not found for this product.", "warning")
+
+                    else:
+                        image_url = request.form.get("image_url", "").strip()
+                        alt_text = request.form.get("alt_text", "").strip()
+                        make_primary = request.form.get("is_primary") == "yes"
+
+                        if not image_url or len(image_url) > 2000:
+                            flash("Enter a valid image URL (maximum 2000 characters).", "danger")
+                            return redirect(url_for("main.dashboard_product_images"))
+
+                        if not image_url.startswith(("https://", "http://")):
+                            flash("Image URL must start with http:// or https://.", "danger")
+                            return redirect(url_for("main.dashboard_product_images"))
+
+                        if len(alt_text) > 255:
+                            flash("Alt text must be 255 characters or fewer.", "danger")
+                            return redirect(url_for("main.dashboard_product_images"))
+
+                        cur.execute(
+                            """
+                            SELECT COUNT(*) AS image_count
+                            FROM product_images
+                            WHERE product_id = %s
+                            """,
+                            (product_id,),
+                        )
+                        image_count = cur.fetchone()["image_count"]
+
+                        if image_count >= 20:
+                            flash("A product can have up to 20 gallery images.", "warning")
+                            return redirect(url_for("main.dashboard_product_images"))
+
+                        cur.execute(
+                            """
+                            SELECT id
+                            FROM product_images
+                            WHERE product_id = %s AND is_primary = TRUE
+                            """,
+                            (product_id,),
+                        )
+                        has_primary = cur.fetchone() is not None
+
+                        if make_primary:
+                            cur.execute(
+                                """
+                                UPDATE product_images
+                                SET is_primary = FALSE
+                                WHERE product_id = %s
+                                """,
+                                (product_id,),
+                            )
+
+                        cur.execute(
+                            """
+                            INSERT INTO product_images
+                                (product_id, image_url, alt_text, is_primary, sort_order)
+                            VALUES (%s, %s, %s, %s, %s)
+                            """,
+                            (
+                                product_id,
+                                image_url,
+                                alt_text or None,
+                                make_primary or not has_primary,
+                                image_count,
+                            ),
+                        )
+                        conn.commit()
+                        flash("Product image added to gallery.", "success")
+
+                    return redirect(url_for("main.dashboard_product_images"))
+
+                cur.execute(
+                    """
+                    SELECT id, name
+                    FROM products
+                    WHERE store_id = %s
+                    ORDER BY name
+                    """,
+                    (store["id"],),
+                )
+                products = cur.fetchall()
+
+                cur.execute(
+                    """
+                    SELECT
+                        i.id,
+                        i.product_id,
+                        i.image_url,
+                        i.alt_text,
+                        i.is_primary,
+                        i.sort_order,
+                        i.created_at,
+                        p.name AS product_name
+                    FROM product_images i
+                    JOIN products p ON p.id = i.product_id
+                    WHERE p.store_id = %s
+                    ORDER BY p.name, i.is_primary DESC, i.sort_order, i.id DESC
+                    """,
+                    (store["id"],),
+                )
+                images = cur.fetchall()
+
+                cur.execute(
+                    """
+                    SELECT
+                        COUNT(*) AS total_images,
+                        COUNT(*) FILTER (WHERE i.is_primary = TRUE) AS primary_images,
+                        COUNT(DISTINCT i.product_id) AS products_with_images
+                    FROM product_images i
+                    JOIN products p ON p.id = i.product_id
+                    WHERE p.store_id = %s
+                    """,
+                    (store["id"],),
+                )
+                stats = cur.fetchone()
+
+        return render_template(
+            "dashboard/product_images.html",
+            store=store,
+            products=products,
+            images=images,
+            stats=stats,
+        )
+
+    except Exception:
+        flash("Unable to load product images. Check the application logs.", "danger")
+        return redirect(url_for("main.dashboard"))
+
+@main_bp.route("/dashboard/content", methods=["GET", "POST"])
+def dashboard_content():
+    if "user_id" not in session:
+        return redirect(url_for("main.login"))
+
+    conn = get_db_connection()
+
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT id, name, currency
+                FROM stores
+                WHERE owner_id = %s AND is_active = TRUE
+                ORDER BY id
+                LIMIT 1
+                """,
+                (session["user_id"],),
+            )
+            store = cur.fetchone()
+
+            if not store:
+                flash("Please create your store before managing content.", "warning")
+                return redirect(url_for("main.dashboard"))
+
+            store_id = store["id"]
+
+            if request.method == "POST":
+                action = request.form.get("action", "").strip()
+                content_id = request.form.get("content_id", type=int)
+
+                if action in ("delete", "publish", "unpublish"):
+                    if not content_id:
+                        flash("Invalid content selected.", "danger")
+                        return redirect(url_for("main.dashboard_content"))
+
+                    if action == "delete":
+                        cur.execute(
+                            """
+                            DELETE FROM store_contents
+                            WHERE id = %s AND store_id = %s
+                            """,
+                            (content_id, store_id),
+                        )
+
+                    else:
+                        status = "published" if action == "publish" else "draft"
+                        cur.execute(
+                            """
+                            UPDATE store_contents
+                            SET status = %s,
+                                published_at = CASE
+                                    WHEN %s = 'published'
+                                    THEN COALESCE(published_at, CURRENT_TIMESTAMP)
+                                    ELSE NULL
+                                END,
+                                updated_at = CURRENT_TIMESTAMP
+                            WHERE id = %s AND store_id = %s
+                            """,
+                            (status, status, content_id, store_id),
+                        )
+
+                    if cur.rowcount:
+                        conn.commit()
+                        flash(
+                            "Content deleted successfully."
+                            if action == "delete"
+                            else "Content status updated successfully.",
+                            "success",
+                        )
+                    else:
+                        conn.rollback()
+                        flash("Content was not found.", "warning")
+
+                    return redirect(url_for("main.dashboard_content"))
+
+                if action in ("create", "update"):
+                    title = request.form.get("title", "").strip()
+                    slug = request.form.get("slug", "").strip().lower()
+                    content_type = request.form.get("content_type", "page").strip()
+                    excerpt = request.form.get("excerpt", "").strip()
+                    body = request.form.get("body", "").strip()
+                    meta_title = request.form.get("meta_title", "").strip()
+                    meta_description = request.form.get("meta_description", "").strip()
+                    status = request.form.get("status", "draft").strip()
+
+                    if not title or not slug:
+                        flash("Title and URL slug are required.", "danger")
+                        return redirect(url_for("main.dashboard_content"))
+
+                    allowed = set("abcdefghijklmnopqrstuvwxyz0123456789-")
+                    if (
+                        any(char not in allowed for char in slug)
+                        or slug.startswith("-")
+                        or slug.endswith("-")
+                        or "--" in slug
+                    ):
+                        flash(
+                            "Slug must use lowercase letters, numbers and single hyphens.",
+                            "danger",
+                        )
+                        return redirect(url_for("main.dashboard_content"))
+
+                    if content_type not in ("page", "blog"):
+                        flash("Invalid content type.", "danger")
+                        return redirect(url_for("main.dashboard_content"))
+
+                    if status not in ("draft", "published"):
+                        status = "draft"
+
+                    if action == "create":
+                        cur.execute(
+                            """
+                            INSERT INTO store_contents (
+                                store_id, content_type, title, slug,
+                                excerpt, body, meta_title, meta_description,
+                                status, published_at
+                            )
+                            VALUES (
+                                %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                                CASE WHEN %s = 'published'
+                                     THEN CURRENT_TIMESTAMP
+                                     ELSE NULL
+                                END
+                            )
+                            """,
+                            (
+                                store_id,
+                                content_type,
+                                title,
+                                slug,
+                                excerpt or None,
+                                body,
+                                meta_title or None,
+                                meta_description or None,
+                                status,
+                                status,
+                            ),
+                        )
+                        conn.commit()
+                        flash("Content created successfully.", "success")
+
+                    else:
+                        if not content_id:
+                            flash("Invalid content selected for editing.", "danger")
+                            return redirect(url_for("main.dashboard_content"))
+
+                        cur.execute(
+                            """
+                            UPDATE store_contents
+                            SET content_type = %s,
+                                title = %s,
+                                slug = %s,
+                                excerpt = %s,
+                                body = %s,
+                                meta_title = %s,
+                                meta_description = %s,
+                                status = %s,
+                                published_at = CASE
+                                    WHEN %s = 'published'
+                                    THEN COALESCE(published_at, CURRENT_TIMESTAMP)
+                                    ELSE NULL
+                                END,
+                                updated_at = CURRENT_TIMESTAMP
+                            WHERE id = %s AND store_id = %s
+                            """,
+                            (
+                                content_type,
+                                title,
+                                slug,
+                                excerpt or None,
+                                body,
+                                meta_title or None,
+                                meta_description or None,
+                                status,
+                                status,
+                                content_id,
+                                store_id,
+                            ),
+                        )
+
+                        if cur.rowcount:
+                            conn.commit()
+                            flash("Content updated successfully.", "success")
+                        else:
+                            conn.rollback()
+                            flash("Content was not found.", "warning")
+
+                    return redirect(url_for("main.dashboard_content"))
+
+                flash("Unknown content action.", "danger")
+                return redirect(url_for("main.dashboard_content"))
+
+            cur.execute(
+                """
+                SELECT
+                    id, content_type, title, slug, excerpt, body,
+                    meta_title, meta_description, status,
+                    published_at, created_at, updated_at
+                FROM store_contents
+                WHERE store_id = %s
+                ORDER BY updated_at DESC, id DESC
+                """,
+                (store_id,),
+            )
+            contents = cur.fetchall()
+
+            cur.execute(
+                """
+                SELECT
+                    COUNT(*) AS total,
+                    COUNT(*) FILTER (WHERE content_type = 'page') AS pages,
+                    COUNT(*) FILTER (WHERE content_type = 'blog') AS blog_posts,
+                    COUNT(*) FILTER (WHERE status = 'published') AS published
+                FROM store_contents
+                WHERE store_id = %s
+                """,
+                (store_id,),
+            )
+            stats = cur.fetchone()
+
+        return render_template(
+            "dashboard/content.html",
+            store=store,
+            contents=contents,
+            stats=stats,
+        )
+
+    except Exception:
+        conn.rollback()
+        current_app.logger.exception("Dashboard content management failed.")
+        flash(
+            "Unable to manage content. Check the application logs for details.",
+            "danger",
+        )
+        return redirect(url_for("main.dashboard"))
+
+    finally:
+        conn.close()
+
+# MARKETS
+@main_bp.route("/dashboard/markets", methods=["GET", "POST"])
+def dashboard_markets():
+    if "user_id" not in session:
+        return redirect(url_for("main.login"))
+
+    conn = get_db_connection()
+
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT id, name, currency
+                FROM stores
+                WHERE owner_id = %s AND is_active = TRUE
+                ORDER BY id
+                LIMIT 1
+                """,
+                (session["user_id"],),
+            )
+            store = cur.fetchone()
+
+            if not store:
+                flash("Please create your store before managing markets.", "warning")
+                return redirect(url_for("main.dashboard"))
+
+            store_id = store["id"]
+
+            if request.method == "POST":
+                name = request.form.get("name", "").strip()
+                countries_raw = request.form.get("countries", "").strip()
+                currency = request.form.get("currency", "USD").strip().upper()
+                status = request.form.get("status", "active").strip().lower()
+                is_primary = request.form.get("is_primary") == "on"
+
+                countries = [
+                    country.strip().upper()
+                    for country in countries_raw.split(",")
+                    if country.strip()
+                ]
+
+                if not name:
+                    flash("Market name is required.", "danger")
+                elif len(currency) != 3 or not currency.isalpha():
+                    flash("Enter a valid three-letter currency code.", "danger")
+                elif status not in ("active", "inactive"):
+                    flash("Select a valid market status.", "danger")
+                else:
+                    try:
+                        if is_primary:
+                            cur.execute(
+                                """
+                                UPDATE store_markets
+                                SET is_primary = FALSE,
+                                    updated_at = CURRENT_TIMESTAMP
+                                WHERE store_id = %s
+                                """,
+                                (store_id,),
+                            )
+
+                        cur.execute(
+                            """
+                            INSERT INTO store_markets
+                                (store_id, name, countries, currency, status, is_primary)
+                            VALUES (%s, %s, %s, %s, %s, %s)
+                            """,
+                            (
+                                store_id,
+                                name,
+                                countries,
+                                currency,
+                                status,
+                                is_primary,
+                            ),
+                        )
+                        conn.commit()
+                        flash("Market created successfully.", "success")
+                        return redirect(url_for("main.dashboard_markets"))
+                    except Exception:
+                        conn.rollback()
+                        current_app.logger.exception("Failed to create market.")
+                        flash(
+                            "Market could not be created. Check whether its name already exists.",
+                            "danger",
+                        )
+
+            cur.execute(
+                """
+                SELECT id, name, countries, currency, status, is_primary,
+                       created_at
+                FROM store_markets
+                WHERE store_id = %s
+                ORDER BY is_primary DESC, created_at DESC, id DESC
+                """,
+                (store_id,),
+            )
+            markets = cur.fetchall()
+
+        return render_template(
+            "dashboard/markets.html",
+            store=store,
+            markets=markets,
+        )
+    finally:
+        conn.close()
+
+# ============================================================
+# GROWTH DASHBOARD
+# ============================================================
+
+@main_bp.route("/dashboard/growth")
+def dashboard_growth():
+    if "user_id" not in session:
+        return redirect(url_for("main.login"))
+
+    period = request.args.get("period", "30").strip()
+    if period not in ("7", "30", "90"):
+        period = "30"
+
+    days = int(period)
+    conn = get_db_connection()
+
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT id, name, currency
+                FROM stores
+                WHERE owner_id = %s AND is_active = TRUE
+                ORDER BY id
+                LIMIT 1
+                """,
+                (session["user_id"],),
+            )
+            store = cur.fetchone()
+
+            if not store:
+                flash(
+                    "Please create your store before viewing Growth.",
+                    "warning",
+                )
+                return redirect(url_for("main.dashboard"))
+
+            store_id = store["id"]
+
+            cur.execute(
+                """
+                SELECT
+                    COUNT(*) AS total_orders,
+                    COALESCE(SUM(total_amount), 0) AS revenue,
+                    COALESCE(AVG(total_amount), 0) AS average_order_value,
+                    COUNT(DISTINCT customer_user_id)
+                        FILTER (WHERE customer_user_id IS NOT NULL)
+                        AS unique_customers
+                FROM orders
+                WHERE store_id = %s
+                  AND created_at >= CURRENT_TIMESTAMP
+                      - (%s * INTERVAL '1 day')
+                """,
+                (store_id, days),
+            )
+            current = cur.fetchone()
+
+            cur.execute(
+                """
+                SELECT
+                    COUNT(*) AS total_orders,
+                    COALESCE(SUM(total_amount), 0) AS revenue,
+                    COUNT(DISTINCT customer_user_id)
+                        FILTER (WHERE customer_user_id IS NOT NULL)
+                        AS unique_customers
+                FROM orders
+                WHERE store_id = %s
+                  AND created_at >= CURRENT_TIMESTAMP
+                      - (%s * INTERVAL '1 day')
+                  AND created_at < CURRENT_TIMESTAMP
+                      - (%s * INTERVAL '1 day')
+                """,
+                (store_id, days * 2, days),
+            )
+            previous = cur.fetchone()
+
+            def growth_rate(now_value, previous_value):
+                now_value = float(now_value or 0)
+                previous_value = float(previous_value or 0)
+
+                if previous_value > 0:
+                    return round(
+                        ((now_value - previous_value) / previous_value) * 100,
+                        1,
+                    )
+
+                if now_value > 0:
+                    return None
+
+                return 0.0
+
+            revenue_growth = growth_rate(
+                current["revenue"], previous["revenue"]
+            )
+            orders_growth = growth_rate(
+                current["total_orders"], previous["total_orders"]
+            )
+            customers_growth = growth_rate(
+                current["unique_customers"], previous["unique_customers"]
+            )
+
+            cur.execute(
+                """
+                SELECT
+                    DATE(created_at) AS order_date,
+                    COUNT(*) AS order_count,
+                    COALESCE(SUM(total_amount), 0) AS revenue
+                FROM orders
+                WHERE store_id = %s
+                  AND created_at >= CURRENT_DATE
+                      - (%s * INTERVAL '1 day')
+                GROUP BY DATE(created_at)
+                ORDER BY order_date
+                """,
+                (store_id, days - 1),
+            )
+            daily_sales = cur.fetchall()
+
+            cur.execute(
+                """
+                SELECT
+                    p.id,
+                    p.name,
+                    COALESCE(SUM(oi.quantity), 0) AS units_sold,
+                    COALESCE(SUM(oi.total_price), 0) AS revenue
+                FROM products p
+                LEFT JOIN order_items oi ON oi.product_id = p.id
+                LEFT JOIN orders o
+                    ON o.id = oi.order_id
+                   AND o.store_id = p.store_id
+                   AND o.created_at >= CURRENT_TIMESTAMP
+                       - (%s * INTERVAL '1 day')
+                WHERE p.store_id = %s
+                GROUP BY p.id, p.name
+                ORDER BY revenue DESC, units_sold DESC
+                LIMIT 5
+                """,
+                (days, store_id),
+            )
+            top_products = cur.fetchall()
+
+            cur.execute(
+                """
+                SELECT
+                    COUNT(*) FILTER (
+                        WHERE stock_quantity > 0
+                          AND stock_quantity <= low_stock_threshold
+                    ) AS low_stock,
+                    COUNT(*) FILTER (
+                        WHERE stock_quantity = 0
+                    ) AS out_of_stock
+                FROM products
+                WHERE store_id = %s
+                """,
+                (store_id,),
+            )
+            inventory = cur.fetchone()
+
+            cur.execute(
+                """
+                SELECT COUNT(*) AS total_products
+                FROM products
+                WHERE store_id = %s
+                """,
+                (store_id,),
+            )
+            product_stats = cur.fetchone()
+
+        return render_template(
+            "dashboard/growth.html",
+            store=store,
+            period=period,
+            current=current,
+            previous=previous,
+            revenue_growth=revenue_growth,
+            orders_growth=orders_growth,
+            customers_growth=customers_growth,
+            daily_sales=daily_sales,
+            top_products=top_products,
+            inventory=inventory,
+            product_stats=product_stats,
+        )
+    finally:
+        conn.close()

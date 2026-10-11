@@ -1,0 +1,120 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Shopping Carts — RicozStore{% endblock %}
+
+{% block content %}
+<style>
+.cart-page{max-width:1450px;margin:auto;color:#20252d}
+.cart-header{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:26px}
+.cart-eyebrow{font-size:11px;letter-spacing:1.8px;font-weight:800;color:#c8171d}
+.cart-header h1{font-size:30px;margin:8px 0}
+.cart-header p{font-size:14px;color:#737b85;margin:0}
+.cart-header-link{background:#e31e24;color:#fff;text-decoration:none;padding:12px 17px;border-radius:10px;font-size:13px;font-weight:750}
+.cart-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:26px}
+.cart-stat{background:#fff;border:1px solid #e8eaee;border-radius:16px;padding:20px;box-shadow:0 5px 18px #20252d07}
+.cart-stat-top{display:flex;align-items:center;justify-content:space-between;color:#727a85;font-size:12px;font-weight:650}
+.cart-stat-icon{width:36px;height:36px;display:grid;place-items:center;border-radius:11px;background:#fff0f0;color:#c8171d;font-size:18px}
+.cart-stat strong{display:block;font-size:29px;margin-top:13px;letter-spacing:-.7px}
+.cart-stat small{display:block;color:#89909a;font-size:11px;margin-top:5px}
+.cart-table-card{background:#fff;border:1px solid #e8eaee;border-radius:17px;overflow:hidden;box-shadow:0 5px 18px #20252d07}
+.cart-table-heading{padding:22px 23px;border-bottom:1px solid #eef0f3}
+.cart-table-heading h2{font-size:18px;margin:0 0 6px}
+.cart-table-heading p{font-size:12px;color:#7a818b;margin:0}
+.cart-table-wrap{overflow-x:auto}
+.cart-table{width:100%;border-collapse:collapse;min-width:760px}
+.cart-table th{text-align:left;padding:14px 19px;background:#fafbfc;color:#777f89;font-size:10px;letter-spacing:.8px;text-transform:uppercase}
+.cart-table td{padding:17px 19px;border-top:1px solid #f0f1f3;font-size:13px}
+.cart-id{font-weight:800;color:#c8171d}
+.cart-status{display:inline-flex;padding:6px 10px;border-radius:20px;font-size:11px;font-weight:750;text-transform:capitalize}
+.cart-status-active{background:#e8f7ee;color:#167745}
+.cart-status-converted{background:#eaf1ff;color:#2759a5}
+.cart-status-abandoned{background:#fff0e8;color:#a74b19}
+.cart-empty{text-align:center;padding:52px 20px}
+.cart-empty-icon{width:58px;height:58px;margin:0 auto 15px;border-radius:18px;background:#fff0f0;color:#c8171d;display:grid;place-items:center;font-size:28px}
+.cart-empty h3{margin:0 0 8px;font-size:17px}
+.cart-empty p{margin:0 auto;max-width:440px;color:#7b828d;font-size:13px;line-height:1.7}
+.cart-note{margin-top:18px;padding:15px 18px;border-radius:12px;background:#f1faf4;border:1px solid #d7efdf;color:#256b43;font-size:12px;line-height:1.7}
+@media(max-width:900px){.cart-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.cart-stats{grid-template-columns:1fr 1fr;gap:10px}.cart-stat{padding:14px}.cart-stat strong{font-size:24px}.cart-header h1{font-size:25px}}
+</style>
+
+<div class="cart-page">
+    <header class="cart-header">
+        <div>
+            <div class="cart-eyebrow">SALES MANAGEMENT</div>
+            <h1>Shopping Carts</h1>
+            <p>Monitor cart activity and understand your customers' shopping journey.</p>
+        </div>
+        <a class="cart-header-link" href="{{ url_for('main.dashboard_commerce') }}">← Ecommerce Center</a>
+    </header>
+
+    <section class="cart-stats">
+        <article class="cart-stat">
+            <div class="cart-stat-top"><span>Total Carts</span><span class="cart-stat-icon">▤</span></div>
+            <strong>{{ stats.total_carts or 0 }}</strong>
+            <small>All recorded shopping carts</small>
+        </article>
+        <article class="cart-stat">
+            <div class="cart-stat-top"><span>Active Carts</span><span class="cart-stat-icon">🛒</span></div>
+            <strong>{{ stats.active_carts or 0 }}</strong>
+            <small>Currently active carts</small>
+        </article>
+        <article class="cart-stat">
+            <div class="cart-stat-top"><span>Converted</span><span class="cart-stat-icon">✓</span></div>
+            <strong>{{ stats.converted_carts or 0 }}</strong>
+            <small>Carts marked as converted</small>
+        </article>
+        <article class="cart-stat">
+            <div class="cart-stat-top"><span>Abandoned</span><span class="cart-stat-icon">↗</span></div>
+            <strong>{{ stats.abandoned_carts or 0 }}</strong>
+            <small>Carts marked as abandoned</small>
+        </article>
+    </section>
+
+    <section class="cart-table-card">
+        <div class="cart-table-heading">
+            <h2>Cart Activity</h2>
+            <p>Latest cart records for {{ store.name }}</p>
+        </div>
+
+        {% if carts %}
+        <div class="cart-table-wrap">
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>Cart ID</th>
+                        <th>Status</th>
+                        <th>Products</th>
+                        <th>Total Quantity</th>
+                        <th>Subtotal</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cart in carts %}
+                    <tr>
+                        <td class="cart-id">#{{ cart.cart_id }}</td>
+                        <td><span class="cart-status cart-status-{{ cart.status }}">{{ cart.status }}</span></td>
+                        <td>{{ cart.item_count }}</td>
+                        <td>{{ cart.total_quantity }}</td>
+                        <td>{{ store.currency }} {{ "%.2f"|format(cart.subtotal or 0) }}</td>
+                        <td>{{ cart.created_at.strftime("%d %b %Y") if cart.created_at else "—" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="cart-empty">
+            <div class="cart-empty-icon">🛒</div>
+            <h3>No shopping carts yet</h3>
+            <p>Cart records will appear here when customers begin adding products to their shopping carts.</p>
+        </div>
+        {% endif %}
+    </section>
+
+    <div class="cart-note">
+        <strong>Next integration:</strong> The cart management dashboard is ready to display database records. Customer-facing Add to Cart, quantity updates, removal and checkout still need to be connected.
+    </div>
+</div>
+{% endblock %}

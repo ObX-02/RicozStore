@@ -1,0 +1,96 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Ecommerce Center — RicozStore{% endblock %}
+
+{% block content %}
+<style>
+.commerce-page{max-width:1450px;margin:0 auto;color:#20252d}
+.commerce-hero{position:relative;overflow:hidden;padding:32px;border-radius:22px;background:linear-gradient(120deg,#a9141c,#e31e24 58%,#f04a40);color:#fff;margin-bottom:28px;box-shadow:0 14px 35px #c8171d20}
+.commerce-hero:after{content:"";position:absolute;width:230px;height:230px;border:36px solid #ffffff18;border-radius:50%;right:-50px;top:-95px;pointer-events:none}
+.commerce-eyebrow{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;opacity:.85}
+.commerce-hero h1{font-size:clamp(27px,4vw,38px);margin:12px 0 10px;color:#fff}
+.commerce-hero p{max-width:650px;line-height:1.7;margin:0;color:#fff;opacity:.94}
+.commerce-hero-link{display:inline-flex;margin-top:22px;background:#fff;color:#bd1720;text-decoration:none;font-weight:750;padding:12px 18px;border-radius:10px;transition:transform .2s}
+.commerce-hero-link:hover{transform:translateY(-2px)}
+.commerce-section-heading{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:30px 0 16px;flex-wrap:wrap}
+.commerce-section-heading h2{font-size:21px;margin:0 0 5px}
+.commerce-section-heading p{margin:0;color:#747b85;font-size:13px}
+.commerce-feature-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
+.commerce-feature-card{display:flex;flex-direction:column;min-height:210px;padding:21px;background:#fff;border:1px solid #e9ebef;border-radius:17px;box-shadow:0 5px 18px #20252d08;transition:transform .2s,border-color .2s,box-shadow .2s}
+.commerce-feature-card:hover{transform:translateY(-3px);border-color:#f0a4a7;box-shadow:0 12px 26px #20252d10}
+.commerce-card-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.commerce-icon{width:45px;height:45px;display:grid;place-items:center;border-radius:13px;background:#fff0f0;color:#c8171d;font-size:24px;font-weight:700;flex-shrink:0}
+.commerce-category{font-size:10px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:#68717e;background:#f3f5f7;border-radius:20px;padding:7px 9px}
+.commerce-feature-card h3{font-size:17px;margin:19px 0 8px}
+.commerce-feature-card p{font-size:13px;line-height:1.7;color:#727984;margin:0 0 20px}
+.commerce-card-footer{margin-top:auto;padding-top:13px;border-top:1px solid #f0f1f3;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.commerce-status{font-size:11px;font-weight:700;color:#737b85}
+.commerce-status-ready{color:#16804a}
+.commerce-card-footer a{font-size:12px;font-weight:800;color:#c8171d;text-decoration:none}
+.commerce-card-footer a:hover{text-decoration:underline}
+.commerce-note{margin-top:24px;padding:17px 19px;background:#f0faf4;border:1px solid #d5efdf;border-radius:13px;color:#236b43;font-size:13px;line-height:1.7}
+@media(max-width:1050px){.commerce-feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.commerce-hero{padding:23px}.commerce-feature-grid{grid-template-columns:1fr}.commerce-feature-card{min-height:190px}.commerce-section-heading h2{font-size:19px}}
+</style>
+
+<div class="commerce-page">
+    <section class="commerce-hero">
+        <div class="commerce-eyebrow">RicozStore · Commerce Platform</div>
+        <h1>Grow your store. Sell smarter.</h1>
+        <p>Manage your ecommerce experience from one place — product catalog, shopping journey, customer growth, marketing and business analytics.</p>
+        <a class="commerce-hero-link" href="{{ url_for('main.dashboard_storefront') }}">Open Storefront &nbsp; →</a>
+    </section>
+
+    <div class="commerce-section-heading">
+        <div>
+            <h2>Ecommerce Center</h2>
+            <p>Explore your store management tools and commerce features.</p>
+        </div>
+    </div>
+
+    <div class="commerce-feature-grid">
+        {% for feature in features %}
+        <article class="commerce-feature-card">
+            <div class="commerce-card-top">
+                <div class="commerce-icon">{{ feature.icon }}</div>
+                <span class="commerce-category">{{ feature.category }}</span>
+            </div>
+
+            <h3>{{ feature.title }}</h3>
+            <p>{{ feature.description }}</p>
+
+            <div class="commerce-card-footer">
+                <span class="commerce-status {% if feature.status in ['Database ready', 'Ready'] %}commerce-status-ready{% endif %}">
+                    {{ feature.status }}
+                </span>
+
+                {% if feature.title == "Product Variants" %}
+                    <a href="{{ url_for('main.dashboard_variants') }}">Manage Variants →</a>
+                {% elif feature.title == "Product Reviews" %}
+                    <a href="{{ url_for('main.dashboard_reviews') }}">Manage Reviews →</a>
+                {% elif feature.title == "Product Image Gallery" %}
+                    <a href="{{ url_for('main.dashboard_product_images') }}">Manage Images →</a>
+                {% elif feature.title == "Shopping Cart" %}
+                    <span class="commerce-status">Feature planned</span>
+                {% elif feature.title == "Sales Performance" %}
+                    <a href="{{ url_for('main.dashboard_analytics') }}">View Analytics →</a>
+                {% elif feature.title == "Customer Segments" %}
+                    <a href="{{ url_for('main.dashboard_customers') }}">View Customers →</a>
+                {% elif feature.title == "SEO Manager" %}
+                    <a href="{{ url_for('main.dashboard_storefront') }}">Manage Store →</a>
+                {% elif feature.title == "Shipping & Delivery" %}
+                    <a href="{{ url_for('main.dashboard_settings') }}">Store Settings →</a>
+                {% else %}
+                    <span class="commerce-status">Feature planned</span>
+                {% endif %}
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    <div class="commerce-note">
+        <strong>Commerce tools:</strong>
+        Product Variants, Reviews & Ratings, and Product Image Gallery have dedicated management pages. More store, checkout, marketing and growth workflows can be connected as they are implemented.
+    </div>
+</div>
+{% endblock %}

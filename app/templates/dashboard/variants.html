@@ -1,0 +1,167 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Product Variants — RicozStore{% endblock %}
+
+{% block content %}
+<style>
+.variants-page{max-width:1450px;margin:auto;color:#20252d}
+.variants-header{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:25px}
+.variants-eyebrow{font-size:11px;font-weight:800;letter-spacing:1.7px;color:#c8171d}
+.variants-header h1{font-size:29px;margin:8px 0}
+.variants-header p{font-size:13px;color:#737b85;margin:0}
+.variants-back{display:inline-flex;padding:11px 15px;background:#fff;border:1px solid #e6e8ec;border-radius:10px;color:#454b55;text-decoration:none;font-size:12px;font-weight:750}
+.variants-layout{display:grid;grid-template-columns:minmax(290px,.85fr) minmax(0,1.5fr);gap:20px;align-items:start}
+.variants-card{background:#fff;border:1px solid #e7e9ed;border-radius:17px;overflow:hidden;box-shadow:0 5px 18px #20252d08}
+.variants-card-heading{padding:21px 22px;border-bottom:1px solid #eff0f3}
+.variants-card-heading h2{font-size:17px;margin:0 0 6px}
+.variants-card-heading p{font-size:12px;color:#777f89;margin:0;line-height:1.6}
+.variants-form{padding:22px}
+.variants-form label{display:block;font-size:12px;font-weight:750;color:#424852;margin:0 0 7px}
+.variants-form input,.variants-form select{width:100%;min-width:0;box-sizing:border-box;border:1px solid #dfe2e7;border-radius:9px;padding:11px 12px;font-size:13px;background:#fff;color:#272c34;outline:none}
+.variants-form input:focus,.variants-form select:focus{border-color:#e31e24;box-shadow:0 0 0 3px #e31e2412}
+.variants-field{margin-bottom:16px}
+.variants-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.variants-submit{width:100%;border:0;border-radius:10px;padding:13px;background:linear-gradient(110deg,#c8171d,#ed3036);color:#fff;font-weight:800;font-size:13px;cursor:pointer;margin-top:4px}
+.variants-submit:hover{filter:brightness(.96)}
+.variants-table-wrap{overflow-x:auto}
+.variants-table{width:100%;border-collapse:collapse;min-width:570px}
+.variants-table th{text-align:left;background:#fafbfc;color:#7b828c;padding:14px;font-size:10px;letter-spacing:.6px;text-transform:uppercase}
+.variants-table td{padding:15px 14px;border-top:1px solid #f0f1f3;font-size:12px}
+.variants-product{font-weight:750;color:#292e37}
+.variants-name{display:block;color:#7c838d;font-size:11px;margin-top:5px}
+.variants-price{font-weight:800;white-space:nowrap}
+.variants-stock{display:inline-flex;padding:6px 9px;border-radius:20px;background:#eaf8ef;color:#187746;font-size:11px;font-weight:750}
+.variants-low{background:#fff0e8;color:#a74b19}
+.variants-empty{text-align:center;padding:38px 18px;color:#7b828d;font-size:13px;line-height:1.7}
+.variants-tip{margin-top:20px;padding:16px 18px;border-radius:12px;background:#f0faf4;border:1px solid #d5efdf;color:#256b43;font-size:12px;line-height:1.7}
+@media(max-width:950px){.variants-layout{grid-template-columns:1fr}}
+@media(max-width:520px){.variants-header h1{font-size:25px}.variants-two{gap:9px}.variants-form{padding:16px}}
+</style>
+
+<div class="variants-page">
+    <header class="variants-header">
+        <div>
+            <div class="variants-eyebrow">PRODUCT CATALOG</div>
+            <h1>Product Variants</h1>
+            <p>Manage product options, individual prices, SKUs and stock levels.</p>
+        </div>
+        <a class="variants-back" href="{{ url_for('main.dashboard_commerce') }}">← Ecommerce Center</a>
+    </header>
+
+    <div class="variants-layout">
+        <section class="variants-card">
+            <div class="variants-card-heading">
+                <h2>Add a Variant</h2>
+                <p>Create a separate option such as Red / Medium or Black / Large.</p>
+            </div>
+
+            {% if products %}
+            <form class="variants-form" method="POST" action="{{ url_for('main.dashboard_variants') }}">
+                <div class="variants-field">
+                    <label for="product_id">Product *</label>
+                    <select id="product_id" name="product_id" required>
+                        <option value="">Select a product</option>
+                        {% for product in products %}
+                        <option value="{{ product.id }}">{{ product.name }}{% if product.sku %} — {{ product.sku }}{% endif %}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="variants-field">
+                    <label for="name">Variant Name *</label>
+                    <input id="name" name="name" type="text" maxlength="200" placeholder="e.g. Red / Medium" required>
+                </div>
+
+                <div class="variants-field">
+                    <label for="sku">Variant SKU</label>
+                    <input id="sku" name="sku" type="text" maxlength="100" placeholder="e.g. TSHIRT-RED-M">
+                </div>
+
+                <div class="variants-two">
+                    <div class="variants-field">
+                        <label for="price">Price ({{ store.currency }}) *</label>
+                        <input id="price" name="price" type="number" min="0" step="0.01" placeholder="0.00" required>
+                    </div>
+                    <div class="variants-field">
+                        <label for="compare_at_price">Compare-at Price</label>
+                        <input id="compare_at_price" name="compare_at_price" type="number" min="0" step="0.01" placeholder="Optional">
+                    </div>
+                </div>
+
+                <div class="variants-field">
+                    <label for="cost_price">Cost Price ({{ store.currency }})</label>
+                    <input id="cost_price" name="cost_price" type="number" min="0" step="0.01" placeholder="Optional">
+                </div>
+
+                <div class="variants-two">
+                    <div class="variants-field">
+                        <label for="stock_quantity">Stock Quantity *</label>
+                        <input id="stock_quantity" name="stock_quantity" type="number" min="0" step="1" value="0" required>
+                    </div>
+                    <div class="variants-field">
+                        <label for="low_stock_threshold">Low Stock Alert</label>
+                        <input id="low_stock_threshold" name="low_stock_threshold" type="number" min="0" step="1" value="5" required>
+                    </div>
+                </div>
+
+                <button class="variants-submit" type="submit">+ Save Product Variant</button>
+            </form>
+            {% else %}
+            <div class="variants-empty">
+                <strong>No products available</strong><br>
+                Create a product first, then you can add variants to it.
+                <p><a href="{{ url_for('main.dashboard_products') }}">Open Products →</a></p>
+            </div>
+            {% endif %}
+        </section>
+
+        <section class="variants-card">
+            <div class="variants-card-heading">
+                <h2>Saved Variants</h2>
+                <p>Product options currently registered in {{ store.name }}.</p>
+            </div>
+
+            {% if variants %}
+            <div class="variants-table-wrap">
+                <table class="variants-table">
+                    <thead>
+                        <tr>
+                            <th>Product / Variant</th>
+                            <th>SKU</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for variant in variants %}
+                        <tr>
+                            <td>
+                                <span class="variants-product">{{ variant.product_name }}</span>
+                                <span class="variants-name">{{ variant.variant_name }}</span>
+                            </td>
+                            <td>{{ variant.variant_sku or "—" }}</td>
+                            <td class="variants-price">{{ store.currency }} {{ "%.2f"|format(variant.price) }}</td>
+                            <td>
+                                <span class="variants-stock {% if variant.stock_quantity <= variant.low_stock_threshold %}variants-low{% endif %}">
+                                    {{ variant.stock_quantity }} units
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="variants-empty">
+                <strong>No variants created yet</strong><br>
+                Use the form to add your first product option.
+            </div>
+            {% endif %}
+        </section>
+    </div>
+
+    <div class="variants-tip">
+        <strong>Inventory tip:</strong> Each variant stores its own SKU, price and stock quantity. For example, a T-shirt can have separate Red / Medium and Black / Large variants.
+    </div>
+</div>
+{% endblock %}

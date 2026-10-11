@@ -1,0 +1,402 @@
+
+{% extends "dashboard/base.html" %}
+
+{% block title %}Content Management | RicozStore{% endblock %}
+
+{% block content %}
+
+<div class="content-manager">
+
+    <section class="content-hero">
+        <div class="content-hero-copy">
+            <span class="content-eyebrow">RICOZSTORE • STORE CONTENT</span>
+            <h1>Content Management</h1>
+            <p>Create store pages, publish blog articles, and manage your content and SEO metadata from one workspace.</p>
+        </div>
+
+        <div class="content-hero-icon">✦</div>
+    </section>
+
+    <section class="content-stats">
+
+        <article class="content-stat-card">
+            <span class="content-stat-icon red">▤</span>
+            <div>
+                <span>Total Content</span>
+                <strong>{{ stats.total or 0 }}</strong>
+            </div>
+        </article>
+
+        <article class="content-stat-card">
+            <span class="content-stat-icon green">▧</span>
+            <div>
+                <span>Store Pages</span>
+                <strong>{{ stats.pages or 0 }}</strong>
+            </div>
+        </article>
+
+        <article class="content-stat-card">
+            <span class="content-stat-icon orange">✎</span>
+            <div>
+                <span>Blog Posts</span>
+                <strong>{{ stats.blog_posts or 0 }}</strong>
+            </div>
+        </article>
+
+        <article class="content-stat-card">
+            <span class="content-stat-icon red">✓</span>
+            <div>
+                <span>Published</span>
+                <strong>{{ stats.published or 0 }}</strong>
+            </div>
+        </article>
+
+    </section>
+
+    <section class="content-workspace">
+
+        <div class="content-section-heading">
+            <div>
+                <h2>Create Content</h2>
+                <p>Add a store page or write a new blog post.</p>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('main.dashboard_content') }}" class="content-editor-form">
+
+            <input type="hidden" name="action" value="create">
+
+            <div class="content-form-grid">
+
+                <div class="content-field">
+                    <label for="contentType">Content Type</label>
+                    <select id="contentType" name="content_type" required>
+                        <option value="page">Store Page</option>
+                        <option value="blog">Blog Post</option>
+                    </select>
+                </div>
+
+                <div class="content-field">
+                    <label for="contentStatus">Publishing Status</label>
+                    <select id="contentStatus" name="status" required>
+                        <option value="draft">Save as Draft</option>
+                        <option value="published">Publish Now</option>
+                    </select>
+                </div>
+
+                <div class="content-field content-field-full">
+                    <label for="contentTitle">Title</label>
+                    <input
+                        id="contentTitle"
+                        name="title"
+                        type="text"
+                        maxlength="200"
+                        placeholder="e.g. About Our Store"
+                        required
+                    >
+                </div>
+
+                <div class="content-field content-field-full">
+                    <label for="contentSlug">URL Slug</label>
+                    <div class="content-slug-input">
+                        <span>/</span>
+                        <input
+                            id="contentSlug"
+                            name="slug"
+                            type="text"
+                            maxlength="220"
+                            placeholder="about-our-store"
+                            pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                            title="Use lowercase letters, numbers and single hyphens."
+                            required
+                        >
+                    </div>
+                    <small>Use lowercase letters, numbers and hyphens only.</small>
+                </div>
+
+                <div class="content-field content-field-full">
+                    <label for="contentExcerpt">Short Description</label>
+                    <textarea
+                        id="contentExcerpt"
+                        name="excerpt"
+                        rows="2"
+                        placeholder="A short summary for your page or blog article."
+                    ></textarea>
+                </div>
+
+                <div class="content-field content-field-full">
+                    <label for="contentBody">Content Body</label>
+                    <textarea
+                        id="contentBody"
+                        name="body"
+                        rows="8"
+                        placeholder="Write your page content or blog article here..."
+                    ></textarea>
+                    <small>Plain text content is supported in this editor.</small>
+                </div>
+
+                <div class="content-field content-field-full">
+                    <label for="metaTitle">SEO Meta Title</label>
+                    <input
+                        id="metaTitle"
+                        name="meta_title"
+                        type="text"
+                        maxlength="200"
+                        placeholder="SEO title for search engines"
+                    >
+                </div>
+
+                <div class="content-field content-field-full">
+                    <label for="metaDescription">SEO Meta Description</label>
+                    <textarea
+                        id="metaDescription"
+                        name="meta_description"
+                        rows="3"
+                        maxlength="320"
+                        placeholder="Describe this page for search engine results."
+                    ></textarea>
+                </div>
+
+            </div>
+
+            <div class="content-form-footer">
+                <span>Content will be saved to {{ store.name }}.</span>
+                <button type="submit" class="content-primary-button">
+                    + Create Content
+                </button>
+            </div>
+
+        </form>
+
+    </section>
+
+    <section class="content-workspace content-library">
+
+        <div class="content-section-heading">
+            <div>
+                <h2>Content Library</h2>
+                <p>Review your pages and articles and manage their publishing status.</p>
+            </div>
+
+            <span class="content-library-count">{{ contents|length }} items</span>
+        </div>
+
+        {% if contents %}
+
+            <div class="content-table-wrap">
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Last Updated</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for item in contents %}
+                            <tr>
+                                <td>
+                                    <div class="content-title-cell">
+                                        <strong>{{ item.title }}</strong>
+                                        <span>/{{ item.slug }}</span>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="content-type-badge {{ item.content_type }}">
+                                        {% if item.content_type == 'blog' %}Blog Post{% else %}Store Page{% endif %}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="content-status-badge {{ item.status }}">
+                                        {{ item.status|title }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="content-date">
+                                        {% if item.updated_at %}
+                                            {{ item.updated_at.strftime("%d %b %Y") }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="content-row-actions">
+
+                                        <button
+                                            type="button"
+                                            class="content-action-button edit"
+                                            onclick="editContent(
+                                                {{ item.id|tojson }},
+                                                {{ item.content_type|tojson }},
+                                                {{ item.title|tojson }},
+                                                {{ item.slug|tojson }},
+                                                {{ (item.excerpt or '')|tojson }},
+                                                {{ (item.body or '')|tojson }},
+                                                {{ (item.meta_title or '')|tojson }},
+                                                {{ (item.meta_description or '')|tojson }},
+                                                {{ item.status|tojson }}
+                                            )"
+                                        >
+                                            Edit
+                                        </button>
+
+                                        <form method="POST" action="{{ url_for('main.dashboard_content') }}">
+                                            <input type="hidden" name="action" value="{% if item.status == 'published' %}unpublish{% else %}publish{% endif %}">
+                                            <input type="hidden" name="content_id" value="{{ item.id }}">
+
+                                            <button type="submit" class="content-action-button publish">
+                                                {% if item.status == 'published' %}Unpublish{% else %}Publish{% endif %}
+                                            </button>
+                                        </form>
+
+                                        <form
+                                            method="POST"
+                                            action="{{ url_for('main.dashboard_content') }}"
+                                            onsubmit="return confirm('Delete this content permanently?');"
+                                        >
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="content_id" value="{{ item.id }}">
+
+                                            <button type="submit" class="content-action-button delete">
+                                                Delete
+                                            </button>
+                                        </form>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        {% else %}
+
+            <div class="content-empty-state">
+                <div class="content-empty-icon">▤</div>
+                <h3>Your content library is ready</h3>
+                <p>Create your first store page or blog post using the form above.</p>
+            </div>
+
+        {% endif %}
+
+    </section>
+
+    <section class="content-workspace content-edit-workspace" id="editContentSection" hidden>
+
+        <div class="content-section-heading">
+            <div>
+                <h2>Edit Content</h2>
+                <p>Update your selected page or blog article.</p>
+            </div>
+
+            <button type="button" class="content-close-button" onclick="closeContentEditor()" aria-label="Close editor">×</button>
+        </div>
+
+        <form method="POST" action="{{ url_for('main.dashboard_content') }}" class="content-editor-form">
+
+            <input type="hidden" name="action" value="update">
+            <input type="hidden" name="content_id" id="editContentId">
+
+            <div class="content-form-grid">
+
+                <div class="content-field">
+                    <label for="editContentType">Content Type</label>
+                    <select id="editContentType" name="content_type" required>
+                        <option value="page">Store Page</option>
+                        <option value="blog">Blog Post</option>
+                    </select>
+                </div>
+
+                <div class="content-field">
+                    <label for="editContentStatus">Publishing Status</label>
+                    <select id="editContentStatus" name="status" required>
+                        <option value="draft">Draft</option>
+                        <option value="published">Published</option>
+                    </select>
+                </div>
+
+                <div class="content-field content-field-full">
+                    <label for="editContentTitle">Title</label>
+                    <input id="editContentTitle" name="title" type="text" maxlength="200" required>
+                </div>
+
+                <div class="content-field content-field-full">
+                    <label for="editContentSlug">URL Slug</label>
+                    <div class="content-slug-input">
+                        <span>/</span>
+                        <input
+                            id="editContentSlug"
+                            name="slug"
+                            type="text"
+                            maxlength="220"
+                            pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="content-field content-field-full">
+                    <label for="editContentExcerpt">Short Description</label>
+                    <textarea id="editContentExcerpt" name="excerpt" rows="2"></textarea>
+                </div>
+
+                <div class="content-field content-field-full">
+                    <label for="editContentBody">Content Body</label>
+                    <textarea id="editContentBody" name="body" rows="8"></textarea>
+                </div>
+
+                <div class="content-field content-field-full">
+                    <label for="editMetaTitle">SEO Meta Title</label>
+                    <input id="editMetaTitle" name="meta_title" type="text" maxlength="200">
+                </div>
+
+                <div class="content-field content-field-full">
+                    <label for="editMetaDescription">SEO Meta Description</label>
+                    <textarea id="editMetaDescription" name="meta_description" rows="3" maxlength="320"></textarea>
+                </div>
+
+            </div>
+
+            <div class="content-form-footer">
+                <span>Changes will be saved to this store.</span>
+                <button type="submit" class="content-primary-button">Save Changes</button>
+            </div>
+
+        </form>
+
+    </section>
+
+</div>
+
+<script>
+function editContent(id, type, title, slug, excerpt, body, metaTitle, metaDescription, status) {
+    document.getElementById("editContentId").value = id;
+    document.getElementById("editContentType").value = type;
+    document.getElementById("editContentTitle").value = title;
+    document.getElementById("editContentSlug").value = slug;
+    document.getElementById("editContentExcerpt").value = excerpt;
+    document.getElementById("editContentBody").value = body;
+    document.getElementById("editMetaTitle").value = metaTitle;
+    document.getElementById("editMetaDescription").value = metaDescription;
+    document.getElementById("editContentStatus").value = status;
+
+    const section = document.getElementById("editContentSection");
+    section.hidden = false;
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function closeContentEditor() {
+    document.getElementById("editContentSection").hidden = true;
+}
+</script>
+
+{% endblock %}

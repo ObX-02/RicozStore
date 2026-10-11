@@ -1,0 +1,212 @@
+
+{% extends "dashboard/base.html" %}
+
+{% block title %}Markets | RicozStore{% endblock %}
+
+{% block content %}
+<div class="markets-page">
+
+    <section class="markets-hero">
+        <div class="markets-hero-copy">
+            <span class="markets-eyebrow">GLOBAL COMMERCE</span>
+            <h1>Markets</h1>
+            <p>Manage the countries, currencies and regions where your store does business.</p>
+            <div class="markets-hero-meta">
+                <span><i></i> Store: {{ store.name }}</span>
+                <span><i></i> {{ markets|length }} market{% if markets|length != 1 %}s{% endif %}</span>
+            </div>
+        </div>
+        <div class="markets-hero-art" aria-hidden="true">
+            <div class="markets-globe">◎</div>
+            <span class="markets-orbit markets-orbit-one"></span>
+            <span class="markets-orbit markets-orbit-two"></span>
+            <span class="markets-art-dot markets-dot-one"></span>
+            <span class="markets-art-dot markets-dot-two"></span>
+        </div>
+    </section>
+
+    <section class="markets-summary">
+        <article class="markets-stat-card">
+            <span class="markets-stat-icon markets-icon-red">◎</span>
+            <div>
+                <span class="markets-stat-label">Total Markets</span>
+                <strong>{{ markets|length }}</strong>
+                <small>Configured for your store</small>
+            </div>
+        </article>
+
+        <article class="markets-stat-card">
+            <span class="markets-stat-icon markets-icon-green">✓</span>
+            <div>
+                <span class="markets-stat-label">Active Markets</span>
+                <strong>{{ markets|selectattr('status', 'equalto', 'active')|list|length }}</strong>
+                <small>Currently enabled</small>
+            </div>
+        </article>
+
+        <article class="markets-stat-card">
+            <span class="markets-stat-icon markets-icon-orange">¤</span>
+            <div>
+                <span class="markets-stat-label">Currencies</span>
+                <strong>{{ markets|map(attribute='currency')|unique|list|length }}</strong>
+                <small>Distinct currency codes</small>
+            </div>
+        </article>
+    </section>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="markets-flash-list">
+                {% for category, message in messages %}
+                    <div class="markets-flash markets-flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <section class="markets-workspace">
+        <div class="markets-section-heading">
+            <div>
+                <span class="markets-section-kicker">MARKET CONFIGURATION</span>
+                <h2>Create a market</h2>
+                <p>Set a market name, its countries and the currency you want to use.</p>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('main.dashboard_markets') }}" class="markets-form">
+            <div class="markets-form-grid">
+                <div class="markets-field">
+                    <label for="market-name">Market name <span>*</span></label>
+                    <input id="market-name" type="text" name="name" placeholder="e.g. Pakistan, United States" maxlength="120" required>
+                    <small>Choose a recognizable name for this market.</small>
+                </div>
+
+                <div class="markets-field">
+                    <label for="market-currency">Currency code <span>*</span></label>
+                    <select id="market-currency" name="currency" required>
+                        <option value="PKR" {% if store.currency == 'PKR' %}selected{% endif %}>PKR — Pakistani Rupee</option>
+                        <option value="USD" {% if store.currency == 'USD' %}selected{% endif %}>USD — US Dollar</option>
+                        <option value="GBP" {% if store.currency == 'GBP' %}selected{% endif %}>GBP — British Pound</option>
+                        <option value="EUR" {% if store.currency == 'EUR' %}selected{% endif %}>EUR — Euro</option>
+                        <option value="AED" {% if store.currency == 'AED' %}selected{% endif %}>AED — UAE Dirham</option>
+                        <option value="SAR" {% if store.currency == 'SAR' %}selected{% endif %}>SAR — Saudi Riyal</option>
+                        <option value="CAD" {% if store.currency == 'CAD' %}selected{% endif %}>CAD — Canadian Dollar</option>
+                        <option value="AUD" {% if store.currency == 'AUD' %}selected{% endif %}>AUD — Australian Dollar</option>
+                        <option value="INR" {% if store.currency == 'INR' %}selected{% endif %}>INR — Indian Rupee</option>
+                        <option value="BDT" {% if store.currency == 'BDT' %}selected{% endif %}>BDT — Bangladeshi Taka</option>
+                        <option value="TRY" {% if store.currency == 'TRY' %}selected{% endif %}>TRY — Turkish Lira</option>
+                        <option value="MYR" {% if store.currency == 'MYR' %}selected{% endif %}>MYR — Malaysian Ringgit</option>
+                    </select>
+                    <small>Select the currency for this market.</small>
+                </div>
+
+                <div class="markets-field markets-field-full">
+                    <label for="market-countries">Countries or regions</label>
+                    <input id="market-countries" type="text" name="countries" placeholder="PK, AE, SA, GB">
+                    <small>Enter ISO two-letter country codes separated by commas, for example PK, AE, GB.</small>
+                </div>
+
+                <div class="markets-field">
+                    <label for="market-status">Market status</label>
+                    <select id="market-status" name="status">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                    <small>Inactive markets remain saved but disabled.</small>
+                </div>
+
+                <label class="markets-primary-option">
+                    <input type="checkbox" name="is_primary">
+                    <span class="markets-checkbox-custom"></span>
+                    <span>
+                        <strong>Set as primary market</strong>
+                        <small>Use this as the main market for your store configuration.</small>
+                    </span>
+                </label>
+            </div>
+
+            <div class="markets-form-footer">
+                <span>Fields marked * are required.</span>
+                <button type="submit" class="markets-submit-btn">
+                    <span>+</span> Create Market
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <section class="markets-list-section">
+        <div class="markets-section-heading markets-list-heading">
+            <div>
+                <span class="markets-section-kicker">YOUR GLOBAL REACH</span>
+                <h2>Configured markets</h2>
+                <p>Review the markets currently saved for this store.</p>
+            </div>
+            <span class="markets-count-pill">{{ markets|length }} total</span>
+        </div>
+
+        {% if markets %}
+            <div class="markets-table-wrap">
+                <table class="markets-table">
+                    <thead>
+                        <tr>
+                            <th>Market</th>
+                            <th>Countries / Regions</th>
+                            <th>Currency</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for market in markets %}
+                            <tr>
+                                <td>
+                                    <div class="markets-name-cell">
+                                        <span class="markets-country-icon">◎</span>
+                                        <div>
+                                            <strong>{{ market.name }}</strong>
+                                            {% if market.is_primary %}
+                                                <span class="markets-primary-badge">Primary</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if market.countries %}
+                                        <div class="markets-country-list">
+                                            {% for country in market.countries %}
+                                                <span>{{ country }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <span class="markets-muted">No countries specified</span>
+                                    {% endif %}
+                                </td>
+                                <td><span class="markets-currency-badge">{{ market.currency }}</span></td>
+                                <td>
+                                    <span class="markets-status markets-status-{{ market.status }}">
+                                        <i></i>{{ market.status|capitalize }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="markets-empty-state">
+                <div class="markets-empty-icon">◎</div>
+                <h3>No markets configured yet</h3>
+                <p>Create your first market above to start organizing your store's international selling settings.</p>
+            </div>
+        {% endif %}
+    </section>
+
+    <section class="markets-note">
+        <span class="markets-note-icon">i</span>
+        <div>
+            <strong>Important to know</strong>
+            <p>Creating a market saves its configuration in RicozStore. Country-specific storefronts, localized product prices, tax rules and shipping availability require their own integrations and are not activated automatically by this page.</p>
+        </div>
+    </section>
+
+</div>
+{% endblock %}

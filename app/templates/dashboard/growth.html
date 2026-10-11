@@ -1,0 +1,270 @@
+
+{% extends "dashboard/base.html" %}
+
+{% block title %}Growth | RicozStore{% endblock %}
+
+{% block content %}
+<div class="growth-page">
+
+    <section class="growth-hero">
+        <div class="growth-hero-content">
+            <span class="growth-eyebrow">RICOZSTORE BUSINESS INTELLIGENCE</span>
+            <h1>Grow your business.</h1>
+            <p>Understand your sales momentum, discover your best-performing products and find opportunities to improve your store.</p>
+
+            <div class="growth-hero-meta">
+                <span><i></i> {{ store.name }}</span>
+                <span><i></i> Last {{ period }} days</span>
+            </div>
+        </div>
+
+        <div class="growth-hero-visual" aria-hidden="true">
+            <div class="growth-chart-art">
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                <div class="growth-chart-line"></div>
+                <div class="growth-chart-arrow">↗</div>
+            </div>
+            <div class="growth-orbit growth-orbit-one"></div>
+            <div class="growth-orbit growth-orbit-two"></div>
+        </div>
+    </section>
+
+    <section class="growth-toolbar">
+        <div>
+            <h2>Growth overview</h2>
+            <p>Compare your current performance with the previous period.</p>
+        </div>
+
+        <form method="GET" action="{{ url_for('main.dashboard_growth') }}" class="growth-period-form">
+            <label for="growth-period">Reporting period</label>
+            <select id="growth-period" name="period" onchange="this.form.submit()">
+                <option value="7" {% if period == '7' %}selected{% endif %}>Last 7 days</option>
+                <option value="30" {% if period == '30' %}selected{% endif %}>Last 30 days</option>
+                <option value="90" {% if period == '90' %}selected{% endif %}>Last 90 days</option>
+            </select>
+        </form>
+    </section>
+
+    <section class="growth-metrics">
+        <article class="growth-metric-card growth-revenue-card">
+            <div class="growth-metric-top">
+                <span class="growth-metric-label">Total Revenue</span>
+                <span class="growth-metric-icon">↗</span>
+            </div>
+            <strong class="growth-metric-value">{{ store.currency }} {{ "{:,.2f}".format(current.revenue|float) }}</strong>
+            <div class="growth-metric-bottom">
+                {% if revenue_growth is not none %}
+                    <span class="growth-change {% if revenue_growth > 0 %}growth-positive{% elif revenue_growth < 0 %}growth-negative{% else %}growth-neutral{% endif %}">
+                        {% if revenue_growth > 0 %}+{% endif %}{{ revenue_growth }}%
+                    </span>
+                {% else %}
+                    <span class="growth-change growth-neutral">New activity</span>
+                {% endif %}
+                <span>vs previous period</span>
+            </div>
+        </article>
+
+        <article class="growth-metric-card">
+            <div class="growth-metric-top">
+                <span class="growth-metric-label">Orders</span>
+                <span class="growth-metric-icon growth-icon-green">▤</span>
+            </div>
+            <strong class="growth-metric-value">{{ current.total_orders }}</strong>
+            <div class="growth-metric-bottom">
+                {% if orders_growth is not none %}
+                    <span class="growth-change {% if orders_growth > 0 %}growth-positive{% elif orders_growth < 0 %}growth-negative{% else %}growth-neutral{% endif %}">
+                        {% if orders_growth > 0 %}+{% endif %}{{ orders_growth }}%
+                    </span>
+                {% else %}
+                    <span class="growth-change growth-neutral">New activity</span>
+                {% endif %}
+                <span>vs previous period</span>
+            </div>
+        </article>
+
+        <article class="growth-metric-card">
+            <div class="growth-metric-top">
+                <span class="growth-metric-label">Unique Customers</span>
+                <span class="growth-metric-icon growth-icon-orange">♙</span>
+            </div>
+            <strong class="growth-metric-value">{{ current.unique_customers }}</strong>
+            <div class="growth-metric-bottom">
+                {% if customers_growth is not none %}
+                    <span class="growth-change {% if customers_growth > 0 %}growth-positive{% elif customers_growth < 0 %}growth-negative{% else %}growth-neutral{% endif %}">
+                        {% if customers_growth > 0 %}+{% endif %}{{ customers_growth }}%
+                    </span>
+                {% else %}
+                    <span class="growth-change growth-neutral">New activity</span>
+                {% endif %}
+                <span>vs previous period</span>
+            </div>
+        </article>
+
+        <article class="growth-metric-card">
+            <div class="growth-metric-top">
+                <span class="growth-metric-label">Average Order Value</span>
+                <span class="growth-metric-icon growth-icon-purple">¤</span>
+            </div>
+            <strong class="growth-metric-value">{{ store.currency }} {{ "{:,.2f}".format(current.average_order_value|float) }}</strong>
+            <div class="growth-metric-bottom">
+                <span class="growth-metric-note">Revenue per order</span>
+            </div>
+        </article>
+    </section>
+
+    <section class="growth-main-grid">
+
+        <article class="growth-panel growth-sales-panel">
+            <div class="growth-panel-heading">
+                <div>
+                    <span class="growth-panel-kicker">PERFORMANCE</span>
+                    <h2>Sales momentum</h2>
+                    <p>Daily revenue from orders in the selected period.</p>
+                </div>
+                <span class="growth-panel-symbol">↗</span>
+            </div>
+
+            {% if daily_sales %}
+                <div class="growth-sales-chart">
+                    {% set max_revenue = daily_sales|map(attribute='revenue')|map('float')|max %}
+                    {% for day in daily_sales %}
+                        {% set amount = day.revenue|float %}
+                        {% if max_revenue > 0 %}
+                            {% set bar_height = (amount / max_revenue * 100)|int %}
+                        {% else %}
+                            {% set bar_height = 0 %}
+                        {% endif %}
+                        <div class="growth-bar-column" title="{{ day.order_date }}: {{ store.currency }} {{ '{:,.2f}'.format(amount) }}">
+                            <div class="growth-bar-track">
+                                <div class="growth-bar {% if loop.last %}growth-bar-latest{% endif %}" style="height: {{ [bar_height, 3]|max }}%"></div>
+                            </div>
+                            <span class="growth-bar-label">
+                                {% if loop.first or loop.last or loop.index0 % 5 == 0 %}
+                                    {{ day.order_date.strftime('%d %b') }}
+                                {% else %}
+                                    ·
+                                {% endif %}
+                            </span>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="growth-chart-footer">
+                    <span><i></i> Daily revenue</span>
+                    <span>{{ daily_sales|length }} days with recorded orders</span>
+                </div>
+            {% else %}
+                <div class="growth-empty-chart">
+                    <div class="growth-empty-symbol">↗</div>
+                    <h3>No sales activity yet</h3>
+                    <p>Revenue trends will appear here when orders are recorded in this period.</p>
+                </div>
+            {% endif %}
+        </article>
+
+        <article class="growth-panel growth-opportunities-panel">
+            <div class="growth-panel-heading">
+                <div>
+                    <span class="growth-panel-kicker">ACTION CENTER</span>
+                    <h2>Growth opportunities</h2>
+                    <p>Operational areas that may need attention.</p>
+                </div>
+                <span class="growth-panel-symbol growth-symbol-green">✦</span>
+            </div>
+
+            <div class="growth-opportunity">
+                <div class="growth-opportunity-icon growth-opportunity-red">!</div>
+                <div class="growth-opportunity-copy">
+                    <strong>Out-of-stock products</strong>
+                    <p>{{ inventory.out_of_stock }} products currently have no stock.</p>
+                </div>
+                <span class="growth-opportunity-count">{{ inventory.out_of_stock }}</span>
+            </div>
+
+            <div class="growth-opportunity">
+                <div class="growth-opportunity-icon growth-opportunity-orange">◷</div>
+                <div class="growth-opportunity-copy">
+                    <strong>Low inventory</strong>
+                    <p>{{ inventory.low_stock }} products are at or below their low-stock threshold.</p>
+                </div>
+                <span class="growth-opportunity-count">{{ inventory.low_stock }}</span>
+            </div>
+
+            <div class="growth-opportunity">
+                <div class="growth-opportunity-icon growth-opportunity-green">✦</div>
+                <div class="growth-opportunity-copy">
+                    <strong>Product catalog</strong>
+                    <p>{{ product_stats.total_products }} products are listed in your store.</p>
+                </div>
+                <span class="growth-opportunity-count">{{ product_stats.total_products }}</span>
+            </div>
+
+            <a href="{{ url_for('main.dashboard_inventory') }}" class="growth-action-link">
+                Review inventory <span>→</span>
+            </a>
+        </article>
+
+    </section>
+
+    <section class="growth-panel growth-products-panel">
+        <div class="growth-panel-heading growth-products-heading">
+            <div>
+                <span class="growth-panel-kicker">PRODUCT PERFORMANCE</span>
+                <h2>Top products</h2>
+                <p>Products ranked by recorded revenue in the selected period.</p>
+            </div>
+            <a href="{{ url_for('main.dashboard_products') }}" class="growth-view-link">View products →</a>
+        </div>
+
+        {% if top_products %}
+            <div class="growth-table-wrap">
+                <table class="growth-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Units sold</th>
+                            <th>Revenue</th>
+                            <th>Performance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in top_products %}
+                            <tr>
+                                <td>
+                                    <div class="growth-product-name">
+                                        <span class="growth-product-number">{{ "%02d"|format(loop.index) }}</span>
+                                        <strong>{{ product.name }}</strong>
+                                    </div>
+                                </td>
+                                <td>{{ product.units_sold }}</td>
+                                <td class="growth-product-revenue">{{ store.currency }} {{ "{:,.2f}".format(product.revenue|float) }}</td>
+                                <td>
+                                    {% if loop.first %}
+                                        <span class="growth-product-tag growth-tag-best">Top ranked</span>
+                                    {% elif product.units_sold|int > 0 %}
+                                        <span class="growth-product-tag growth-tag-active">Selling</span>
+                                    {% else %}
+                                        <span class="growth-product-tag growth-tag-quiet">No recorded sales</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="growth-empty-products">
+                <h3>No products to analyze</h3>
+                <p>Add products to your store to begin reviewing product performance.</p>
+                <a href="{{ url_for('main.dashboard_products') }}">Open product catalog →</a>
+            </div>
+        {% endif %}
+    </section>
+
+    <section class="growth-footer-note">
+        <span class="growth-footer-note-icon">i</span>
+        <p>Growth insights are calculated from recorded orders and product inventory. Customer counts include only orders linked to a customer account. Store visits, conversion rates, customer acquisition costs and marketing attribution require additional tracking integrations.</p>
+    </section>
+
+</div>
+{% endblock %}

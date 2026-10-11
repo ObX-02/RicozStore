@@ -32,42 +32,34 @@ Products | RicozStore
                 <div class="products-hero-stats">
 
                     <div class="hero-stat">
-
                         <strong>
                             {{ products|length }}
                         </strong>
-
                         <span>
-                            Total Products
+                            Matching Products
                         </span>
-
                     </div>
 
                     <div class="hero-stat-divider"></div>
 
                     <div class="hero-stat">
-
                         <strong>
                             {{ products|selectattr("is_published", "equalto", true)|list|length }}
                         </strong>
-
                         <span>
                             Published
                         </span>
-
                     </div>
 
                 </div>
 
             </div>
 
-
             <div class="products-hero-action">
 
                 <div class="catalog-visual">
 
                     <div class="visual-card visual-card-back"></div>
-
                     <div class="visual-card visual-card-middle"></div>
 
                     <div class="visual-card visual-card-front">
@@ -75,10 +67,8 @@ Products | RicozStore
                         <div class="visual-product-image"></div>
 
                         <div class="visual-product-info">
-
                             <span></span>
                             <span></span>
-
                         </div>
 
                     </div>
@@ -94,45 +84,216 @@ Products | RicozStore
 
     <section class="products-toolbar-section">
 
-        <div class="products-toolbar">
+        <form
+            method="GET"
+            action="{{ url_for('main.dashboard_products') }}"
+            class="products-filters-form"
+        >
 
-            <div class="products-search">
+            <div class="products-toolbar">
 
-                <span class="search-icon">
-                    ⌕
-                </span>
+                <div class="products-search">
 
-                <input
-                    type="search"
-                    id="productSearch"
-                    placeholder="Search products by name, SKU or brand..."
-                    autocomplete="off"
-                >
+                    <span class="search-icon">
+                        ⌕
+                    </span>
+
+                    <input
+                        type="search"
+                        id="productSearch"
+                        name="search"
+                        value="{{ search or '' }}"
+                        placeholder="Search products by name, SKU or brand..."
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <div class="products-toolbar-right">
+
+                    <span class="products-total">
+
+                        {{ products|length }}
+
+                        product{% if products|length != 1 %}s{% endif %}
+
+                    </span>
+
+                    <a
+                        href="{{ url_for('main.create_product') }}"
+                        class="products-add-button"
+                    >
+
+                        <span>+</span>
+
+                        Add Product
+
+                    </a>
+
+                </div>
 
             </div>
 
 
-            <div class="products-toolbar-right">
+            <div class="products-filter-panel">
 
-                <span class="products-total">
+                <div class="products-filter-header">
 
-                    {{ products|length }}
+                    <div>
 
-                    product{% if products|length != 1 %}s{% endif %}
+                        <strong>
+                            Catalog Filters
+                        </strong>
 
-                </span>
+                        <span>
+                            Refine products by category, status and price.
+                        </span>
 
-                <a
-                    href="{{ url_for('main.create_product') }}"
-                    class="products-add-button"
-                >
-                    <span>+</span>
-                    Add Product
-                </a>
+                    </div>
+
+                    {% if search or selected_category or selected_status or min_price is not none or max_price is not none %}
+
+                        <a
+                            href="{{ url_for('main.dashboard_products') }}"
+                            class="products-clear-filters"
+                        >
+                            Clear all filters
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="products-filter-grid">
+
+                    <div class="product-filter-field">
+
+                        <label for="categoryFilter">
+                            Category
+                        </label>
+
+                        <select
+                            id="categoryFilter"
+                            name="category_id"
+                        >
+
+                            <option value="">
+                                All Categories
+                            </option>
+
+                            {% for category in categories %}
+
+                                <option
+                                    value="{{ category.id }}"
+                                    {% if selected_category == category.id %}selected{% endif %}
+                                >
+                                    {{ category.name }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="product-filter-field">
+
+                        <label for="statusFilter">
+                            Status
+                        </label>
+
+                        <select
+                            id="statusFilter"
+                            name="status"
+                        >
+
+                            <option value="">
+                                All Statuses
+                            </option>
+
+                            <option
+                                value="Published"
+                                {% if selected_status == "Published" %}selected{% endif %}
+                            >
+                                Published
+                            </option>
+
+                            <option
+                                value="Active"
+                                {% if selected_status == "Active" %}selected{% endif %}
+                            >
+                                Active
+                            </option>
+
+                            <option
+                                value="Draft"
+                                {% if selected_status == "Draft" %}selected{% endif %}
+                            >
+                                Draft
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="product-filter-field">
+
+                        <label for="minPrice">
+                            Minimum Price
+                        </label>
+
+                        <input
+                            type="number"
+                            id="minPrice"
+                            name="min_price"
+                            value="{{ min_price if min_price is not none else '' }}"
+                            min="0"
+                            step="0.01"
+                            placeholder="0.00"
+                        >
+
+                    </div>
+
+
+                    <div class="product-filter-field">
+
+                        <label for="maxPrice">
+                            Maximum Price
+                        </label>
+
+                        <input
+                            type="number"
+                            id="maxPrice"
+                            name="max_price"
+                            value="{{ max_price if max_price is not none else '' }}"
+                            min="0"
+                            step="0.01"
+                            placeholder="999999.00"
+                        >
+
+                    </div>
+
+
+                    <div class="product-filter-actions">
+
+                        <button
+                            type="submit"
+                            class="products-filter-button"
+                        >
+                            Apply Filters
+                        </button>
+
+                    </div>
+
+                </div>
 
             </div>
 
-        </div>
+        </form>
 
     </section>
 
@@ -155,6 +316,40 @@ Products | RicozStore
 
                 </div>
 
+                <div class="products-filter-summary">
+
+                    {% if search %}
+                        <span>
+                            Search: "{{ search }}"
+                        </span>
+                    {% endif %}
+
+                    {% if selected_category %}
+
+                        {% for category in categories %}
+
+                            {% if category.id == selected_category %}
+
+                                <span>
+                                    Category: {{ category.name }}
+                                </span>
+
+                            {% endif %}
+
+                        {% endfor %}
+
+                    {% endif %}
+
+                    {% if selected_status %}
+
+                        <span>
+                            Status: {{ selected_status }}
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
             </div>
 
 
@@ -172,6 +367,10 @@ Products | RicozStore
 
                             <th>
                                 SKU
+                            </th>
+
+                            <th>
+                                Category
                             </th>
 
                             <th>
@@ -205,12 +404,7 @@ Products | RicozStore
 
                             <tr
                                 class="product-row"
-                                data-search="
-                                    {{ product.name|default('', true)|lower }}
-                                    {{ product.sku|default('', true)|lower }}
-                                    {{ product.brand|default('', true)|lower }}
-                                    {{ product.status|default('', true)|lower }}
-                                "
+                                data-search="{{ product.name|default('', true)|lower }} {{ product.sku|default('', true)|lower }} {{ product.brand|default('', true)|lower }} {{ product.status|default('', true)|lower }}"
                             >
 
                                 <td>
@@ -277,6 +471,25 @@ Products | RicozStore
 
                                         <span class="product-muted">
                                             —
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if product.category_name %}
+
+                                        <span class="product-category">
+                                            {{ product.category_name }}
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="product-muted">
+                                            Uncategorised
                                         </span>
 
                                     {% endif %}
@@ -454,32 +667,57 @@ Products | RicozStore
 
                 <div class="empty-state-content">
 
-                    <div class="page-eyebrow">
-                        YOUR CATALOG
-                    </div>
+                    {% if search or selected_category or selected_status or min_price is not none or max_price is not none %}
 
-                    <h2>
-                        Your product catalog starts here
-                    </h2>
+                        <div class="page-eyebrow">
+                            NO MATCHES
+                        </div>
 
-                    <p>
-                        Add your first product to start building your
-                        RicozStore catalog. You can manage pricing,
-                        inventory, categories and publishing from here.
-                    </p>
+                        <h2>
+                            No products match your filters
+                        </h2>
 
-                    <a
-                        href="{{ url_for('main.create_product') }}"
-                        class="products-add-button large"
-                    >
+                        <p>
+                            Try changing your search, category, status or price range.
+                        </p>
 
-                        <span>
-                            +
-                        </span>
+                        <a
+                            href="{{ url_for('main.dashboard_products') }}"
+                            class="products-add-button large"
+                        >
+                            Clear Filters
+                        </a>
 
-                        Create Your First Product
+                    {% else %}
 
-                    </a>
+                        <div class="page-eyebrow">
+                            YOUR CATALOG
+                        </div>
+
+                        <h2>
+                            Your product catalog starts here
+                        </h2>
+
+                        <p>
+                            Add your first product to start building your
+                            RicozStore catalog. You can manage pricing,
+                            inventory, categories and publishing from here.
+                        </p>
+
+                        <a
+                            href="{{ url_for('main.create_product') }}"
+                            class="products-add-button large"
+                        >
+
+                            <span>
+                                +
+                            </span>
+
+                            Create Your First Product
+
+                        </a>
+
+                    {% endif %}
 
                 </div>
 

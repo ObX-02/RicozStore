@@ -1,0 +1,169 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Product Reviews — RicozStore{% endblock %}
+
+{% block content %}
+<style>
+.reviews-page{max-width:1450px;margin:auto;color:#20252d}
+.reviews-header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:25px}
+.reviews-eyebrow{font-size:11px;font-weight:800;letter-spacing:1.7px;color:#c8171d}
+.reviews-header h1{font-size:29px;margin:8px 0}
+.reviews-header p{font-size:13px;color:#737b85;margin:0}
+.reviews-back{display:inline-flex;padding:11px 15px;background:#fff;border:1px solid #e6e8ec;border-radius:10px;color:#454b55;text-decoration:none;font-size:12px;font-weight:750}
+.reviews-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:23px}
+.reviews-stat{background:#fff;border:1px solid #e8eaee;border-radius:15px;padding:19px;box-shadow:0 5px 18px #20252d07}
+.reviews-stat-label{font-size:12px;font-weight:650;color:#747c86}
+.reviews-stat-value{display:block;font-size:29px;font-weight:800;letter-spacing:-.7px;margin-top:12px}
+.reviews-stat-note{display:block;font-size:11px;color:#8a919b;margin-top:5px}
+.reviews-star{color:#e5a313}
+.reviews-panel{background:#fff;border:1px solid #e8eaee;border-radius:17px;overflow:hidden;box-shadow:0 5px 18px #20252d07}
+.reviews-panel-head{padding:21px 23px;border-bottom:1px solid #eff0f3}
+.reviews-panel-head h2{font-size:18px;margin:0 0 5px}
+.reviews-panel-head p{font-size:12px;color:#7b828c;margin:0}
+.reviews-list{display:flex;flex-direction:column}
+.review-item{padding:22px 23px;border-bottom:1px solid #f0f1f3}
+.review-item:last-child{border-bottom:0}
+.review-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.review-customer{font-size:14px;font-weight:800}
+.review-email{display:block;font-size:11px;color:#858c96;margin-top:5px;overflow-wrap:anywhere}
+.review-product{display:inline-block;margin-top:9px;padding:6px 9px;background:#f4f5f7;border-radius:7px;font-size:11px;color:#515965;font-weight:700}
+.review-rating{font-size:16px;letter-spacing:2px;margin-top:12px}
+.review-rating .empty-star{color:#d9dde2}
+.review-title{font-size:14px;font-weight:800;margin:12px 0 7px}
+.review-text{font-size:13px;line-height:1.75;color:#666f7a;white-space:pre-wrap;overflow-wrap:anywhere}
+.review-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:15px}
+.review-status{display:inline-flex;padding:6px 10px;border-radius:20px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px}
+.review-status-pending{background:#fff4d8;color:#956300}
+.review-status-approved{background:#e8f7ee;color:#167745}
+.review-status-rejected{background:#fff0e8;color:#a74b19}
+.review-date{font-size:11px;color:#8a919b}
+.review-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:17px}
+.review-actions button{border:0;border-radius:8px;padding:9px 13px;font-size:11px;font-weight:800;cursor:pointer}
+.review-approve{background:#e8f7ee;color:#167745}
+.review-reject{background:#fff0e8;color:#a74b19}
+.review-pending{background:#f0f2f5;color:#535d69}
+.review-actions button:hover{filter:brightness(.97)}
+.reviews-empty{text-align:center;padding:48px 20px}
+.reviews-empty-mark{width:57px;height:57px;display:grid;place-items:center;margin:0 auto 15px;border-radius:17px;background:#fff0f0;color:#c8171d;font-size:26px}
+.reviews-empty h3{font-size:17px;margin:0 0 8px}
+.reviews-empty p{font-size:13px;line-height:1.7;color:#7b828c;margin:0}
+.reviews-note{margin-top:20px;padding:15px 18px;border-radius:12px;background:#f0faf4;border:1px solid #d5efdf;color:#256b43;font-size:12px;line-height:1.7}
+@media(max-width:950px){.reviews-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.reviews-header h1{font-size:25px}.reviews-stats{gap:10px}.reviews-stat{padding:14px}.reviews-stat-value{font-size:24px}.review-item{padding:18px}}
+</style>
+
+<div class="reviews-page">
+    <header class="reviews-header">
+        <div>
+            <div class="reviews-eyebrow">CUSTOMER EXPERIENCE</div>
+            <h1>Product Reviews</h1>
+            <p>Review customer feedback, moderate ratings and manage product reputation.</p>
+        </div>
+        <a class="reviews-back" href="{{ url_for('main.dashboard_commerce') }}">← Ecommerce Center</a>
+    </header>
+
+    <section class="reviews-stats">
+        <article class="reviews-stat">
+            <span class="reviews-stat-label">Total Reviews</span>
+            <strong class="reviews-stat-value">{{ stats.total_reviews or 0 }}</strong>
+            <span class="reviews-stat-note">Reviews received by your store</span>
+        </article>
+        <article class="reviews-stat">
+            <span class="reviews-stat-label">Pending Review</span>
+            <strong class="reviews-stat-value">{{ stats.pending_reviews or 0 }}</strong>
+            <span class="reviews-stat-note">Awaiting moderation</span>
+        </article>
+        <article class="reviews-stat">
+            <span class="reviews-stat-label">Approved</span>
+            <strong class="reviews-stat-value">{{ stats.approved_reviews or 0 }}</strong>
+            <span class="reviews-stat-note">Approved customer feedback</span>
+        </article>
+        <article class="reviews-stat">
+            <span class="reviews-stat-label">Average Rating</span>
+            <strong class="reviews-stat-value"><span class="reviews-star">★</span> {{ "%.1f"|format(stats.average_rating or 0) }}</strong>
+            <span class="reviews-stat-note">Out of 5 stars</span>
+        </article>
+    </section>
+
+    <section class="reviews-panel">
+        <div class="reviews-panel-head">
+            <h2>Customer Feedback</h2>
+            <p>Showing the latest reviews for {{ store.name }} (up to 200 records).</p>
+        </div>
+
+        {% if reviews %}
+        <div class="reviews-list">
+            {% for review in reviews %}
+            <article class="review-item">
+                <div class="review-top">
+                    <div>
+                        <div class="review-customer">{{ review.customer_name }}</div>
+                        {% if review.customer_email %}
+                        <span class="review-email">{{ review.customer_email }}</span>
+                        {% endif %}
+                        <span class="review-product">{{ review.product_name }}</span>
+                    </div>
+
+                    <span class="review-status review-status-{{ review.status }}">
+                        {{ review.status }}
+                    </span>
+                </div>
+
+                <div class="review-rating" aria-label="{{ review.rating }} out of 5 stars">
+                    <span>{{ "★" * review.rating }}</span><span class="empty-star">{{ "☆" * (5 - review.rating) }}</span>
+                </div>
+
+                {% if review.title %}
+                <div class="review-title">{{ review.title }}</div>
+                {% endif %}
+
+                <div class="review-text">{{ review.review_text }}</div>
+
+                <div class="review-meta">
+                    <span class="review-date">
+                        {{ review.created_at.strftime("%d %b %Y, %I:%M %p") if review.created_at else "Date unavailable" }}
+                    </span>
+                </div>
+
+                <div class="review-actions">
+                    {% if review.status != "approved" %}
+                    <form method="POST" action="{{ url_for('main.dashboard_reviews') }}">
+                        <input type="hidden" name="review_id" value="{{ review.id }}">
+                        <input type="hidden" name="status" value="approved">
+                        <button class="review-approve" type="submit">✓ Approve Review</button>
+                    </form>
+                    {% endif %}
+
+                    {% if review.status != "rejected" %}
+                    <form method="POST" action="{{ url_for('main.dashboard_reviews') }}">
+                        <input type="hidden" name="review_id" value="{{ review.id }}">
+                        <input type="hidden" name="status" value="rejected">
+                        <button class="review-reject" type="submit">Reject Review</button>
+                    </form>
+                    {% endif %}
+
+                    {% if review.status != "pending" %}
+                    <form method="POST" action="{{ url_for('main.dashboard_reviews') }}">
+                        <input type="hidden" name="review_id" value="{{ review.id }}">
+                        <input type="hidden" name="status" value="pending">
+                        <button class="review-pending" type="submit">Mark Pending</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="reviews-empty">
+            <div class="reviews-empty-mark">★</div>
+            <h3>No reviews yet</h3>
+            <p>Customer reviews will appear here when review records are submitted for your products.</p>
+        </div>
+        {% endif %}
+    </section>
+
+    <div class="reviews-note">
+        <strong>Moderation:</strong> Approve genuine feedback before publishing it to customers. This dashboard currently manages review records; a customer-facing review submission form will be connected separately.
+    </div>
+</div>
+{% endblock %}

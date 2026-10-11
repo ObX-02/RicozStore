@@ -1,0 +1,268 @@
+
+{% extends "marketing/base.html" %}
+
+{% block title %}RicozStore Blog — Insights, Ideas & Growth{% endblock %}
+
+{% block extra_css %}
+<style>
+.blog-page {
+    background: #fff;
+    color: #202124;
+    min-height: 100vh;
+}
+.blog-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 90px 24px 80px;
+    background: linear-gradient(125deg, #fff5f5 0%, #fff 55%, #effaf2 100%);
+    border-bottom: 1px solid #f1e3e3;
+}
+.blog-hero-inner, .blog-container {
+    max-width: 1180px;
+    margin: 0 auto;
+}
+.blog-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 13px;
+    background: #ffe8e8;
+    color: #c8171d;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.3px;
+}
+.blog-hero h1 {
+    max-width: 800px;
+    margin: 24px 0 18px;
+    font-size: clamp(38px, 6vw, 68px);
+    line-height: 1.08;
+    letter-spacing: -2px;
+    font-weight: 850;
+}
+.blog-hero h1 span { color: #e31e24; }
+.blog-hero p {
+    max-width: 650px;
+    margin: 0;
+    color: #62666d;
+    font-size: 18px;
+    line-height: 1.8;
+}
+.blog-main { padding: 64px 24px 90px; }
+.blog-section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+.blog-section-heading h2 {
+    margin: 0 0 8px;
+    font-size: clamp(26px, 4vw, 36px);
+    letter-spacing: -1px;
+}
+.blog-section-heading p { margin: 0; color: #747780; }
+.blog-post-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+}
+.blog-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #eee5e5;
+    border-radius: 20px;
+    box-shadow: 0 10px 35px rgba(45, 20, 20, .055);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+.blog-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 18px 42px rgba(45, 20, 20, .1);
+}
+.blog-card-banner {
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e31e24, #a90f16);
+    color: white;
+    font-size: 45px;
+    font-weight: 900;
+    letter-spacing: -2px;
+}
+.blog-card:nth-child(3n + 2) .blog-card-banner {
+    background: linear-gradient(135deg, #168447, #075d30);
+}
+.blog-card:nth-child(3n) .blog-card-banner {
+    background: linear-gradient(135deg, #292d38, #505969);
+}
+.blog-card-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 25px;
+}
+.blog-card-meta {
+    margin-bottom: 13px;
+    color: #c8171d;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .7px;
+    text-transform: uppercase;
+}
+.blog-card h3 {
+    margin: 0 0 12px;
+    font-size: 22px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+.blog-card p {
+    margin: 0 0 22px;
+    color: #696d75;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+}
+.blog-read-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    margin-top: auto;
+    color: #c8171d;
+    font-weight: 800;
+    text-decoration: none;
+}
+.blog-read-link:hover { color: #8e1015; }
+.blog-empty {
+    padding: 55px 25px;
+    text-align: center;
+    background: #fffafa;
+    border: 1px dashed #e7b9b9;
+    border-radius: 20px;
+}
+.blog-empty-mark {
+    width: 65px;
+    height: 65px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 18px;
+    border-radius: 18px;
+    background: #ffe8e8;
+    color: #c8171d;
+    font-size: 27px;
+    font-weight: 900;
+}
+.blog-empty h3 { margin: 0 0 10px; font-size: 24px; }
+.blog-empty p {
+    max-width: 520px;
+    margin: 0 auto;
+    color: #737780;
+    line-height: 1.7;
+}
+.blog-cta {
+    margin-top: 55px;
+    padding: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 22px;
+    border-radius: 22px;
+    background: linear-gradient(120deg, #c8171d, #e83238);
+    color: white;
+}
+.blog-cta h2 { margin: 0 0 8px; font-size: 28px; }
+.blog-cta p { margin: 0; color: #ffe4e4; line-height: 1.7; }
+.blog-cta a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 13px 21px;
+    border-radius: 10px;
+    background: #fff;
+    color: #b51218;
+    font-weight: 800;
+    text-decoration: none;
+}
+@media (max-width: 900px) {
+    .blog-post-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .blog-hero { padding-top: 65px; }
+}
+@media (max-width: 600px) {
+    .blog-post-grid { grid-template-columns: 1fr; }
+    .blog-main { padding: 42px 18px 60px; }
+    .blog-hero { padding: 55px 18px; }
+    .blog-hero h1 { letter-spacing: -1px; }
+    .blog-cta { padding: 26px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="blog-page">
+    <section class="blog-hero">
+        <div class="blog-hero-inner">
+            <span class="blog-eyebrow">THE RICOZSTORE JOURNAL</span>
+            <h1>Ideas that help you <span>sell smarter.</span></h1>
+            <p>
+                Practical insights, ecommerce strategies, product tips and
+                growth ideas to help you build a better online business.
+            </p>
+        </div>
+    </section>
+
+    <section class="blog-main">
+        <div class="blog-container">
+            <div class="blog-section-heading">
+                <div>
+                    <h2>Latest articles</h2>
+                    <p>Explore ideas and insights from RicozStore.</p>
+                </div>
+            </div>
+
+            {% if posts %}
+                <div class="blog-post-grid">
+                    {% for post in posts %}
+                        <article class="blog-card">
+                            <div class="blog-card-banner" aria-hidden="true">R.</div>
+                            <div class="blog-card-body">
+                                <div class="blog-card-meta">
+                                    {{ post.published_at.strftime('%b %d, %Y') if post.published_at else 'RicozStore Insights' }}
+                                </div>
+                                <h3>{{ post.title }}</h3>
+                                <p>{{ post.excerpt or (post.body | striptags | truncate(150, True, '…')) }}</p>
+                                <a class="blog-read-link"
+                                   href="{{ url_for('main.public_blog_post', content_id=post.id, slug=post.slug) }}">
+                                    Read article <span aria-hidden="true">→</span>
+                                </a>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="blog-empty">
+                    <div class="blog-empty-mark">R.</div>
+                    <h3>Fresh ideas are on the way</h3>
+                    <p>
+                        Our team is preparing useful ecommerce guides and business
+                        insights. Please check back soon for the latest articles.
+                    </p>
+                </div>
+            {% endif %}
+
+            <section class="blog-cta">
+                <div>
+                    <h2>Ready to grow your online store?</h2>
+                    <p>Explore the tools that help you build, manage and grow your business.</p>
+                </div>
+                <a href="{{ url_for('main.signup') }}">Get started <span aria-hidden="true"> →</span></a>
+            </section>
+        </div>
+    </section>
+</main>
+{% endblock %}
